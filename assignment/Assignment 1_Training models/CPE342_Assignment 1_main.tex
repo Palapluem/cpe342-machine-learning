@@ -1,0 +1,394 @@
+% Compile: xelatex main.tex (รัน 2 รอบ)
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{thai}
+\setotherlanguage{english}
+
+\setmainfont{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+    BoldItalicFont = Sarabun-BoldItalic,
+]
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{needspace}
+\usepackage{caption}
+\tcbuselibrary{skins, breakable}
+
+\definecolor{captioncol}{RGB}{80, 80, 80}
+\definecolor{accentblue}{RGB}{37, 99, 235}
+\captionsetup{font={small, color=captioncol}, justification=centering}
+
+\widowpenalty=10000
+\clubpenalty=10000
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=14pt}
+
+\newtcolorbox{ansbox}[1][]{
+    colback=green!5!white, colframe=green!50!black,
+    boxrule=0.5pt, arc=4pt, left=8pt, right=8pt, top=5pt, bottom=5pt, #1
+}
+
+% =================================================================
+\begin{document}
+
+\begin{center}
+    {\Large\textbf{CPE 342 Machine Learning}}\\[2pt]
+    {\Large\textbf{Assignment 1: Training Models}}\\[4pt]
+    {\large OLS Regression}\\[6pt]
+    \textcolor{accentblue}{67070501042 วิศิษฐ์ สุวรรณเนาว์}
+\end{center}
+
+\noindent\rule{\textwidth}{0.4pt}\vspace{4pt}
+
+\noindent
+ข้อมูลที่กำหนดให้เป็นตัวเลขงบประมาณโฆษณา ($X$, หน่วย: พันดอลลาร์) และยอดขาย ($Y$, หน่วย: พันหน่วย) จาก 10 เดือน ดังนี้
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c c c}
+\toprule
+\textbf{Month} & \textbf{Advertising Budget $X$ (\$1,000s)} & \textbf{Sales $Y$ (1,000 units)} \\
+\midrule
+1  & 3.0  & 6.0  \\
+2  & 5.0  & 9.0  \\
+3  & 2.0  & 4.0  \\
+4  & 7.0  & 10.0 \\
+5  & 8.0  & 12.0 \\
+6  & 1.0  & 3.0  \\
+7  & 4.0  & 7.0  \\
+8  & 6.0  & 8.0  \\
+9  & 9.0  & 13.0 \\
+10 & 10.0 & 15.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =================================================================
+\section*{Task 1: Implement OLS Regression}
+% =================================================================
+
+\subsection*{1a) Fit Simple Linear Regression ด้วยวิธี OLS}
+
+\textbf{แบบจำลอง:}
+สมมติว่าความสัมพันธ์ระหว่าง $X$ กับ $Y$ เป็นเชิงเส้น (linear) กำหนดให้ $\hat{Y}_i = \alpha + \beta X_i$ 
+โดยที่ $\alpha$ คือ intercept และ $\beta$ คือ slope 
+
+แทน $Y_i = \beta X_i + \alpha$ ลงในสมการ error $\varepsilon_i = Y_i - \hat{Y}_i$ จะได้
+\[
+    \varepsilon_i = Y_i - (\alpha + \beta X_i)
+\]
+
+\medskip\noindent
+\textbf{หลักการของ OLS:}
+ฟังก์ชันผลรวมของกำลังสองของ error (Least Squares Function) $S$:
+\[
+    S(\alpha, \beta) = \sum_{i=1}^{n} \varepsilon_i^2 = \sum_{i=1}^{n} \bigl(Y_i - \alpha - \beta X_i\bigr)^2
+\]
+ฟังก์ชัน $S$ จะมีค่าน้อยที่สุดเมื่อ $\frac{\partial S}{\partial \alpha} = 0$ และ $\frac{\partial S}{\partial \beta} = 0$
+
+\medskip\noindent
+\textbf{การหา partial derivatives:}
+
+\begin{align}
+    \frac{\partial S}{\partial \alpha} &= -2\sum_{i=1}^{n}(Y_i - \alpha - \beta X_i) = 0 \label{eq:da}\\[6pt]
+    \frac{\partial S}{\partial \beta}  &= -2\sum_{i=1}^{n}(Y_i - \alpha - \beta X_i)X_i = 0 \label{eq:db}
+\end{align}
+
+จากสมการ \eqref{eq:da}: 
+$\displaystyle\sum_{i=1}^{n} Y_i - n\alpha - \beta\sum_{i=1}^{n} X_i = 0 \implies$ \textbf{Normal Equation 1:}
+\[
+    n\alpha + \beta\sum_{i=1}^{n} X_i = \sum_{i=1}^{n} Y_i
+\]
+
+จากสมการ \eqref{eq:db}: 
+$\displaystyle\sum_{i=1}^{n} X_i Y_i - \alpha\sum_{i=1}^{n} X_i - \beta\sum_{i=1}^{n} X_i^2 = 0 \implies$ \textbf{Normal Equation 2:}
+\[
+    \alpha\sum_{i=1}^{n} X_i + \beta\sum_{i=1}^{n} X_i^2 = \sum_{i=1}^{n} X_i Y_i
+\]
+
+สามารถเขียน Normal Equation ในรูปแบบ Matrix ได้ดังนี้:
+\[
+    \begin{bmatrix}
+        n & \sum X_i \\
+        \sum X_i & \sum X_i^2
+    \end{bmatrix}
+    \begin{bmatrix}
+        \alpha \\
+        \beta
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \sum Y_i \\
+        \sum X_i Y_i
+    \end{bmatrix}
+\]
+
+\medskip\noindent
+\textbf{คำนวณค่า summation จากข้อมูล:}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c r r r r}
+\toprule
+$i$ & $X_i$ & $Y_i$ & $X_i Y_i$ & $X_i^2$ \\
+\midrule
+1  & 3.0  & 6.0  & 18.0   & 9.0   \\
+2  & 5.0  & 9.0  & 45.0   & 25.0  \\
+3  & 2.0  & 4.0  & 8.0    & 4.0   \\
+4  & 7.0  & 10.0 & 70.0   & 49.0  \\
+5  & 8.0  & 12.0 & 96.0   & 64.0  \\
+6  & 1.0  & 3.0  & 3.0    & 1.0   \\
+7  & 4.0  & 7.0  & 28.0   & 16.0  \\
+8  & 6.0  & 8.0  & 48.0   & 36.0  \\
+9  & 9.0  & 13.0 & 117.0  & 81.0  \\
+10 & 10.0 & 15.0 & 150.0  & 100.0 \\
+\midrule
+$\sum$ & \textbf{55.0} & \textbf{87.0} & \textbf{583.0} & \textbf{385.0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+ดังนั้น:
+\[
+    n = 10, \quad
+    \sum X_i = 55, \quad
+    \sum Y_i = 87, \quad
+    \sum X_i Y_i = 583, \quad
+    \sum X_i^2 = 385
+\]
+
+\begin{ansbox}
+\textbf{สรุป 1a:} \quad จากข้อมูลข้างต้น จะได้ระบบสมการ:
+\[
+    \begin{bmatrix}
+        10 & 55 \\
+        55 & 385
+    \end{bmatrix}
+    \begin{bmatrix}
+        \alpha \\
+        \beta
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        87 \\
+        583
+    \end{bmatrix}
+\]
+\end{ansbox}
+
+% ----- 1b -----
+\subsection*{1b) คำนวณ Regression Coefficients}
+
+เราสามารถหาค่า $\alpha$ (intercept) และ $\beta$ (slope) ได้หลายวิธี:
+
+\subsubsection*{วิธีที่ 1: Cramer's Rule}
+จากระบบสมการ:
+\begin{align*}
+    10\alpha + 55\beta &= 87 \\
+    55\alpha + 385\beta &= 583
+\end{align*}
+หาค่า Determinant:
+\[
+    \Delta = \det \begin{bmatrix} 10 & 55 \\ 55 & 385 \end{bmatrix} = (10)(385) - (55)(55) = 3850 - 3025 = 825
+\]
+\[
+    \Delta_\alpha = \det \begin{bmatrix} 87 & 55 \\ 583 & 385 \end{bmatrix} = (87)(385) - (55)(583) = 33495 - 32065 = 1430
+\]
+\[
+    \Delta_\beta = \det \begin{bmatrix} 10 & 87 \\ 55 & 583 \end{bmatrix} = (10)(583) - (87)(55) = 5830 - 4785 = 1045
+\]
+จะได้:
+\[
+    \alpha = \frac{\Delta_\alpha}{\Delta} = \frac{1430}{825} = \frac{26}{15} \approx 1.7333
+\]
+\[
+    \beta = \frac{\Delta_\beta}{\Delta} = \frac{1045}{825} = \frac{19}{15} \approx 1.2667
+\]
+
+\subsubsection*{วิธีที่ 2: Pseudoinverse Method}
+กำหนด $A = \begin{bmatrix} 1 & X_1 \\ 1 & X_2 \\ \vdots & \vdots \\ 1 & X_n \end{bmatrix}$, 
+$Y = \begin{bmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{bmatrix}$, 
+และ $c = \begin{bmatrix} \alpha \\ \beta \end{bmatrix}$
+
+จากสมการ $Ac = Y$ เราใช้ Left Pseudoinverse:
+\[
+    c = (A^T A)^{-1} A^T Y
+\]
+จากตารางคำนวณ:
+\[
+    A^T A = \begin{bmatrix} n & \sum X_i \\ \sum X_i & \sum X_i^2 \end{bmatrix} = \begin{bmatrix} 10 & 55 \\ 55 & 385 \end{bmatrix}
+\]
+\[
+    A^T Y = \begin{bmatrix} \sum Y_i \\ \sum X_i Y_i \end{bmatrix} = \begin{bmatrix} 87 \\ 583 \end{bmatrix}
+\]
+หา $(A^T A)^{-1}$:
+\[
+    (A^T A)^{-1} = \frac{1}{825} \begin{bmatrix} 385 & -55 \\ -55 & 10 \end{bmatrix}
+\]
+คำนวณหา $c$:
+\begin{align*}
+    c &= \frac{1}{825} \begin{bmatrix} 385 & -55 \\ -55 & 10 \end{bmatrix} \begin{bmatrix} 87 \\ 583 \end{bmatrix} \\[6pt]
+      &= \frac{1}{825} \begin{bmatrix} (385)(87) + (-55)(583) \\ (-55)(87) + (10)(583) \end{bmatrix} \\[6pt]
+      &= \frac{1}{825} \begin{bmatrix} 33495 - 32065 \\ -4785 + 5830 \end{bmatrix} \\[6pt]
+      &= \frac{1}{825} \begin{bmatrix} 1430 \\ 1045 \end{bmatrix} = \begin{bmatrix} 1430/825 \\ 1045/825 \end{bmatrix} = \begin{bmatrix} 26/15 \\ 19/15 \end{bmatrix}
+\end{align*}
+
+\begin{ansbox}
+\textbf{สรุป 1b:} \quad ได้ค่าสัมประสิทธิ์ดังนี้:
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Intercept ($\alpha$)} = $\frac{26}{15} \approx 1.7333$
+    \item \textbf{Slope ($\beta$)} = $\frac{19}{15} \approx 1.2667$
+\end{itemize}
+\end{ansbox}
+\newpage
+
+% ----- 1c -----
+\subsection*{1c) สมการ Fitted Line}
+
+นำค่า $\alpha$ และ $\beta$ ที่คำนวณได้ไปแทนในสมการ $\hat{Y} = \alpha + \beta X$
+
+\begin{ansbox}
+\textbf{สรุป 1c:} \quad สมการ Fitted Line คือ:
+\[
+    \boxed{\;\hat{Y} = 1.7333 + 1.2667\,X\;}
+\]
+\end{ansbox}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{scatter_regression.pdf}
+    \caption{Scatter Plot แสดงความสัมพันธ์ระหว่างงบโฆษณากับยอดขาย พร้อมเส้น Fitted Line $\hat{Y} = 1.7333 + 1.2667X$}
+\end{figure}
+\newpage
+
+% =================================================================
+\section*{Task 2: Interpret the Results}
+% =================================================================
+
+\subsection*{2a) ความหมายของ Slope และ Intercept}
+
+\textbf{ความหมายของ Slope ($\beta \approx 1.2667$):}
+\begin{ansbox}
+Slope บ่งบอกว่ายอดขาย (Sales) ถูกคาดการณ์ว่าจะเพิ่มตามค่าโฆษณา (Advertising) ที่เพิ่มขึ้น นั่นคือ ทุก ๆ \$1,000 ของ advertising ที่เพิ่มขึ้น จะทำให้ยอดขาย (Sales) เพิ่มขึ้นประมาณ \textbf{1,267 หน่วย}
+\end{ansbox}
+
+\textbf{ความหมายของ Intercept ($\alpha \approx 1.7333$):}
+\begin{ansbox}
+จุดตัดแกน Y บ่งบอกยอดขายที่คาดการณ์ไว้เมื่อไม่มีต้นทุนค่าโฆษณา กล่าวคือ ถ้าบริษัทไม่ทำโฆษณาเลย ($X=0$) จะสามารถคาดการณ์ยอดขายได้ประมาณ \textbf{1,733 หน่วย}
+\end{ansbox}
+
+
+\subsection*{2b) Predict ยอดขายเมื่องบโฆษณา = \$12,000}
+
+แทน $X = 12$ ลงในสมการที่ได้:
+\begin{align*}
+    \hat{Y} &= 1.7333 + 1.2667(12) \\
+    \hat{Y} &= 1.7333 + 15.2004 \\
+    \hat{Y} &\approx 16.9333
+\end{align*}
+
+\begin{ansbox}
+\textbf{สรุป 2b:} \quad ถ้าต้นทุนในการโฆษณาคือ \$12,000 คาดการณ์ยอดขายได้ประมาณ \textbf{16.93 พันหน่วย} (ประมาณ 16,933 หน่วย)
+\end{ansbox}
+\newpage
+
+% =================================================================
+\section*{Task 3: Model Evaluation}
+% =================================================================
+
+\subsection*{3a) คำนวณ R-squared ($R^2$)}
+
+$R^2$ วัดความเหมาะสมของแบบจำลอง (Goodness of fit) นิยามเป็น:
+\[
+    R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}
+\]
+โดย:
+\begin{itemize}[noitemsep, topsep=4pt]
+    \item $SS_{\text{res}} = \displaystyle\sum(Y_i - \hat{Y}_i)^2$ 
+    \item $SS_{\text{tot}} = \displaystyle\sum(Y_i - \bar{Y})^2$ 
+\end{itemize}
+
+\textbf{คำนวณ:} (โดย $\bar{Y} = 8.7$)
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{c r r r r r r}
+\toprule
+$i$ & $X_i$ & $Y_i$ & $\hat{Y}_i = 1.7333 + 1.2667X_i$ & $e_i = Y_i - \hat{Y}_i$ & $e_i^2$ & $(Y_i - \bar{Y})^2$ \\
+\midrule
+1  & 3.0  & 6.0  & 5.5333  & $0.4667$  & 0.2178  & 7.2900   \\
+2  & 5.0  & 9.0  & 8.0667  & $0.9333$  & 0.8711  & 0.0900   \\
+3  & 2.0  & 4.0  & 4.2667  & $-0.2667$ & 0.0711  & 22.0900  \\
+4  & 7.0  & 10.0 & 10.6000 & $-0.6000$ & 0.3600  & 1.6900   \\
+5  & 8.0  & 12.0 & 11.8667 & $0.1333$  & 0.0178  & 10.8900 \\
+6  & 1.0  & 3.0  & 3.0000  & $0.0000$  & 0.0000  & 32.4900  \\
+7  & 4.0  & 7.0  & 6.8000  & $0.2000$  & 0.0400  & 2.8900   \\
+8  & 6.0  & 8.0  & 9.3333  & $-1.3333$ & 1.7778  & 0.4900   \\
+9  & 9.0  & 13.0 & 13.1333 & $-0.1333$ & 0.0178  & 18.4900 \\
+10 & 10.0 & 15.0 & 14.4000 & $0.6000$  & 0.3600  & 39.6900 \\
+\midrule
+$\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+จากตาราง: $SS_{\text{res}} = 3.7333$, $SS_{\text{tot}} = 136.1000$
+
+แทนค่า:
+\[
+    R^2 = 1 - \frac{3.7333}{136.10} = 1 - 0.0274 = 0.9726
+\]
+
+\begin{ansbox}
+\textbf{สรุป 3a:} \quad $\boxed{R^2 \approx 0.9726}$ หรือประมาณ 97.26\%
+\end{ansbox}
+
+\subsection*{3b) ตีความค่า R-squared}
+
+\begin{ansbox}
+\textbf{สรุป 3b:} \quad ค่า R-squared ที่ $0.9726$ หมายความว่า ประมาณ \textbf{97.26\% ของการเปลี่ยนแปลงของยอดขาย (Sales) สามารถถูกอธิบายได้ด้วยงบโฆษณา (Advertising Budget)} 
+
+สิ่งนี้บ่งชี้ว่าโมเดล linear regression มี \textbf{ความเหมาะสมดีเยี่ยม (Excellent fit)} กับข้อมูล และตัวงบโฆษณาเป็นปัจจัยพยากรณ์ความสำเร็จของยอดขายที่แข็งแกร่งมาก
+\end{ansbox}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{residual_plot.pdf}
+    \caption{Residual Plot แสดงค่าความคลาดเคลื่อน (Error) ของแต่ละจุดข้อมูล ซึ่งกระจายตัวรอบศูนย์ได้ดี}
+\end{figure}
+\newpage
+
+% =================================================================
+\section*{สรุปผลลัพธ์}
+% =================================================================
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l l}
+\toprule
+\textbf{ข้อ} & \textbf{คำตอบ} \\
+\midrule
+\textbf{1a} & ระบบสมการ $10\alpha + 55\beta = 87$ และ $55\alpha + 385\beta = 583$ \\
+\textbf{1b} & Intercept ($\alpha$) $\approx 1.7333$, \quad Slope ($\beta$) $\approx 1.2667$ \\
+\textbf{1c} & สมการ Fitted Line: $\hat{Y} = 1.7333 + 1.2667X$ \\
+\textbf{2a} & Slope: เพิ่มงบโฆษณา \$1,000 ทำให้ยอดขายเพิ่ม 1,267 หน่วย \\
+            & Intercept: หากไม่มีงบโฆษณาเลย ยอดขายคาดการณ์คือ 1,733 หน่วย \\
+\textbf{2b} & เมื่องบโฆษณา = \$12,000 คาดการณ์ยอดขายได้ประมาณ 16,933 หน่วย \\
+\textbf{3a} & $R^2 \approx 0.9726$ (97.26\%) \\
+\textbf{3b} & 97.26\% ของยอดขายสามารถอธิบายได้ด้วยงบโฆษณา (โมเดลมีความเหมาะสมดีเยี่ยม) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
