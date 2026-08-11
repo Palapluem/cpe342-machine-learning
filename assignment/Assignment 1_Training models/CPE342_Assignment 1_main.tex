@@ -429,33 +429,34 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
 
 \begin{figure}[H]
     \centering
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plot_2_residuals_lollipop.pdf}
-    \end{minipage}\hfill
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plot_3_res_vs_fitted.pdf}
-    \end{minipage}
-    \vspace{0.5cm}
-    
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plot_4_res_dist.pdf}
-    \end{minipage}\hfill
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plot_5_qq.pdf}
-    \end{minipage}
-    \vspace{0.5cm}
-    
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plot_6_scale_loc.pdf}
-    \end{minipage}
-    \caption{ชุดกราฟวิเคราะห์พฤติกรรมความคลาดเคลื่อน (Residual Diagnostics) ได้แก่ Lollipop Chart, Residuals vs Fitted, การกระจายตัว (Distribution), Q-Q Plot และ Scale-Location Plot}
+    \includegraphics[width=0.75\textwidth]{plot_2_residuals_lollipop.pdf}
+    \caption{\textbf{Residuals Lollipop Chart:} แสดงขนาดของความคลาดเคลื่อน (Residual) ของแต่ละจุดข้อมูล (M1-M10) ช่วยให้เห็นชัดเจนว่าจุดไหนที่โมเดลทำนายคลาดเคลื่อนมากที่สุด (เช่น M8 มีค่า Residual ต่ำกว่าศูนย์มากที่สุด)}
 \end{figure}
-\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{plot_3_res_vs_fitted.pdf}
+    \caption{\textbf{Residuals vs Fitted Values:} ใช้ตรวจสอบรูปแบบความคลาดเคลื่อน หากจุดกระจายตัวแบบสุ่มรอบๆ เส้น 0 แสดงว่าโมเดล Linear เหมาะสม ไม่มีปัญหา non-linearity}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{plot_4_res_dist.pdf}
+    \caption{\textbf{Residuals Distribution:} ตรวจสอบการกระจายตัวของความคลาดเคลื่อนว่าใกล้เคียงการแจกแจงแบบปกติ (Normal Distribution) หรือไม่ ซึ่งเป็นสมมติฐานสำคัญของ OLS}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{plot_5_qq.pdf}
+    \caption{\textbf{Normal Q-Q Plot:} ใช้เปรียบเทียบการกระจายตัวของ Residuals กับ Normal Distribution ในเชิง Quantile หากจุดส่วนใหญ่อยู่บนเส้นทแยงมุม แสดงว่า Residuals มีการแจกแจงแบบปกติ}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{plot_6_scale_loc.pdf}
+    \caption{\textbf{Scale-Location Plot:} ใช้ตรวจสอบสมมติฐาน Homoscedasticity (ความแปรปรวนคงที่) หากจุดกระจายตัวสม่ำเสมอโดยไม่มีรูปแบบที่ชัดเจน แสดงว่าความแปรปรวนของความคลาดเคลื่อนคงที่ตลอดทุกช่วงค่าพยากรณ์}
+\end{figure}
+\clearpage
 
 % =================================================================
 \section*{สรุปผลลัพธ์}

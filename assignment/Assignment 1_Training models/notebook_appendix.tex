@@ -8,7 +8,7 @@
 \begin{lstlisting}[style=pycode]
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import os
@@ -272,15 +272,11 @@ ax.set_ylim(0, 18)
 plt.tight_layout()
 fig.savefig('scatter_regression.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-print("Saved scatter_regression.pdf")
+# print("Saved scatter_regression.pdf")
 \end{lstlisting}
-\smallskip
-\noindent\textbf{Out[10]:}
-\begin{lstlisting}[style=output]
-Saved scatter_regression.pdf
-C:\Users\Admin\AppData\Local\Temp\ipykernel_12172\1893595585.py:34: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
-  plt.show()
-\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{nb_out_plot_1.png}
+\end{center}
 \vspace{1em}
 \noindent\textbf{In [11]:}
 \begin{lstlisting}[style=pycode]
@@ -338,15 +334,11 @@ fig.suptitle('Residual Diagnostics', fontsize=15, fontweight='bold', y=1.01)
 plt.tight_layout()
 fig.savefig('diagnostics_panel.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-print("Saved diagnostics_panel.pdf")
+# print("Saved diagnostics_panel.pdf")
 \end{lstlisting}
-\smallskip
-\noindent\textbf{Out[11]:}
-\begin{lstlisting}[style=output]
-Saved diagnostics_panel.pdf
-C:\Users\Admin\AppData\Local\Temp\ipykernel_12172\2127319616.py:54: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
-  plt.show()
-\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{nb_out_plot_2.png}
+\end{center}
 \vspace{1em}
 \noindent\textbf{In [12]:}
 \begin{lstlisting}[style=pycode]
@@ -373,12 +365,8 @@ ax.set_aspect('equal')
 plt.tight_layout()
 fig.savefig('actual_vs_fitted.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-print("Saved actual_vs_fitted.pdf")
+# print("Saved actual_vs_fitted.pdf")
 \end{lstlisting}
-\smallskip
-\noindent\textbf{Out[12]:}
-\begin{lstlisting}[style=output]
-Saved actual_vs_fitted.pdf
-C:\Users\Admin\AppData\Local\Temp\ipykernel_12172\3902287056.py:23: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
-  plt.show()
-\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{nb_out_plot_3.png}
+\end{center}
