@@ -1,0 +1,13 @@
+# .gitignore for CPE342 machine learning repo
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+texput.log
+__pycache__/
+*.py.bak
+exec_notebook.py
+read_friend.py
+trim_tex.py
+make_notebook.py
