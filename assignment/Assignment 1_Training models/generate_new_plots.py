@@ -44,7 +44,7 @@ def avoid_overlap(x, y, x_offset=0, y_offset=0):
 fig1, ax1 = plt.subplots(figsize=(8, 5))
 ax1.scatter(X, Y, color='#4F46E5', s=100, edgecolors='white', linewidths=1.5, label='Actual Data')
 X_line = np.linspace(0, 13, 100)
-ax1.plot(X_line, alpha + beta * X_line, color='#E11D48', linewidth=2.5, label=f'Regression Line: Y = {alpha:.2f} + {beta:.2f}X')
+ax1.plot(X_line, alpha + beta * X_line, color='#E11D48', linewidth=2.5, label=fr'Regression Line: Y = {alpha:.2f} + {beta:.2f}X')
 ax1.scatter([12], [alpha + beta * 12], color='#10B981', s=120, marker='D', edgecolors='white', linewidths=1.5, label='Prediction at X=12')
 
 for i in range(n):
@@ -88,7 +88,7 @@ ax3.scatter(Y_hat, residuals, color='#F59E0B', s=90, edgecolors='white', linewid
 ax3.axhline(0, color='#1F2937', linestyle='--', linewidth=1.5)
 for i in range(n):
     ax3.annotate(f'M{i+1}', (Y_hat[i], residuals[i]), textcoords='offset points', xytext=(6, 5), fontproperties=prop_small, color='#4B5563')
-ax3.set_xlabel('Fitted Values ($\hat{Y}$)', fontproperties=prop_b)
+ax3.set_xlabel(r'Fitted Values ($\hat{Y}$)', fontproperties=prop_b)
 ax3.set_ylabel('Residuals', fontproperties=prop_b)
 ax3.set_title('3. Residuals vs Fitted Values', fontproperties=prop_title)
 apply_font(ax3)
@@ -130,8 +130,8 @@ sqrt_abs_res = np.sqrt(np.abs(residuals))
 ax6.scatter(Y_hat, sqrt_abs_res, color='#10B981', s=90, edgecolors='white', linewidths=1.2)
 for i in range(n):
     ax6.annotate(f'M{i+1}', (Y_hat[i], sqrt_abs_res[i]), textcoords='offset points', xytext=(6, 5), fontproperties=prop_small, color='#4B5563')
-ax6.set_xlabel('Fitted Values ($\hat{Y}$)', fontproperties=prop_b)
-ax6.set_ylabel('$\sqrt{|Residuals|}$', fontproperties=prop_b)
+ax6.set_xlabel(r'Fitted Values ($\hat{Y}$)', fontproperties=prop_b)
+ax6.set_ylabel(r'$\sqrt{|Residuals|}$', fontproperties=prop_b)
 ax6.set_title('6. Scale-Location Plot', fontproperties=prop_title)
 apply_font(ax6)
 plt.tight_layout()
@@ -153,7 +153,7 @@ ax7.plot(lims, lims, color='#1F2937', linestyle='--', linewidth=2, label='Perfec
 for i in range(n):
     ax7.annotate(f'M{i+1}', (Y_hat[i], Y[i]), textcoords='offset points', xytext=(-15, 8), fontproperties=prop_small, color='#4B5563', bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="none", alpha=0.6))
 
-ax7.set_xlabel('Predicted Sales ($\hat{Y}$)', fontproperties=prop_b)
+ax7.set_xlabel(r'Predicted Sales ($\hat{Y}$)', fontproperties=prop_b)
 ax7.set_ylabel('Actual Sales ($Y$)', fontproperties=prop_b)
 ax7.set_title('7. Actual vs Predicted Sales', fontproperties=prop_title)
 ax7.legend(prop=prop_r)

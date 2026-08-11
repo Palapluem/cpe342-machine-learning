@@ -314,16 +314,13 @@ $Y = \begin{bmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{bmatrix}$,
 นำค่า $\alpha$ และ $\beta$ ที่คำนวณได้ไปแทนในสมการ $\hat{Y} = \alpha + \beta X$
 
 \begin{ansbox}
-\textbf{สรุป 1c:} \quad สมการ Fitted Line คือ:
-\[
-    \boxed{\;\hat{Y} = 1.7333 + 1.2667\,X\;}
-\]
+\textbf{สรุป 1c:} \quad สมการเส้นตรงพยากรณ์คือ \quad $\boxed{\hat{Y} = 1.7333 + 1.2667X}$
 \end{ansbox}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{scatter_regression.pdf}
-    \caption{Scatter Plot แสดงความสัมพันธ์ระหว่างงบโฆษณากับยอดขาย พร้อมเส้น Fitted Line $\hat{Y} = 1.7333 + 1.2667X$}
+    \includegraphics[width=0.75\textwidth]{plot_1_regression.pdf}
+    \caption{OLS Linear Regression Analysis (Advertising Budget vs Sales) แสดงข้อมูลจริงและเส้นพยากรณ์ $\hat{Y} = 1.7333 + 1.2667X$}
 \end{figure}
 \newpage
 
@@ -358,6 +355,12 @@ Slope บ่งบอกว่ายอดขาย (Sales) ถูกคาด�
 
 \textit{ข้อควรระวัง:} $X = 12$ อยู่นอกช่วงข้อมูลที่ใช้ fit โมเดล (ค่าสูงสุดใน dataset คือ $X = 10$) การทำนายนี้จึงเป็น \textbf{extrapolation} ซึ่งโมเดลไม่สามารถยืนยันได้ว่าความสัมพันธ์เชิงเส้นยังคงดำเนินต่อไปที่ระดับนี้
 \end{ansbox}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{plot_7_actual_vs_pred.pdf}
+    \caption{Actual vs Predicted Sales แสดงความแม่นยำของการพยากรณ์โดยเปรียบเทียบค่าพยากรณ์กับค่าจริง}
+\end{figure}
 \newpage
 
 % =================================================================
@@ -428,39 +431,29 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
     \centering
     \begin{minipage}{0.48\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{plot_1_regression.pdf}
-    \end{minipage}\hfill
-    \begin{minipage}{0.48\textwidth}
-        \centering
         \includegraphics[width=\linewidth]{plot_2_residuals_lollipop.pdf}
-    \end{minipage}
-    \vspace{0.5cm}
-    
+    \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{plot_3_res_vs_fitted.pdf}
-    \end{minipage}\hfill
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plot_4_res_dist.pdf}
     \end{minipage}
     \vspace{0.5cm}
     
     \begin{minipage}{0.48\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{plot_5_qq.pdf}
+        \includegraphics[width=\linewidth]{plot_4_res_dist.pdf}
     \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_5_qq.pdf}
+    \end{minipage}
+    \vspace{0.5cm}
+    
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{plot_6_scale_loc.pdf}
     \end{minipage}
-    \vspace{0.5cm}
-
-    \begin{minipage}{0.6\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plot_7_actual_vs_pred.pdf}
-    \end{minipage}
-    \caption{ชุดกราฟวิเคราะห์ 7 รูปแบบ (Diagnostic Plots) ใช้ในการวิเคราะห์พฤติกรรมของข้อมูลและความแม่นยำของโมเดล OLS อย่างละเอียด ตั้งแต่การเปรียบเทียบยอดขายกับงบโฆษณา (1, 7) ไปจนถึงการวิเคราะห์ค่าความคลาดเคลื่อนด้วยวิธีต่างๆ (2, 3, 4, 5, 6) ฟอนต์ Sarabun}
+    \caption{ชุดกราฟวิเคราะห์พฤติกรรมความคลาดเคลื่อน (Residual Diagnostics) ได้แก่ Lollipop Chart, Residuals vs Fitted, การกระจายตัว (Distribution), Q-Q Plot และ Scale-Location Plot}
 \end{figure}
 \newpage
 
