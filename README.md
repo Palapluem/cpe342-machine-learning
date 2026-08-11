@@ -5,8 +5,8 @@ This repository contains coursework, assignments, and lecture materials for the 
 ## Contents
 
 - **`assignment/`**: Contains the solutions and reports for course assignments.
-  - **Assignment 1: Training Models (OLS Regression)** - Implementation and interpretation of Ordinary Least Squares regression to predict sales based on advertising budgets. Includes Python scripts for calculation and plotting, and LaTeX source files for the final report.
+  - **Assignment 1: Training Models (OLS Regression)**
+    - `Assignment_1_OLS.ipynb`: Jupyter Notebook with the OLS Regression Python implementation.
+    - `CPE342_Assignment 1_main.pdf`: Final PDF report containing the results, mathematical derivations, and a full code appendix with plots.
+    - `better_convert_nb.py`: Helper script to format the Jupyter Notebook as a clean LaTeX appendix.
 - **`lecture/`**: Course lecture materials and notes.
-
-## Author
-**Wisit Suwannao** (Student ID: 67070501042)
