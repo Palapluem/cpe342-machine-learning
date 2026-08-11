@@ -9,4 +9,4 @@ This repository contains coursework, assignments, and lecture materials for the 
 - **`lecture/`**: Course lecture materials and notes.
 
 ## Author
-**Wisit Suwannaw** (Student ID: 67070501042)
+**Wisit Suwannao** (Student ID: 67070501042)
