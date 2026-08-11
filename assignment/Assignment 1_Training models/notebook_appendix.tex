@@ -4,6 +4,18 @@
 \end{tcolorbox}
 
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\Large CPE 342 Machine Learning — Assignment 1: Training Models}\\
+\\
+**67070501042 วิศิษฐ์ สุวรรณเนาว์**\\
+\\
+OLS (Ordinary Least Squares) Linear Regression — Advertising Budget vs Sales\\
+\end{tcolorbox}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\large 0. Imports and Setup}\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [1]:}
 \begin{lstlisting}[style=pycode]
 %matplotlib inline
@@ -39,6 +51,10 @@ print("Plotting libraries and fonts loaded.")
 Plotting libraries and fonts loaded.
 \end{lstlisting}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\large 1. Data}\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [2]:}
 \begin{lstlisting}[style=pycode]
 # Advertising budget (X, in $1,000s) and Sales (Y, in 1,000 units)
@@ -58,6 +74,16 @@ n = 10
 X = [ 3.  5.  2.  7.  8.  1.  4.  6.  9. 10.]
 Y = [ 6.  9.  4. 10. 12.  3.  7.  8. 13. 15.]
 \end{lstlisting}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\large 2. Task 1: OLS Regression}\\
+\\
+\textbf{2a. Setting up the Normal Equations}\\
+\\
+Minimise $S(\alpha, \beta) = \sum\_i (Y\_i - \alpha - \beta X\_i)^2$ gives the Normal Equations:\\
+\\
+$$\begin{bmatrix} n & \sum X\_i \\ \sum X\_i & \sum X\_i^2 \end{bmatrix} \begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \begin{bmatrix} \sum Y\_i \\ \sum X\_i Y\_i \end{bmatrix}$$\\
+\end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [3]:}
 \begin{lstlisting}[style=pycode]
@@ -90,6 +116,14 @@ Normal Equation (matrix form):
   [55 385.0] [beta ] = [583.0]
 \end{lstlisting}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{2b. Solving for Coefficients}\\
+\\
+**Method 0 — Closed-form via $S\_{xx}$, $S\_{xy}$** (derived directly from Normal Equations):\\
+\\
+$$\beta = \frac{S\_{xy}}{S\_{xx}}, \qquad \alpha = \bar{Y} - \beta \bar{X}$$\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [4]:}
 \begin{lstlisting}[style=pycode]
 X_bar = X.mean()   # 5.5
@@ -119,6 +153,10 @@ alpha (intercept) = 1.733333
 Fitted line: Y_hat = 1.7333 + 1.2667 * X
 \end{lstlisting}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+**Verification — Method 1: Cramer's Rule**\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
 A = np.array([[n, sum_X], [sum_X, sum_X2]], dtype=float)
@@ -141,6 +179,10 @@ Cramer's Rule → alpha = 1.733333,  beta = 1.266667
 [OK] Matches Sxx/Sxy result
 \end{lstlisting}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+**Verification — Method 2: Pseudoinverse $(A^T A)^{-1} A^T Y$**\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [6]:}
 \begin{lstlisting}[style=pycode]
 A_mat = np.column_stack([np.ones(n), X])   # design matrix [1 | X]
@@ -156,6 +198,10 @@ print("[OK] Matches all previous results")
 Pseudoinverse   → alpha = 1.733333,  beta = 1.266667
 [OK] Matches all previous results
 \end{lstlisting}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{2c. Fitted Line}\\
+\end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [7]:}
 \begin{lstlisting}[style=pycode]
@@ -214,6 +260,17 @@ plt.show()
 \begin{center}
 \includegraphics[width=0.6\textwidth]{nb_out_plot_1.png}
 \end{center}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\large 3. Task 2: Interpretation}\\
+\\
+\textbf{3a. Meaning of Slope and Intercept}\\
+\\
+- **Slope (β ≈ 1.2667):** For each additional \$1,000 in advertising budget, sales are predicted to increase by approximately **1,267 units**. This is an association in the sample, not proof of causation.\\
+- **Intercept (α ≈ 1.7333):** At zero advertising budget (X = 0), predicted sales ≈ **1,733 units**. X = 0 is outside the observed range (1–10), so this is an extrapolated baseline.\\
+\\
+\textbf{3b. Prediction at X = 12 (\$12,000 budget)}\\
+\end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [9]:}
 \begin{lstlisting}[style=pycode]
@@ -279,6 +336,14 @@ print("7 individual plots generated successfully using strict Sarabun FontProper
 \includegraphics[width=0.6\textwidth]{nb_out_plot_2.png}
 \end{center}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\large 4. Task 3: Model Evaluation}\\
+\\
+\textbf{4a. R² Calculation}\\
+\\
+$$R^2 = 1 - \frac{SS\_{\text{res}}}{SS\_{\text{tot}}}, \quad SS\_{\text{res}} = \sum e\_i^2, \quad SS\_{\text{tot}} = \sum (Y\_i - \bar{Y})^2$$\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [11]:}
 \begin{lstlisting}[style=pycode]
 SS_res = np.sum(residuals ** 2)
@@ -309,6 +374,17 @@ Residual std  = 0.644061
 
 [OK] All assertions passed
 \end{lstlisting}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{4b. Interpretation}\\
+\\
+97.26% of the observed variation in sales is explained by the fitted linear relationship with advertising budget.\\
+\\
+**Important caveats:**\\
+- High R² does **not** establish that advertising *causes* higher sales.\\
+- R² alone does not guarantee the model will predict well on new data.\\
+- Residual mean ≈ 0 confirms the model is unbiased over the sample.\\
+\end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [12]:}
 \begin{lstlisting}[style=pycode]
@@ -416,3 +492,17 @@ plt.show()
 \begin{center}
 \includegraphics[width=0.6\textwidth]{nb_out_plot_7.png}
 \end{center}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\large 6. Summary of Results}\\
+\\
+| Task | Answer |\\
+|------|--------|\\
+| **1a** | Normal Equations: $10\alpha + 55\beta = 87$, $55\alpha + 385\beta = 583$ |\\
+| **1b** | Intercept $\alpha \approx 1.7333$, Slope $\beta \approx 1.2667$ |\\
+| **1c** | Fitted line: $\hat{Y} = 1.7333 + 1.2667X$ |\\
+| **2a** | Slope: +\$1,000 ads → +1,267 units sold (association, not causation) |\\
+| **2b** | At \$12,000 budget: $\hat{Y} \approx 16.93$ thousand units ≈ 16,933 units (extrapolation) |\\
+| **3a** | $R^2 \approx 0.9726$ (97.26%) |\\
+| **3b** | 97.26% of sales variation explained by advertising budget; residual mean = 0 (no bias) |\\
+\end{tcolorbox}
