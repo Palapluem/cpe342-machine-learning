@@ -125,13 +125,13 @@ alpha_cr = det_alpha / det_A
 beta_cr  = det_beta  / det_A
 print(f"Cramer's Rule → alpha = {alpha_cr:.6f},  beta = {beta_cr:.6f}")
 assert np.isclose(alpha_cr, alpha) and np.isclose(beta_cr, beta)
-print("✓ Matches Sxx/Sxy result")
+print("[OK] Matches Sxx/Sxy result")
 \end{lstlisting}
 \smallskip
 \noindent\textbf{Out[5]:}
 \begin{lstlisting}[style=output]
 Cramer's Rule → alpha = 1.733333,  beta = 1.266667
-✓ Matches Sxx/Sxy result
+[OK] Matches Sxx/Sxy result
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [6]:}
@@ -141,13 +141,13 @@ coeffs = np.linalg.inv(A_mat.T @ A_mat) @ A_mat.T @ Y
 alpha_ps, beta_ps = coeffs
 print(f"Pseudoinverse   → alpha = {alpha_ps:.6f},  beta = {beta_ps:.6f}")
 assert np.isclose(alpha_ps, alpha) and np.isclose(beta_ps, beta)
-print("✓ Matches all previous results")
+print("[OK] Matches all previous results")
 \end{lstlisting}
 \smallskip
 \noindent\textbf{Out[6]:}
 \begin{lstlisting}[style=output]
 Pseudoinverse   → alpha = 1.733333,  beta = 1.266667
-✓ Matches all previous results
+[OK] Matches all previous results
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [7]:}
@@ -221,7 +221,7 @@ print(f"Residual std  = {residuals.std(ddof=1):.6f}")
 assert np.isclose(SS_res, 3.7333333333)
 assert np.isclose(SS_tot, 136.1)
 assert np.isclose(R2, 0.9725691893)
-print("\n✓ All assertions passed")
+print("\n[OK] All assertions passed")
 \end{lstlisting}
 \smallskip
 \noindent\textbf{Out[9]:}
@@ -233,7 +233,7 @@ R²     = 0.972569  (97.26%)
 Residual mean = 0.000000  (≈ 0 → no bias)
 Residual std  = 0.644061
 
-✓ All assertions passed
+[OK] All assertions passed
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [10]:}
