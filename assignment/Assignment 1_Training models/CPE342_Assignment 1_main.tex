@@ -247,33 +247,6 @@ $\sum$ & \textbf{55.0} & \textbf{87.0} & \textbf{583.0} & \textbf{385.0} \\
 \]
 วิธีนี้ให้ผลลัพธ์ที่ตรงกันกับทุกวิธีอื่น แต่คำนวณได้เร็วกว่าเพราะไม่ต้องแก้ระบบสมการ
 
-\smallskip
-สามารถยืนยันด้วยโค้ด Python:
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=pycode, caption=OLS computation using $S_{xx}$/$S_{xy}$ method]
-import numpy as np
-
-X = np.array([3.,5.,2.,7.,8.,1.,4.,6.,9.,10.])
-Y = np.array([6.,9.,4.,10.,12.,3.,7.,8.,13.,15.])
-
-X_bar, Y_bar = X.mean(), Y.mean()    # 5.5, 8.7
-Sxx = np.sum((X - X_bar)**2)         # 82.5
-Sxy = np.sum((X - X_bar)*(Y - Y_bar))# 104.5
-
-beta  = Sxy / Sxx                    # 1.266667
-alpha = Y_bar - beta * X_bar         # 1.733333
-
-print(f"beta  = {beta:.6f}")
-print(f"alpha = {alpha:.6f}")
-print(f"Fitted: Y_hat = {alpha:.4f} + {beta:.4f}*X")
-\end{lstlisting}
-\begin{lstlisting}[style=output]
-beta  = 1.266667
-alpha = 1.733333
-Fitted: Y_hat = 1.7333 + 1.2667*X
-\end{lstlisting}
-\end{minipage}
-
 \subsubsection*{วิธีที่ 1: Cramer's Rule}
 จากระบบสมการ:
 \begin{align*}
@@ -428,29 +401,6 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
 \end{tabular}
 \end{table}
 
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=pycode, caption=Computing $R^2$ from residuals]
-Y_hat     = alpha + beta * X
-residuals = Y - Y_hat
-SS_res    = np.sum(residuals**2)           # 3.7333
-SS_tot    = np.sum((Y - Y_bar)**2)         # 136.1
-R2        = 1 - SS_res / SS_tot
-
-print(f"SS_res = {SS_res:.4f}")
-print(f"SS_tot = {SS_tot:.4f}")
-print(f"R^2    = {R2:.6f}")
-print(f"Residual mean = {residuals.mean():.6f}")
-print(f"Residual std  = {residuals.std(ddof=1):.6f}")
-\end{lstlisting}
-\begin{lstlisting}[style=output]
-SS_res = 3.7333
-SS_tot = 136.1000
-R^2    = 0.972569
-Residual mean = 0.000000
-Residual std  = 0.644061
-\end{lstlisting}
-\end{minipage}
-
 จากตาราง: $SS_{\text{res}} = 3.7333$, $SS_{\text{tot}} = 136.1000$
 
 แทนค่า:
@@ -474,14 +424,14 @@ Residual std  = 0.644061
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{diagnostics_panel.pdf}
-    \caption{Residual Diagnostics Panel — (top-left) Residuals vs Fitted แสดงว่า residuals ไม่มีรูปแบบชัดเจนรอบเส้นศูนย์; (top-right) Residual Distribution การกระจายใกล้เคียง Normal; (bottom-left) Q-Q Plot ยืนยันความเป็น Normal; (bottom-right) Scale-Location ไม่พบ Heteroscedasticity}
+    \includegraphics[width=0.85\textwidth]{regression_analysis.pdf}
+    \caption{OLS Linear Regression Analysis \& Residuals — ภาพบนแสดงการกระจายตัวของยอดขายและงบโฆษณาพร้อมเส้นพยากรณ์ ส่วนภาพล่าง (Lollipop Chart) แสดงค่า Residual ของแต่ละจุดข้อมูลอย่างชัดเจน}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.72\textwidth]{actual_vs_fitted.pdf}
-    \caption{Actual vs Fitted Sales — จุดทุกจุดอยู่ใกล้เส้น Perfect Fit ($Y = \hat{Y}$) ด้านแดงพระ แสดงว่าโมเดล fit ข้อมูลได้ดี}
+    \includegraphics[width=0.65\textwidth]{prediction_accuracy.pdf}
+    \caption{Model Accuracy: Predicted vs Actual — แสดงความแม่นยำของการพยากรณ์ โดยจุดข้อมูลเกาะกลุ่มอยู่ใกล้เส้น Perfect Prediction อย่างมาก}
 \end{figure}
 \newpage
 
@@ -507,7 +457,40 @@ Residual std  = 0.644061
 \end{tabular}
 \end{table}
 
+\newpage
+% =================================================================
+\section*{Appendix: Python Code}
+% =================================================================
+
+\noindent
+โค้ดสำหรับสร้างกราฟเพื่อนำเสนอผลวิเคราะห์ความสัมพันธ์
+
+\begin{lstlisting}[style=pycode, caption=Code for Unique Data Visualization (plots)]
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+# Set font to Sarabun for Thai compatibility
+plt.rcParams['font.family'] = 'Sarabun'
+plt.style.use('seaborn-v0_8-whitegrid')
+
+X = np.array([3., 5., 2., 7., 8., 1., 4., 6., 9., 10.])
+Y = np.array([6., 9., 4., 10., 12., 3., 7., 8., 13., 15.])
+
+X_bar, Y_bar = X.mean(), Y.mean()
+Sxx = np.sum((X - X_bar)**2)
+Sxy = np.sum((X - X_bar)*(Y - Y_bar))
+beta = Sxy / Sxx
+alpha = Y_bar - beta * X_bar
+
+Y_hat = alpha + beta * X
+residuals = Y - Y_hat
+
+# ... (Plotting code omitted for brevity. Full code in Assignment_1_OLS.ipynb) ...
+\end{lstlisting}
+
 \smallskip
-\noindent\textit{\small โค้ดสำหรับคำนวณและสร้างกราฟทั้งหมดอยู่ใน \texttt{Assignment\_1\_OLS.ipynb}}
+\noindent\textit{\small หมายเหตุ: โค้ดฉบับเต็ม รวมถึงโค้ดสร้างกราฟทั้งหมดและ Output แบบสมบูรณ์สามารถดูได้ใน Jupyter Notebook \texttt{Assignment\_1\_OLS.ipynb} ที่แนบมาด้วย}
 
 \end{document}
