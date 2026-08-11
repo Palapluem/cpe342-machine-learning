@@ -28,14 +28,7 @@ def escape_tex(text):
 
 for cell in nb['cells']:
     if cell['cell_type'] == 'markdown':
-        source = "".join(cell['source']).strip()
-        if source.startswith("# CPE") or source.startswith("## 6. Summary") or "|" in source:
-            continue # Skip title and table markdown cells as they are redundant
-        
-        # Clean markdown formatting for normal reading
-        clean_source = re.sub(r'[*#>`]', '', source)
-        tex_lines.append(r"\vspace{0.5em}")
-        tex_lines.append(r"\noindent " + escape_tex(clean_source) + r"\\")
+        continue
         
     elif cell['cell_type'] == 'code':
         source = "".join(cell['source'])

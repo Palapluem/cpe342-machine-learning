@@ -3,20 +3,6 @@
 โค้ดและผลลัพธ์ทั้งหมดด้านล่างเป็นการรันจริงจาก Jupyter Notebook
 \end{tcolorbox}
 
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-# CPE 342 Machine Learning — Assignment 1: Training Models
-
-**67070501042 วิศิษฐ์ สุวรรณเนาว์**
-
-OLS (Ordinary Least Squares) Linear Regression — Advertising Budget vs Sales
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-## 0. Imports and Setup
-\end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [1]:}
 \begin{lstlisting}[style=pycode]
@@ -45,11 +31,6 @@ print("Libraries loaded.")
 \begin{lstlisting}[style=output]
 Libraries loaded.
 \end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-## 1. Data
-\end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [2]:}
 \begin{lstlisting}[style=pycode]
@@ -69,17 +50,6 @@ print(f"Y = {Y}")
 n = 10
 X = [ 3.  5.  2.  7.  8.  1.  4.  6.  9. 10.]
 Y = [ 6.  9.  4. 10. 12.  3.  7.  8. 13. 15.]
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-## 2. Task 1: OLS Regression
-
-### 2a. Setting up the Normal Equations
-
-Minimise $S(\alpha, \beta) = \sum_i (Y_i - \alpha - \beta X_i)^2$ gives the Normal Equations:
-
-$$\begin{bmatrix} n & \sum X_i \\ \sum X_i & \sum X_i^2 \end{bmatrix} \begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \begin{bmatrix} \sum Y_i \\ \sum X_i Y_i \end{bmatrix}$$
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [3]:}
@@ -112,15 +82,6 @@ Normal Equation (matrix form):
   [10   55.0] [alpha]   [ 87.0]
   [55 385.0] [beta ] = [583.0]
 \end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-### 2b. Solving for Coefficients
-
-**Method 0 — Closed-form via $S_{xx}$, $S_{xy}$** (derived directly from Normal Equations):
-
-$$\beta = \frac{S_{xy}}{S_{xx}}, \qquad \alpha = \bar{Y} - \beta \bar{X}$$
-\end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [4]:}
 \begin{lstlisting}[style=pycode]
@@ -150,11 +111,6 @@ beta  (slope)     = 1.266667
 alpha (intercept) = 1.733333
 Fitted line: Y_hat = 1.7333 + 1.2667 * X
 \end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-**Verification — Method 1: Cramer's Rule**
-\end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
@@ -177,11 +133,6 @@ print("✓ Matches Sxx/Sxy result")
 Cramer's Rule → alpha = 1.733333,  beta = 1.266667
 ✓ Matches Sxx/Sxy result
 \end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-**Verification — Method 2: Pseudoinverse $(A^T A)^{-1} A^T Y$**
-\end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [6]:}
 \begin{lstlisting}[style=pycode]
@@ -197,11 +148,6 @@ print("✓ Matches all previous results")
 \begin{lstlisting}[style=output]
 Pseudoinverse   → alpha = 1.733333,  beta = 1.266667
 ✓ Matches all previous results
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-### 2c. Fitted Line
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [7]:}
@@ -234,18 +180,6 @@ Month     X     Y    Y_hat      e_i
    9    9.0  13.0   13.1333   -0.1333
   10   10.0  15.0   14.4000   +0.6000
 \end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-## 3. Task 2: Interpretation
-
-### 3a. Meaning of Slope and Intercept
-
-- **Slope (β ≈ 1.2667):** For each additional \$1,000 in advertising budget, sales are predicted to increase by approximately **1,267 units**. This is an association in the sample, not proof of causation.
-- **Intercept (α ≈ 1.7333):** At zero advertising budget (X = 0), predicted sales ≈ **1,733 units**. X = 0 is outside the observed range (1–10), so this is an extrapolated baseline.
-
-### 3b. Prediction at X = 12 (\$12,000 budget)
-\end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [8]:}
 \begin{lstlisting}[style=pycode]
@@ -269,15 +203,6 @@ Y_hat = 1.7333 + 1.2667 * 12.0 = 16.9333 thousand units
 
 NOTE: X = 12 is beyond the observed maximum (X_max = 10).
 This prediction is extrapolation — treat with caution.
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-## 4. Task 3: Model Evaluation
-
-### 4a. R² Calculation
-
-$$R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}, \quad SS_{\text{res}} = \sum e_i^2, \quad SS_{\text{tot}} = \sum (Y_i - \bar{Y})^2$$
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [9]:}
@@ -310,28 +235,6 @@ Residual std  = 0.644061
 
 ✓ All assertions passed
 \end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-### 4b. Interpretation
-
-97.26% of the observed variation in sales is explained by the fitted linear relationship with advertising budget.
-
-**Important caveats:**
-- High R² does **not** establish that advertising *causes* higher sales.
-- R² alone does not guarantee the model will predict well on new data.
-- Residual mean ≈ 0 confirms the model is unbiased over the sample.
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-## 5. Visualisations
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-### 5a. Scatter Plot with Regression Line
-\end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [10]:}
 \begin{lstlisting}[style=pycode]
@@ -344,12 +247,12 @@ ax.scatter(X, Y, color='#2563EB', s=90, edgecolors='white',
 # Regression line (extended to X=13)
 X_line = np.linspace(0, 13, 300)
 ax.plot(X_line, alpha + beta * X_line, color='#DC2626', linewidth=2.2,
-        label=f'$\hat{{Y}} = {alpha:.4f} + {beta:.4f}X$', zorder=4)
+        label=f'$\\\hat{{Y}} = {alpha:.4f} + {beta:.4f}X$', zorder=4)
 
 # Prediction point
 ax.scatter([X_pred], [Y_pred], color='#16A34A', s=140, marker='D',
            edgecolors='white', linewidths=1.5, zorder=6,
-           label=f'Prediction at X=12 ($\hat{{Y}}$={Y_pred:.2f})')
+           label=f'Prediction at X=12 ($\\\hat{{Y}}$={Y_pred:.2f})')
 ax.plot([X_pred, X_pred], [0, Y_pred], color='#16A34A',
         linestyle='--', linewidth=1, alpha=0.6, zorder=3)
 ax.plot([0, X_pred], [Y_pred, Y_pred], color='#16A34A',
@@ -374,22 +277,9 @@ print("Saved scatter_regression.pdf")
 \smallskip
 \noindent\textbf{Out[10]:}
 \begin{lstlisting}[style=output]
-<>:10: SyntaxWarning: invalid escape sequence '\h'
-<>:15: SyntaxWarning: invalid escape sequence '\h'
-<>:10: SyntaxWarning: invalid escape sequence '\h'
-<>:15: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\3933166873.py:10: SyntaxWarning: invalid escape sequence '\h'
-  label=f'$\hat{{Y}} = {alpha:.4f} + {beta:.4f}X$', zorder=4)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\3933166873.py:15: SyntaxWarning: invalid escape sequence '\h'
-  label=f'Prediction at X=12 ($\hat{{Y}}$={Y_pred:.2f})')
 Saved scatter_regression.pdf
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\3933166873.py:34: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+C:\Users\Admin\AppData\Local\Temp\ipykernel_12172\1893595585.py:34: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
   plt.show()
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-### 5b. Residual Diagnostics Panel (2×2)
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [11]:}
@@ -404,7 +294,7 @@ ax.axhline(0, color='#DC2626', linestyle='--', linewidth=1.8, zorder=3)
 for i in range(n):
     ax.annotate(f'M{i+1}', (Y_hat[i], residuals[i]),
                 textcoords='offset points', xytext=(6, 5), fontsize=8.5, color='#374151')
-ax.set_xlabel('Fitted values ($\hat{Y}$) [1,000 units]')
+ax.set_xlabel('Fitted values ($\\\hat{Y}$) [1,000 units]')
 ax.set_ylabel('Residual ($e_i$)')
 ax.set_title('Residuals vs Fitted Values')
 
@@ -440,8 +330,8 @@ ax.scatter(Y_hat, sqrt_abs, color='#059669', s=90,
 for i in range(n):
     ax.annotate(f'M{i+1}', (Y_hat[i], sqrt_abs[i]),
                 textcoords='offset points', xytext=(6, 4), fontsize=8.5, color='#374151')
-ax.set_xlabel('Fitted values ($\hat{Y}$) [1,000 units]')
-ax.set_ylabel('$\sqrt{|e_i|}$')
+ax.set_xlabel('Fitted values ($\\\hat{Y}$) [1,000 units]')
+ax.set_ylabel('$\\\sqrt{|e_i|}$')
 ax.set_title('Scale-Location')
 
 fig.suptitle('Residual Diagnostics', fontsize=15, fontweight='bold', y=1.01)
@@ -453,26 +343,9 @@ print("Saved diagnostics_panel.pdf")
 \smallskip
 \noindent\textbf{Out[11]:}
 \begin{lstlisting}[style=output]
-<>:11: SyntaxWarning: invalid escape sequence '\h'
-<>:47: SyntaxWarning: invalid escape sequence '\h'
-<>:48: SyntaxWarning: invalid escape sequence '\s'
-<>:11: SyntaxWarning: invalid escape sequence '\h'
-<>:47: SyntaxWarning: invalid escape sequence '\h'
-<>:48: SyntaxWarning: invalid escape sequence '\s'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\2831409773.py:11: SyntaxWarning: invalid escape sequence '\h'
-  ax.set_xlabel('Fitted values ($\hat{Y}$) [1,000 units]')
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\2831409773.py:47: SyntaxWarning: invalid escape sequence '\h'
-  ax.set_xlabel('Fitted values ($\hat{Y}$) [1,000 units]')
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\2831409773.py:48: SyntaxWarning: invalid escape sequence '\s'
-  ax.set_ylabel('$\sqrt{|e_i|}$')
 Saved diagnostics_panel.pdf
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\2831409773.py:54: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+C:\Users\Admin\AppData\Local\Temp\ipykernel_12172\2127319616.py:54: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
   plt.show()
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-### 5c. Actual vs Fitted Sales
 \end{lstlisting}
 \vspace{1em}
 \noindent\textbf{In [12]:}
@@ -492,7 +365,7 @@ for i in range(n):
                 textcoords='offset points', xytext=(6, 4), fontsize=8.5, color='#374151')
 
 ax.set_xlabel('Actual Sales $Y$ [1,000 units]')
-ax.set_ylabel('Fitted Sales $\hat{Y}$ [1,000 units]')
+ax.set_ylabel('Fitted Sales $\\\hat{Y}$ [1,000 units]')
 ax.set_title('Actual vs Fitted Sales', fontsize=13)
 ax.legend(loc='upper left')
 ax.set_xlim(lims); ax.set_ylim(lims)
@@ -505,26 +378,7 @@ print("Saved actual_vs_fitted.pdf")
 \smallskip
 \noindent\textbf{Out[12]:}
 \begin{lstlisting}[style=output]
-<>:16: SyntaxWarning: invalid escape sequence '\h'
-<>:16: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\2730993131.py:16: SyntaxWarning: invalid escape sequence '\h'
-  ax.set_ylabel('Fitted Sales $\hat{Y}$ [1,000 units]')
 Saved actual_vs_fitted.pdf
-C:\Users\Admin\AppData\Local\Temp\ipykernel_26040\2730993131.py:23: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+C:\Users\Admin\AppData\Local\Temp\ipykernel_12172\3902287056.py:23: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
   plt.show()
-\end{lstlisting}
-\vspace{0.5em}
-\noindent\textbf{Markdown:}
-\begin{lstlisting}[style=output]
-## 6. Summary of Results
-
-| Task | Answer |
-|------|--------|
-| **1a** | Normal Equations: $10\alpha + 55\beta = 87$, $55\alpha + 385\beta = 583$ |
-| **1b** | Intercept $\alpha \approx 1.7333$, Slope $\beta \approx 1.2667$ |
-| **1c** | Fitted line: $\hat{Y} = 1.7333 + 1.2667X$ |
-| **2a** | Slope: +\$1,000 ads → +1,267 units sold (association, not causation) |
-| **2b** | At \$12,000 budget: $\hat{Y} \approx 16.93$ thousand units ≈ 16,933 units (extrapolation) |
-| **3a** | $R^2 \approx 0.9726$ (97.26%) |
-| **3b** | 97.26% of sales variation explained by advertising budget; residual mean = 0 (no bias) |
 \end{lstlisting}
