@@ -422,16 +422,45 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
 \textit{สิ่งที่ $R^2$ สูงไม่ได้บ่งชี้:} ว่างบโฆษณา\emph{เป็นสาเหตุ}ของยอดขาย หรือรับประกันว่าโมเดลจะพยากรณ์ได้ดีเสมอในอนาคต
 \end{ansbox}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{regression_analysis.pdf}
-    \caption{OLS Linear Regression Analysis \& Residuals — ภาพบนแสดงการกระจายตัวของยอดขายและงบโฆษณาพร้อมเส้นพยากรณ์ ส่วนภาพล่าง (Lollipop Chart) แสดงค่า Residual ของแต่ละจุดข้อมูลอย่างชัดเจน}
-\end{figure}
+\subsection*{Diagnostic Plots (วิเคราะห์ความสัมพันธ์เชิงลึก)}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\textwidth]{prediction_accuracy.pdf}
-    \caption{Model Accuracy: Predicted vs Actual — แสดงความแม่นยำของการพยากรณ์ โดยจุดข้อมูลเกาะกลุ่มอยู่ใกล้เส้น Perfect Prediction อย่างมาก}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_1_regression.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_2_residuals_lollipop.pdf}
+    \end{minipage}
+    \vspace{0.5cm}
+    
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_3_res_vs_fitted.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_4_res_dist.pdf}
+    \end{minipage}
+    \vspace{0.5cm}
+    
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_5_qq.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_6_scale_loc.pdf}
+    \end{minipage}
+    \vspace{0.5cm}
+
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plot_7_actual_vs_pred.pdf}
+    \end{minipage}
+    \caption{ชุดกราฟวิเคราะห์ 7 รูปแบบ (Diagnostic Plots) ใช้ในการวิเคราะห์พฤติกรรมของข้อมูลและความแม่นยำของโมเดล OLS อย่างละเอียด ตั้งแต่การเปรียบเทียบยอดขายกับงบโฆษณา (1, 7) ไปจนถึงการวิเคราะห์ค่าความคลาดเคลื่อนด้วยวิธีต่างๆ (2, 3, 4, 5, 6) ฟอนต์ Sarabun}
 \end{figure}
 \newpage
 
@@ -459,38 +488,12 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
 
 \newpage
 % =================================================================
-\section*{Appendix: Python Code}
+\section*{Appendix: Jupyter Notebook Output}
 % =================================================================
 
 \noindent
-โค้ดสำหรับสร้างกราฟเพื่อนำเสนอผลวิเคราะห์ความสัมพันธ์
+ส่วนนี้คือโค้ด Python แบบเต็มและผลลัพธ์ (Output) ที่รันจริงจาก \texttt{Assignment\_1\_OLS.ipynb} เพื่อแสดงวิธีการคำนวณและสร้างกราฟทั้งหมด
 
-\begin{lstlisting}[style=pycode, caption=Code for Unique Data Visualization (plots)]
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-
-# Set font to Sarabun for Thai compatibility
-plt.rcParams['font.family'] = 'Sarabun'
-plt.style.use('seaborn-v0_8-whitegrid')
-
-X = np.array([3., 5., 2., 7., 8., 1., 4., 6., 9., 10.])
-Y = np.array([6., 9., 4., 10., 12., 3., 7., 8., 13., 15.])
-
-X_bar, Y_bar = X.mean(), Y.mean()
-Sxx = np.sum((X - X_bar)**2)
-Sxy = np.sum((X - X_bar)*(Y - Y_bar))
-beta = Sxy / Sxx
-alpha = Y_bar - beta * X_bar
-
-Y_hat = alpha + beta * X
-residuals = Y - Y_hat
-
-# ... (Plotting code omitted for brevity. Full code in Assignment_1_OLS.ipynb) ...
-\end{lstlisting}
-
-\smallskip
-\noindent\textit{\small หมายเหตุ: โค้ดฉบับเต็ม รวมถึงโค้ดสร้างกราฟทั้งหมดและ Output แบบสมบูรณ์สามารถดูได้ใน Jupyter Notebook \texttt{Assignment\_1\_OLS.ipynb} ที่แนบมาด้วย}
+\input{notebook_appendix.tex}
 
 \end{document}
