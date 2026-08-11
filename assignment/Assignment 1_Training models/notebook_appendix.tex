@@ -249,11 +249,15 @@ plt.show()
 \end{center}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+✨ \textbf{ภาพประกอบที่ 1 (Regression Line)}: แสดงความสัมพันธ์ระหว่างงบโฆษณา (Advertising Budget) และยอดขาย (Sales) พร้อมกับเส้นความสัมพันธ์เชิงเส้น (Regression Line) ที่ได้จากสมการ OLS\\
+\end{tcolorbox}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
 \textbf{\large 3. Task 2: Interpretation}\par\smallskip
 \textbf{3a. Meaning of Slope and Intercept}\par\smallskip
 \begin{itemize}
-\item \textbf{Slope (β ≈ 1.2667):} For each additional \$1,000 in advertising budget, sales are predicted to increase by approximately \textbf{1,267 units}. This is an association in the sample, not proof of causation.
-\item \textbf{Intercept (α ≈ 1.7333):} At zero advertising budget (X = 0), predicted sales ≈ \textbf{1,733 units}. X = 0 is outside the observed range (1–10), so this is an extrapolated baseline.
+\item \textbf{Slope ($\beta$ $\approx$ 1.2667):} For each additional \$1,000 in advertising budget, sales are predicted to increase by approximately \textbf{1,267 units}. This is an association in the sample, not proof of causation.
+\item \textbf{Intercept ($\alpha$ $\approx$ 1.7333):} At zero advertising budget (X = 0), predicted sales $\approx$ \textbf{1,733 units}. X = 0 is outside the observed range (1–10), so this is an extrapolated baseline.
 \end{itemize}
 \textbf{3b. Prediction at X = 12 (\$12,000 budget)}\par\smallskip
 \end{tcolorbox}
@@ -316,6 +320,10 @@ plt.show()
 \end{center}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+✨ \textbf{ภาพประกอบที่ 7 (Actual vs Predicted)}: เปรียบเทียบยอดขายจริง (Actual) กับยอดขายที่แบบจำลองทำนายได้ (Predicted) จุดที่เรียงใกล้เส้นประทแยงมุมแสดงให้เห็นว่าโมเดลทำนายได้ค่อนข้างแม่นยำ\\
+\end{tcolorbox}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
 \textbf{\large 4. Task 3: Model Evaluation}\par\smallskip
 \textbf{4a. R² Calculation}\par\smallskip
 $$R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}, \quad SS_{\text{res}} = \sum e_i^2, \quad SS_{\text{tot}} = \sum (Y_i - \bar{Y})^2$$\\
@@ -359,7 +367,7 @@ Residual std  = 0.644061
 \begin{itemize}
 \item High R² does \textbf{not} establish that advertising *causes* higher sales.
 \item R² alone does not guarantee the model will predict well on new data.
-\item Residual mean ≈ 0 confirms the model is unbiased over the sample.
+\item Residual mean $\approx$ 0 confirms the model is unbiased over the sample.
 \end{itemize}
 \end{tcolorbox}
 \vspace{1em}
@@ -390,6 +398,10 @@ plt.show()
 \includegraphics[width=0.6\textwidth]{nb_out_plot_3.png}
 \end{center}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+✨ \textbf{ภาพประกอบที่ 2 (Residuals Lollipop Plot)}: แสดงค่าความคลาดเคลื่อน (Residuals) ของข้อมูลแต่ละจุด โดยเปรียบเทียบระยะห่างในแนวดิ่งระหว่างค่าจริงกับค่าที่โมเดลทำนายได้\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [13]:}
 \begin{lstlisting}[style=pycode]
 # --- Plot 3: Residuals vs Fitted ---
@@ -409,6 +421,10 @@ plt.show()
 \begin{center}
 \includegraphics[width=0.6\textwidth]{nb_out_plot_4.png}
 \end{center}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+✨ \textbf{ภาพประกอบที่ 3 (Residuals vs Fitted)}: ตรวจสอบรูปแบบความคลาดเคลื่อน (Non-linear patterns) และความแปรปรวนที่คงที่ (Homoscedasticity) หากจุดข้อมูลกระจายตัวแบบสุ่มรอบเส้น 0 ถือว่าเป็นโมเดลที่ดี\\
+\end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [14]:}
 \begin{lstlisting}[style=pycode]
@@ -430,6 +446,10 @@ plt.show()
 \includegraphics[width=0.6\textwidth]{nb_out_plot_5.png}
 \end{center}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+✨ \textbf{ภาพประกอบที่ 4 (Residuals Distribution)}: กราฟฮิสโตแกรมการแจกแจงความถี่ของค่า Residuals เพื่อตรวจสอบว่ามีการแจกแจงเข้าใกล้การแจกแจงแบบปกติ (Normality) หรือไม่\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [15]:}
 \begin{lstlisting}[style=pycode]
 # --- Plot 5: Normal Q-Q Plot ---
@@ -450,6 +470,10 @@ plt.show()
 \includegraphics[width=0.6\textwidth]{nb_out_plot_6.png}
 \end{center}
 \vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+✨ \textbf{ภาพประกอบที่ 5 (Q-Q Plot)}: กราฟเปรียบเทียบ Quantile ของค่า Residuals กับการแจกแจงแบบปกติมาตรฐาน ยิ่งจุดเรียงตัวชิดเส้นทแยงมุมสีแดงมากเท่าใด ยิ่งแสดงถึงความเป็นโค้งปกติมากเท่านั้น\\
+\end{tcolorbox}
+\vspace{1em}
 \noindent\textbf{In [16]:}
 \begin{lstlisting}[style=pycode]
 # --- Plot 6: Scale-Location Plot ---
@@ -469,3 +493,7 @@ plt.show()
 \begin{center}
 \includegraphics[width=0.6\textwidth]{nb_out_plot_7.png}
 \end{center}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+✨ \textbf{ภาพประกอบที่ 6 (Scale-Location)}: ตรวจสอบความเท่าเทียมกันของความแปรปรวนของความคลาดเคลื่อน (Homoscedasticity) ตลอดช่วงค่าที่ทำนายได้ เส้นสีแดงควรมีลักษณะราบขนานกับแกน X\\
+\end{tcolorbox}
