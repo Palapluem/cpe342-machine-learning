@@ -11,6 +11,11 @@
     ItalicFont     = Sarabun-Italic,
     BoldItalicFont = Sarabun-BoldItalic,
 ]
+% แก้ปัญหา polyglossia: monospace font ต้องรองรับ Thai script
+\newfontfamily\thaifonttt{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+]
 
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
@@ -22,11 +27,50 @@
 \usepackage{tcolorbox}
 \usepackage{needspace}
 \usepackage{caption}
+\usepackage{listings}
+\usepackage{upquote}
 \tcbuselibrary{skins, breakable}
 
 \definecolor{captioncol}{RGB}{80, 80, 80}
 \definecolor{accentblue}{RGB}{37, 99, 235}
+\definecolor{codebg}{RGB}{248, 250, 252}
+\definecolor{codeframe}{RGB}{203, 213, 225}
+\definecolor{keyword}{RGB}{124, 58, 237}
+\definecolor{string}{RGB}{22, 163, 74}
+\definecolor{comment}{RGB}{100, 116, 139}
+\definecolor{output}{RGB}{30, 58, 138}
 \captionsetup{font={small, color=captioncol}, justification=centering}
+
+\lstdefinestyle{pycode}{
+    language=Python,
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{keyword}\bfseries,
+    stringstyle=\color{string},
+    commentstyle=\color{comment}\itshape,
+    numberstyle=\tiny\color{comment},
+    numbers=left,
+    numbersep=8pt,
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    xleftmargin=16pt,
+    xrightmargin=4pt,
+}
+
+\lstdefinestyle{output}{
+    basicstyle=\ttfamily\small\color{output},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    numbers=none,
+    xleftmargin=8pt,
+    xrightmargin=4pt,
+    breaklines=true,
+}
 
 \widowpenalty=10000
 \clubpenalty=10000
@@ -191,6 +235,45 @@ $\sum$ & \textbf{55.0} & \textbf{87.0} & \textbf{583.0} & \textbf{385.0} \\
 
 เราสามารถหาค่า $\alpha$ (intercept) และ $\beta$ (slope) ได้หลายวิธี:
 
+\subsubsection*{วิธีที่ 0: สูตร $S_{xx}$, $S_{xy}$ (Closed-form จาก Normal Equations)}
+จาก Normal Equations สามารถแก้หาค่า $\beta$ ได้โดยตรงด้วยการนิยามทั้งสองแบบ:
+\begin{align*}
+    S_{xx} &= \sum_{i=1}^{n}(X_i - \bar{X})^2 = \sum X_i^2 - \frac{(\sum X_i)^2}{n} = 385 - \frac{55^2}{10} = 385 - 302.5 = 82.5 \\
+    S_{xy} &= \sum_{i=1}^{n}(X_i - \bar{X})(Y_i - \bar{Y}) = \sum X_iY_i - \frac{\sum X_i \sum Y_i}{n} = 583 - \frac{(55)(87)}{10} = 583 - 478.5 = 104.5
+\end{align*}
+จะได้:
+\[
+    \beta = \frac{S_{xy}}{S_{xx}} = \frac{104.5}{82.5} \approx 1.2667, \qquad \alpha = \bar{Y} - \beta\bar{X} = 8.7 - (1.2667)(5.5) \approx 1.7333
+\]
+วิธีนี้ให้ผลลัพธ์ที่ตรงกันกับทุกวิธีอื่น แต่คำนวณได้เร็วกว่าเพราะไม่ต้องแก้ระบบสมการ
+
+\smallskip
+สามารถยืนยันด้วยโค้ด Python:
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=pycode, caption=OLS computation using $S_{xx}$/$S_{xy}$ method]
+import numpy as np
+
+X = np.array([3.,5.,2.,7.,8.,1.,4.,6.,9.,10.])
+Y = np.array([6.,9.,4.,10.,12.,3.,7.,8.,13.,15.])
+
+X_bar, Y_bar = X.mean(), Y.mean()    # 5.5, 8.7
+Sxx = np.sum((X - X_bar)**2)         # 82.5
+Sxy = np.sum((X - X_bar)*(Y - Y_bar))# 104.5
+
+beta  = Sxy / Sxx                    # 1.266667
+alpha = Y_bar - beta * X_bar         # 1.733333
+
+print(f"beta  = {beta:.6f}")
+print(f"alpha = {alpha:.6f}")
+print(f"Fitted: Y_hat = {alpha:.4f} + {beta:.4f}*X")
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+beta  = 1.266667
+alpha = 1.733333
+Fitted: Y_hat = 1.7333 + 1.2667*X
+\end{lstlisting}
+\end{minipage}
+
 \subsubsection*{วิธีที่ 1: Cramer's Rule}
 จากระบบสมการ:
 \begin{align*}
@@ -279,7 +362,7 @@ $Y = \begin{bmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{bmatrix}$,
 
 \textbf{ความหมายของ Slope ($\beta \approx 1.2667$):}
 \begin{ansbox}
-Slope บ่งบอกว่ายอดขาย (Sales) ถูกคาดการณ์ว่าจะเพิ่มตามค่าโฆษณา (Advertising) ที่เพิ่มขึ้น นั่นคือ ทุก ๆ \$1,000 ของ advertising ที่เพิ่มขึ้น จะทำให้ยอดขาย (Sales) เพิ่มขึ้นประมาณ \textbf{1,267 หน่วย}
+Slope บ่งบอกว่ายอดขาย (Sales) ถูกคาดการณ์ว่าจะเพิ่มตามค่าโฆษณา (Advertising) ที่เพิ่มขึ้น นั่นคือ ทุก ๆ \$1,000 ของ advertising ที่เพิ่มขึ้น จะทำให้ยอดขาย (Sales) เพิ่มขึ้นประมาณ \textbf{1,267 หน่วย} ค่านี้เป็นความสัมพันธ์เชิงสถิติ (association) ไม่ใช่การพิสูจน์ว่าโฆษณา\textit{เป็นสาเหตุ}(causation) ของยอดขายที่เพิ่มขึ้น
 \end{ansbox}
 
 \textbf{ความหมายของ Intercept ($\alpha \approx 1.7333$):}
@@ -299,6 +382,8 @@ Slope บ่งบอกว่ายอดขาย (Sales) ถูกคาด�
 
 \begin{ansbox}
 \textbf{สรุป 2b:} \quad ถ้าต้นทุนในการโฆษณาคือ \$12,000 คาดการณ์ยอดขายได้ประมาณ \textbf{16.93 พันหน่วย} (ประมาณ 16,933 หน่วย)
+
+\textit{ข้อควรระวัง:} $X = 12$ อยู่นอกช่วงข้อมูลที่ใช้ fit โมเดล (ค่าสูงสุดใน dataset คือ $X = 10$) การทำนายนี้จึงเป็น \textbf{extrapolation} ซึ่งโมเดลไม่สามารถยืนยันได้ว่าความสัมพันธ์เชิงเส้นยังคงดำเนินต่อไปที่ระดับนี้
 \end{ansbox}
 \newpage
 
@@ -343,6 +428,29 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
 \end{tabular}
 \end{table}
 
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=pycode, caption=Computing $R^2$ from residuals]
+Y_hat     = alpha + beta * X
+residuals = Y - Y_hat
+SS_res    = np.sum(residuals**2)           # 3.7333
+SS_tot    = np.sum((Y - Y_bar)**2)         # 136.1
+R2        = 1 - SS_res / SS_tot
+
+print(f"SS_res = {SS_res:.4f}")
+print(f"SS_tot = {SS_tot:.4f}")
+print(f"R^2    = {R2:.6f}")
+print(f"Residual mean = {residuals.mean():.6f}")
+print(f"Residual std  = {residuals.std(ddof=1):.6f}")
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+SS_res = 3.7333
+SS_tot = 136.1000
+R^2    = 0.972569
+Residual mean = 0.000000
+Residual std  = 0.644061
+\end{lstlisting}
+\end{minipage}
+
 จากตาราง: $SS_{\text{res}} = 3.7333$, $SS_{\text{tot}} = 136.1000$
 
 แทนค่า:
@@ -357,15 +465,23 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
 \subsection*{3b) ตีความค่า R-squared}
 
 \begin{ansbox}
-\textbf{สรุป 3b:} \quad ค่า R-squared ที่ $0.9726$ หมายความว่า ประมาณ \textbf{97.26\% ของการเปลี่ยนแปลงของยอดขาย (Sales) สามารถถูกอธิบายได้ด้วยงบโฆษณา (Advertising Budget)} 
+\textbf{สรุป 3b:} \quad ค่า R-squared ที่ $0.9726$ หมายความว่า ประมาณ \textbf{97.26\% ของการเปลี่ยนแปลงของยอดขาย (Sales) สามารถถูกอธิบายได้ด้วยงบโฆษณา (Advertising Budget)}
 
-สิ่งนี้บ่งชี้ว่าโมเดล linear regression มี \textbf{ความเหมาะสมดีเยี่ยม (Excellent fit)} กับข้อมูล และตัวงบโฆษณาเป็นปัจจัยพยากรณ์ความสำเร็จของยอดขายที่แข็งแกร่งมาก
+จากตาราง residuals ข้างต้น พบว่า $\bar{e} = 0$ \textit{(residual mean เท่ากับศูนย์พอดี แสดงว่าโมเดลไม่มี bias)} โดย Standard Deviation ของ residuals อยู่ที่ $s_e = 0.6441$ พันหน่วย (เทียบกับค่าเฉลี่ยยได้ดี เพราะ residual สูงสุดใน dataset คือ $|e_8| = 1.33$)
+
+\textit{สิ่งที่ $R^2$ สูงไม่ได้บ่งชี้:} ว่างบโฆษณา\emph{เป็นสาเหตุ}ของยอดขาย หรือรับประกันว่าโมเดลจะพยากรณ์ได้ดีเสมอในอนาคต
 \end{ansbox}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{residual_plot.pdf}
-    \caption{Residual Plot แสดงค่าความคลาดเคลื่อน (Error) ของแต่ละจุดข้อมูล ซึ่งกระจายตัวรอบศูนย์ได้ดี}
+    \includegraphics[width=0.85\textwidth]{diagnostics_panel.pdf}
+    \caption{Residual Diagnostics Panel — (top-left) Residuals vs Fitted แสดงว่า residuals ไม่มีรูปแบบชัดเจนรอบเส้นศูนย์; (top-right) Residual Distribution การกระจายใกล้เคียง Normal; (bottom-left) Q-Q Plot ยืนยันความเป็น Normal; (bottom-right) Scale-Location ไม่พบ Heteroscedasticity}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\textwidth]{actual_vs_fitted.pdf}
+    \caption{Actual vs Fitted Sales — จุดทุกจุดอยู่ใกล้เส้น Perfect Fit ($Y = \hat{Y}$) ด้านแดงพระ แสดงว่าโมเดล fit ข้อมูลได้ดี}
 \end{figure}
 \newpage
 
@@ -390,5 +506,8 @@ $\sum$ & & & & & $\mathbf{3.7333}$ & $\mathbf{136.1000}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\smallskip
+\noindent\textit{\small โค้ดสำหรับคำนวณและสร้างกราฟทั้งหมดอยู่ใน \texttt{Assignment\_1\_OLS.ipynb}}
 
 \end{document}
