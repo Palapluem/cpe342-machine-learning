@@ -22,27 +22,28 @@ Where:
 # 2. Font & Library Setup
 cells.append(nbf.v4.new_markdown_cell(
 r"""## 2. Library & Font Setup
-Loading libraries and downloading the Sarabun font to support Thai rendering in Matplotlib if needed."""
+Loading libraries and configuring the system's Sarabun font to support Thai rendering in Matplotlib."""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# Download TH Sarabun New font for Matplotlib
-!wget -q https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf
-
-import numpy as np
+r"""import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import matplotlib.font_manager as fm
-import urllib.request
 import os
 
-# Font configuration
-font_path = 'thsarabunnew-webfont.ttf'
-if not os.path.exists(font_path):
-    urllib.request.urlretrieve('https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf', font_path)
-fm.fontManager.addfont(font_path)
-mpl.rc('font', family='TH Sarabun New', size=14)
-mpl.rcParams['axes.unicode_minus'] = False # Prevent minus sign rendering issues
+# --- Robust Sarabun Font Setup ---
+font_dir = os.path.join(os.environ.get('LOCALAPPDATA', ''), 'Microsoft', 'Windows', 'Fonts')
+sarabun_r_path = os.path.join(font_dir, 'Sarabun-Regular.ttf')
+sarabun_b_path = os.path.join(font_dir, 'Sarabun-Bold.ttf')
+
+if os.path.exists(sarabun_r_path):
+    fm.fontManager.addfont(sarabun_r_path)
+if os.path.exists(sarabun_b_path):
+    fm.fontManager.addfont(sarabun_b_path)
+
+plt.rcParams['font.family'] = 'Sarabun'
+plt.rcParams['font.size'] = 14
+plt.rcParams['axes.unicode_minus'] = False # Prevent minus sign rendering issues
 
 print("Library and font setup complete")"""
 ))

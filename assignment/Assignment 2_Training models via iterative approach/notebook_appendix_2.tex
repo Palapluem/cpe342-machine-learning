@@ -6,37 +6,36 @@
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
 \textbf{\large 2. Library \& Font Setup}\par\smallskip
-Loading libraries and downloading the Sarabun font to support Thai rendering in Matplotlib if needed.
+Loading libraries and configuring the system's Sarabun font to support Thai rendering in Matplotlib.
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [1]:}
 \begin{lstlisting}[style=pycode]
-# Download TH Sarabun New font for Matplotlib
-!wget -q https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import matplotlib.font_manager as fm
-import urllib.request
 import os
 
-# Font configuration
-font_path = 'thsarabunnew-webfont.ttf'
-if not os.path.exists(font_path):
-    urllib.request.urlretrieve('https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf', font_path)
-fm.fontManager.addfont(font_path)
-mpl.rc('font', family='TH Sarabun New', size=14)
-mpl.rcParams['axes.unicode_minus'] = False # Prevent minus sign rendering issues
+# --- Robust Sarabun Font Setup ---
+font_dir = os.path.join(os.environ.get('LOCALAPPDATA', ''), 'Microsoft', 'Windows', 'Fonts')
+sarabun_r_path = os.path.join(font_dir, 'Sarabun-Regular.ttf')
+sarabun_b_path = os.path.join(font_dir, 'Sarabun-Bold.ttf')
+
+if os.path.exists(sarabun_r_path):
+    fm.fontManager.addfont(sarabun_r_path)
+if os.path.exists(sarabun_b_path):
+    fm.fontManager.addfont(sarabun_b_path)
+
+plt.rcParams['font.family'] = 'Sarabun'
+plt.rcParams['font.size'] = 14
+plt.rcParams['axes.unicode_minus'] = False # Prevent minus sign rendering issues
 
 print("Library and font setup complete")
 \end{lstlisting}
 \smallskip
 \noindent\textbf{Out[1]:}
 \begin{lstlisting}[style=output]
-'wget' is not recognized as an internal or external command,
-operable program or batch file.
 Library and font setup complete
 \end{lstlisting}
 \vspace{1em}
@@ -250,9 +249,9 @@ plt.show()
 <>:39: SyntaxWarning: invalid escape sequence '\h'
 <>:26: SyntaxWarning: invalid escape sequence '\h'
 <>:39: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_22544\1694607884.py:26: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_11388\1694607884.py:26: SyntaxWarning: invalid esca ...
   ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_22544\1694607884.py:39: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_11388\1694607884.py:39: SyntaxWarning: invalid esca ...
   ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}
