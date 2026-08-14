@@ -194,8 +194,8 @@ print(f"Final MSE Loss: {history_loss[-1]:.6f}")"""
 
 # 8. Task 5 (Visualizations)
 cells.append(nbf.v4.new_markdown_cell(
-r"""## Task 5 — ผลลัพธ์และการแสดงภาพ (Results & Visualizations)
-เราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน"""
+r"""## Task 5 — Results & Visualizations
+In this section, we analyze the behavior of our trained model and evaluate how well it fits the dataset using various plots."""
 ))
 cells.append(nbf.v4.new_code_cell(
 r"""# Graph 1: Learning Curve (Loss over Iterations)

@@ -197,17 +197,17 @@ Optimized Parameters: C0 = nan, C1 = nan
 Final MSE Loss: nan
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\_methods.py:132: Runt ...
   ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_5368\3501735774.py:27: RuntimeWarning: overflow enc ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\3501735774.py:27: RuntimeWarning: overflow enc ...
   loss = np.mean(error**2)
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\fromnumeric.py:83: Ru ...
   return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_5368\3501735774.py:38: RuntimeWarning: invalid valu ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\3501735774.py:38: RuntimeWarning: invalid valu ...
   C1 = C1 - learning_rate * grad_C1
 \end{lstlisting}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 5 — ผลลัพธ์และการแสดงภาพ (Results \& Visualizations)}\par\smallskip
-เราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน
+\textbf{\large Task 5 — Results \& Visualizations}\par\smallskip
+In this section, we analyze the behavior of our trained model and evaluate how well it fits the dataset using various plots.
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [4]:}
@@ -277,7 +277,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:11: SyntaxWarning: invalid escape sequence '\h'
 <>:11: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_5368\3158359308.py:11: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\3158359308.py:11: SyntaxWarning: invalid escap ...
   plt.plot(x_line, y_line, color='red', linewidth=3, label=f'Model: $\hat{{y}} = {C0:.4f} + {C1 ...
 \end{lstlisting}
 \begin{center}
@@ -304,7 +304,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:10: SyntaxWarning: invalid escape sequence '\h'
 <>:10: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_5368\198927625.py:10: SyntaxWarning: invalid escape ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\198927625.py:10: SyntaxWarning: invalid escape ...
   plt.ylabel('Residual ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}
