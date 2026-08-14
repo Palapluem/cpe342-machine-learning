@@ -5,8 +5,7 @@
 
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)}\par\smallskip
-ทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น
+\textbf{\large 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)\nทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น}\par\smallskip
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [1]:}
@@ -41,8 +40,7 @@ operable program or batch file.
 \end{lstlisting}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 3. นำเข้าและสำรวจข้อมูล (Data Loading \& EDA)}\par\smallskip
-อ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$
+\textbf{\large 3. นำเข้าและสำรวจข้อมูล (Data Loading \& EDA)\nอ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$}\par\smallskip
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [2]:}
@@ -85,9 +83,9 @@ plt.show()
 \textbf{\large Task 1 — ฟังก์ชันความสูญเสีย (Loss Function)}\par\smallskip
 กำหนดให้โมเดลของเราคือ $\hat{y}_i = C_0 + C_1 x_i^2$
 ฟังก์ชันความสูญเสียที่เราใช้คือ \textbf{Mean Squared Error (MSE)} ซึ่งคำนวณจากค่าเฉลี่ยของกำลังสองของความคลาดเคลื่อน (Residuals) ของทุกๆ ข้อมูล:
-$$ L(C_0, C_1) = rac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+$$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
 เมื่อแทนค่า $\hat{y}_i$ จะได้สมการเป้าหมายของเรา:
-$$ L(C_0, C_1) = rac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$
+$$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$
 \end{tcolorbox}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
@@ -95,18 +93,18 @@ $$ L(C_0, C_1) = rac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$
 เพื่อที่จะใช้ Gradient Descent เราต้องหาอนุพันธ์ย่อย (Partial derivatives) ของ $L$ เทียบกับพารามิเตอร์แต่ละตัว
 ให้ $e_i = y_i - C_0 - C_1 x_i^2$ เป็นค่าความคลาดเคลื่อน
 \textbf{1. Gradient เทียบกับ $C_0$:}
-$$ rac{\partial L}{\partial C_0} = rac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot rac{\partial}{\partial C_0}(-C_0) $$
-$$ rac{\partial L}{\partial C_0} = -rac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
+$$ \frac{\partial L}{\partial C_0} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_0}(-C_0) $$
+$$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
 \textbf{2. Gradient เทียบกับ $C_1$:}
-$$ rac{\partial L}{\partial C_1} = rac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot rac{\partial}{\partial C_1}(-C_1 x_i^2) $$
-$$ rac{\partial L}{\partial C_1} = -rac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) x_i^2 $$
+$$ \frac{\partial L}{\partial C_1} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_1}(-C_1 x_i^2) $$
+$$ \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) x_i^2 $$
 \end{tcolorbox}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
 \textbf{\large Task 3 — กฎการอัปเดตพารามิเตอร์ (Update Rules)}\par\smallskip
 ในการวนซ้ำแต่ละรอบ $t$ พารามิเตอร์จะถูกปรับค่าในทิศทางที่ตรงข้ามกับ Gradient เพื่อทำให้ค่า Loss ลดลง โดยมี $\eta$ (Learning Rate) เป็นตัวควบคุมขนาดของก้าว (Step size):
-$$ C_0^{(t+1)} = C_0^{(t)} - \eta \cdot rac{\partial L}{\partial C_0} $$
-$$ C_1^{(t+1)} = C_1^{(t)} - \eta \cdot rac{\partial L}{\partial C_1} $$
+$$ C_0^{(t+1)} = C_0^{(t)} - \eta \cdot \frac{\partial L}{\partial C_0} $$
+$$ C_1^{(t+1)} = C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1} $$
 \end{tcolorbox}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
@@ -182,17 +180,16 @@ Final Parameters: C0 = nan, C1 = nan
 Final MSE Loss: nan
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\_methods.py:132: Runt ...
   ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\1213225691.py:27: RuntimeWarning: overflow en ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_8024\1213225691.py:27: RuntimeWarning: overflow enc ...
   loss = np.mean(error**2)
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\fromnumeric.py:83: Ru ...
   return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\1213225691.py:38: RuntimeWarning: invalid val ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_8024\1213225691.py:38: RuntimeWarning: invalid valu ...
   C1 = C1 - learning_rate * grad_C1
 \end{lstlisting}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 5 — ผลลัพธ์และการแสดงภาพ (Results \& Visualizations)}\par\smallskip
-เราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน
+\textbf{\large Task 5 — ผลลัพธ์และการแสดงภาพ (Results \& Visualizations)\nเราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน}\par\smallskip
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [4]:}
@@ -262,7 +259,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:11: SyntaxWarning: invalid escape sequence '\h'
 <>:11: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\3233163607.py:11: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_8024\3233163607.py:11: SyntaxWarning: invalid escap ...
   plt.plot(x_line, y_line, color='red', linewidth=3, label=f'โมเดล: $\hat{{y}} = {C0:.4f} {C1:. ...
 \end{lstlisting}
 \begin{center}
@@ -289,7 +286,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:10: SyntaxWarning: invalid escape sequence '\h'
 <>:10: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\3932470835.py:10: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_8024\3932470835.py:10: SyntaxWarning: invalid escap ...
   plt.ylabel('Residual ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}

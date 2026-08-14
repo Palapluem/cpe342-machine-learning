@@ -6,7 +6,7 @@ cells = []
 
 # 1. Title & Problem Overview
 cells.append(nbf.v4.new_markdown_cell(
-"""# CPE 342 Machine Learning — Assignment 2: Training Models
+r"""# CPE 342 Machine Learning — Assignment 2: Training Models
 **ผู้จัดทำ:** 67070501042 วิศิษฐ์ สุวรรณเนาว์
 
 ## 1. ภาพรวมของปัญหา (Problem Overview)
@@ -20,9 +20,9 @@ $$ \hat{y} = C_0 + C_1 x^2 $$
 ))
 
 # 2. Font & Library Setup
-cells.append(nbf.v4.new_markdown_cell("## 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)\nทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น"))
+cells.append(nbf.v4.new_markdown_cell(r"## 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)\nทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น"))
 cells.append(nbf.v4.new_code_cell(
-"""# ดาวน์โหลดฟอนต์ TH Sarabun New สำหรับใช้ใน Matplotlib (รันบน Colab/Jupyter ได้)
+r"""# ดาวน์โหลดฟอนต์ TH Sarabun New สำหรับใช้ใน Matplotlib (รันบน Colab/Jupyter ได้)
 !wget -q https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf
 
 import numpy as np
@@ -45,9 +45,9 @@ print("ตั้งค่าไลบรารีและฟอนต์สำ�
 ))
 
 # 3. Data Loading
-cells.append(nbf.v4.new_markdown_cell("## 3. นำเข้าและสำรวจข้อมูล (Data Loading & EDA)\nอ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$"))
+cells.append(nbf.v4.new_markdown_cell(r"## 3. นำเข้าและสำรวจข้อมูล (Data Loading & EDA)\nอ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$"))
 cells.append(nbf.v4.new_code_cell(
-"""# อ่านข้อมูล
+r"""# อ่านข้อมูล
 df = pd.read_csv('CPE342_Assignment 2_Data.csv')
 X = df['X'].values
 Y = df['Y'].values
@@ -80,7 +80,7 @@ plt.show()"""
 
 # 4. Task 1
 cells.append(nbf.v4.new_markdown_cell(
-"""## Task 1 — ฟังก์ชันความสูญเสีย (Loss Function)
+r"""## Task 1 — ฟังก์ชันความสูญเสีย (Loss Function)
 กำหนดให้โมเดลของเราคือ $\hat{y}_i = C_0 + C_1 x_i^2$ 
 
 ฟังก์ชันความสูญเสียที่เราใช้คือ **Mean Squared Error (MSE)** ซึ่งคำนวณจากค่าเฉลี่ยของกำลังสองของความคลาดเคลื่อน (Residuals) ของทุกๆ ข้อมูล:
@@ -93,7 +93,7 @@ $$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$"""
 
 # 5. Task 2
 cells.append(nbf.v4.new_markdown_cell(
-"""## Task 2 — การหาอนุพันธ์ย่อย (Gradient of Each Coefficient)
+r"""## Task 2 — การหาอนุพันธ์ย่อย (Gradient of Each Coefficient)
 เพื่อที่จะใช้ Gradient Descent เราต้องหาอนุพันธ์ย่อย (Partial derivatives) ของ $L$ เทียบกับพารามิเตอร์แต่ละตัว 
 
 ให้ $e_i = y_i - C_0 - C_1 x_i^2$ เป็นค่าความคลาดเคลื่อน
@@ -109,7 +109,7 @@ $$ \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_
 
 # 6. Task 3
 cells.append(nbf.v4.new_markdown_cell(
-"""## Task 3 — กฎการอัปเดตพารามิเตอร์ (Update Rules)
+r"""## Task 3 — กฎการอัปเดตพารามิเตอร์ (Update Rules)
 ในการวนซ้ำแต่ละรอบ $t$ พารามิเตอร์จะถูกปรับค่าในทิศทางที่ตรงข้ามกับ Gradient เพื่อทำให้ค่า Loss ลดลง โดยมี $\eta$ (Learning Rate) เป็นตัวควบคุมขนาดของก้าว (Step size):
 
 $$ C_0^{(t+1)} = C_0^{(t)} - \eta \cdot \frac{\partial L}{\partial C_0} $$
@@ -118,11 +118,11 @@ $$ C_1^{(t+1)} = C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1} $$"""
 
 # 7. Task 4 (Code)
 cells.append(nbf.v4.new_markdown_cell(
-"""## Task 4 — การเขียนโปรแกรม Gradient Descent (Implementation)
+r"""## Task 4 — การเขียนโปรแกรม Gradient Descent (Implementation)
 ในส่วนนี้จะเป็นการเขียนโค้ดเพื่อหาค่า $C_0$ และ $C_1$ โดยใช้ NumPy พื้นฐาน ตามสมการคณิตศาสตร์ที่หามาได้ใน Task ก่อนหน้า"""
 ))
 cells.append(nbf.v4.new_code_cell(
-"""# Hyperparameters การตั้งค่าเบื้องต้น
+r"""# Hyperparameters การตั้งค่าเบื้องต้น
 learning_rate = 0.01  # อัตราการเรียนรู้
 n_iterations = 5000   # จำนวนรอบการวนซ้ำ
 n = len(Y)            # จำนวนจุดข้อมูล
@@ -171,9 +171,9 @@ print(f"Final MSE Loss: {loss:.5f}")"""
 ))
 
 # 8. Task 5 (Visualizations)
-cells.append(nbf.v4.new_markdown_cell("## Task 5 — ผลลัพธ์และการแสดงภาพ (Results & Visualizations)\nเราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน"))
+cells.append(nbf.v4.new_markdown_cell(r"## Task 5 — ผลลัพธ์และการแสดงภาพ (Results & Visualizations)\nเราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน"))
 cells.append(nbf.v4.new_code_cell(
-"""# กราฟที่ 1: การลดลงของ Loss (Learning Curve)
+r"""# กราฟที่ 1: การลดลงของ Loss (Learning Curve)
 plt.figure(figsize=(8, 5))
 plt.plot(range(n_iterations), history_loss, color='red', linewidth=2)
 plt.title('การเปลี่ยนแปลงของ MSE Loss ตลอดการวนซ้ำ')
@@ -183,7 +183,7 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()"""
 ))
 cells.append(nbf.v4.new_code_cell(
-"""# กราฟที่ 2: เส้นทางการลู่เข้าของพารามิเตอร์ C0 และ C1
+r"""# กราฟที่ 2: เส้นทางการลู่เข้าของพารามิเตอร์ C0 และ C1
 plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
@@ -204,7 +204,7 @@ plt.tight_layout()
 plt.show()"""
 ))
 cells.append(nbf.v4.new_code_cell(
-"""# กราฟที่ 3: เส้นโค้งที่ฟิตแล้วเทียบกับจุดข้อมูลจริง (Fitted Curve)
+r"""# กราฟที่ 3: เส้นโค้งที่ฟิตแล้วเทียบกับจุดข้อมูลจริง (Fitted Curve)
 plt.figure(figsize=(9, 6))
 
 # จุดข้อมูลจริง
@@ -224,7 +224,7 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()"""
 ))
 cells.append(nbf.v4.new_code_cell(
-"""# กราฟที่ 4: ความคลาดเคลื่อน (Residuals) แต่ละจุด
+r"""# กราฟที่ 4: ความคลาดเคลื่อน (Residuals) แต่ละจุด
 Y_pred_final = C0 + C1 * X_sq
 residuals = Y - Y_pred_final
 
