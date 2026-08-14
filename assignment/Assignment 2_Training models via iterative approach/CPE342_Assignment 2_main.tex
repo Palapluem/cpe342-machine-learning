@@ -1,315 +1,178 @@
-% -*- coding: utf-8 -*-
+% Compile: xelatex main.tex (รัน 2 รอบ)
 \documentclass[12pt,a4paper]{article}
 
-% ── Packages ──────────────────────────────────────────────────────────────────
 \usepackage{fontspec}
 \usepackage{polyglossia}
-\usepackage{mathtools}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{geometry}
-\usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{hyperref}
-\usepackage{listings}
-\usepackage{tcolorbox}
-\usepackage{caption}
-\usepackage{float}
-\usepackage{parskip}
-\usepackage{enumitem}
-\usepackage{upquote}
-\usepackage{needspace}
-
-% ── Page geometry ─────────────────────────────────────────────────────────────
-\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
-
-% ── Fonts ─────────────────────────────────────────────────────────────────────
-\setmainlanguage{thai}
+\setdefaultlanguage{thai}
 \setotherlanguage{english}
-\newfontfamily\thaifont[Script=Thai]{Sarabun}
-\newfontfamily\englishfont{Sarabun}
-\newfontfamily\thaifonttt[Script=Thai]{Sarabun}
-\setmainfont{Sarabun}
-\setmonofont[Scale=0.88]{Courier New}
 
-% ── Colors ────────────────────────────────────────────────────────────────────
-\definecolor{codebg}{RGB}{245,245,245}
-\definecolor{codeframe}{RGB}{180,180,180}
-\definecolor{pyblue}{RGB}{30,100,180}
-\definecolor{pygreen}{RGB}{0,128,0}
-\definecolor{pyorange}{RGB}{200,100,0}
-\definecolor{headerblue}{RGB}{30,80,160}
-\definecolor{accent}{RGB}{180,30,30}
+\setmainfont{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+    BoldItalicFont = Sarabun-BoldItalic,
+]
+% แก้ปัญหา polyglossia: monospace font ต้องรองรับ Thai script
+\newfontfamily\thaifonttt{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+]
 
-% ── Listings styles ───────────────────────────────────────────────────────────
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{needspace}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{upquote}
+\tcbuselibrary{skins, breakable}
+
+\definecolor{captioncol}{RGB}{80, 80, 80}
+\definecolor{accentblue}{RGB}{37, 99, 235}
+\definecolor{codebg}{RGB}{248, 250, 252}
+\definecolor{codeframe}{RGB}{203, 213, 225}
+\definecolor{keyword}{RGB}{124, 58, 237}
+\definecolor{string}{RGB}{22, 163, 74}
+\definecolor{comment}{RGB}{100, 116, 139}
+\definecolor{output}{RGB}{30, 58, 138}
+\captionsetup{font={small, color=captioncol}, justification=centering}
+
 \lstdefinestyle{pycode}{
-  backgroundcolor=\color{codebg},
-  basicstyle=\ttfamily\small,
-  breaklines=true,
-  breakatwhitespace=false,
-  frame=single,
-  rulecolor=\color{codeframe},
-  numbers=left,
-  numberstyle=\tiny\color{gray},
-  numbersep=6pt,
-  keywordstyle=\color{pyblue}\bfseries,
-  stringstyle=\color{pyorange},
-  commentstyle=\color{pygreen}\itshape,
-  showstringspaces=false,
-  tabsize=4,
-  literate=
-    {α}{{\ensuremath{\alpha}}}1
-    {β}{{\ensuremath{\beta}}}1
-    {η}{{\ensuremath{\eta}}}1
-    {≈}{{\ensuremath{\approx}}}1
-    {²}{{\ensuremath{{}^2}}}1,
+    language=Python,
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{keyword}\bfseries,
+    stringstyle=\color{string},
+    commentstyle=\color{comment}\itshape,
+    numberstyle=\tiny\color{comment},
+    numbers=left,
+    numbersep=8pt,
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    xleftmargin=16pt,
+    xrightmargin=4pt,
+    literate={≈}{{$\approx$}}1 {α}{{$\alpha$}}1 {β}{{$\beta$}}1
 }
 
 \lstdefinestyle{output}{
-  backgroundcolor=\color{white},
-  basicstyle=\ttfamily\small,
-  breaklines=true,
-  breakatwhitespace=false,
-  columns=fullflexible,
-  keepspaces=true,
-  frame=single,
-  rulecolor=\color{codeframe},
-  numbers=none,
-  literate=
-    {α}{{\ensuremath{\alpha}}}1
-    {β}{{\ensuremath{\beta}}}1
-    {η}{{\ensuremath{\eta}}}1
-    {≈}{{\ensuremath{\approx}}}1
-    {²}{{\ensuremath{{}^2}}}1,
+    basicstyle=\ttfamily\small\color{output},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    numbers=none,
+    xleftmargin=8pt,
+    xrightmargin=4pt,
+    breaklines=true,
+    literate={≈}{{$\approx$}}1 {α}{{$\alpha$}}1 {β}{{$\beta$}}1
 }
 
-% ── tcolorbox ─────────────────────────────────────────────────────────────────
-\tcbuselibrary{skins,breakable}
+\widowpenalty=10000
+\clubpenalty=10000
 
-% ── Hyperref ──────────────────────────────────────────────────────────────────
-\hypersetup{colorlinks=true, linkcolor=headerblue, urlcolor=headerblue}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=14pt}
 
-% ── Title info ────────────────────────────────────────────────────────────────
-\title{
-  \vspace{-1cm}
-  {\large King Mongkut's University of Technology Thonburi}\\
-  {\large Faculty of Engineering, Department of Computer Engineering}\\[0.5em]
-  \textbf{\Large CPE 342 Machine Learning}\\[0.5em]
-  \textbf{\LARGE Assignment 2: Training Models via Iterative Approach}\\[0.5em]
-  {\large Gradient Descent — Quadratic Model Fitting}
+\newtcolorbox{ansbox}[1][]{
+    colback=green!5!white, colframe=green!50!black,
+    boxrule=0.5pt, arc=4pt, left=8pt, right=8pt, top=5pt, bottom=5pt, #1
 }
-\author{67070501042 วิศิษฐ์ สุวรรณเนาว์}
-\date{Submitted: September 2024}
 
-% ══════════════════════════════════════════════════════════════════════════════
+% =================================================================
 \begin{document}
-\maketitle
-\thispagestyle{empty}
-\tableofcontents
-\newpage
 
-% ══════════════════════════════════════════════════════════════════════════════
-\section{Problem Overview}
+\begin{center}
+    {\Large\textbf{CPE 342 Machine Learning}}\\[2pt]
+    {\Large\textbf{Assignment 2: Training Models via Iterative Approach}}\\[4pt]
+    {\large Gradient Descent — Quadratic Model Fitting}\\[6pt]
+    \textcolor{accentblue}{67070501042 วิศิษฐ์ สุวรรณเนาว์}
+\end{center}
 
-This assignment investigates the \textbf{iterative approach} to model training using \textbf{Gradient Descent (GD)}. Given a dataset of $n = 100$ observations with variables $X$ and $Y$, the objective is to fit the following \textbf{quadratic model}:
+\noindent\rule{\textwidth}{0.4pt}\vspace{4pt}
+
+\noindent
+เป้าหมายของงานนี้คือการฝึกสอนโมเดล (Train model) ด้วยวิธีการ \textbf{Gradient Descent (GD)} เพื่อหาพารามิเตอร์ที่เหมาะสมให้กับชุดข้อมูล $n = 100$ จุด โดยกำหนดให้โมเดลเป็นสมการพหุนามกำลังสองที่ไม่มีพจน์เชิงเส้น:
 
 \[
   \hat{y} = C_0 + C_1 x^2
 \]
 
-where $C_0$ is the intercept (bias) and $C_1$ is the coefficient for the squared feature $x^2$.
-
-Unlike the closed-form Ordinary Least Squares approach (Assignment 1), gradient descent finds the optimal parameters \textit{iteratively} by repeatedly computing the gradient of the loss function and taking small steps in the direction of steepest descent.
-
 % ══════════════════════════════════════════════════════════════════════════════
-\section{Dataset Overview}
+\section*{1. ฟังก์ชันความสูญเสีย (Loss Function)}
 
-The dataset \texttt{CPE342\_Assignment 2\_Data.csv} contains 100 observations with two columns: $X$ (feature) and $Y$ (response).
-
-\begin{table}[H]
-\centering
-\caption{Dataset Summary Statistics}
-\begin{tabular}{lrrr}
-\toprule
-\textbf{Variable} & \textbf{Min} & \textbf{Max} & \textbf{Mean} \\
-\midrule
-$X$ & 0.0108 & 4.9783 & 2.7306 \\
-$Y$ & 0.9493 & 1.9707 & 1.1195 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-An exploratory analysis (Figure~\ref{fig:eda}) reveals a \textbf{decreasing trend}: as $X$ increases, $Y$ tends to decrease. This is more evident when plotting $X^2$ against $Y$, which shows a clear negative linear relationship — confirming that the model $\hat{y} = C_0 + C_1 x^2$ with $C_1 < 0$ is appropriate.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.92\textwidth]{plot_1_eda.pdf}
-  \caption{Scatter plots of $X$ vs $Y$ (left) and $X^2$ vs $Y$ (right). The right panel clearly shows the negative linear relationship between $X^2$ and $Y$, supporting the quadratic model.}
-  \label{fig:eda}
-\end{figure}
-
-% ══════════════════════════════════════════════════════════════════════════════
-\section{Task 1 — Loss Function}
-
-Given the model $\hat{y}_i = C_0 + C_1 x_i^2$, the \textbf{Mean Squared Error (MSE)} loss function is defined as:
+สำหรับโมเดล $\hat{y}_i = C_0 + C_1 x_i^2$ เราใช้ฟังก์ชันความสูญเสียแบบ \textbf{Mean Squared Error (MSE)}:
 
 \[
   L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2
 \]
 
-Substituting the model expression:
+เมื่อแทนค่า $\hat{y}_i$ ลงไป จะได้:
 
+\begin{ansbox}
 \[
-  \boxed{L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)^2}
+  L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)^2
 \]
-
-This is a smooth, convex function in $C_0$ and $C_1$, which guarantees that gradient descent will converge to the global minimum.
+\end{ansbox}
 
 % ══════════════════════════════════════════════════════════════════════════════
-\section{Task 2 — Gradient of Each Coefficient}
+\section*{2. การหาอนุพันธ์ย่อย (Gradient of Each Coefficient)}
 
-To apply gradient descent, we compute the \textbf{partial derivative} of $L$ with respect to each parameter. Let $e_i = y_i - C_0 - C_1 x_i^2$ denote the residual for observation $i$.
+เพื่อใช้ Gradient Descent เราต้องหาอนุพันธ์ย่อย (Partial derivatives) ของ $L$ เทียบกับ $C_0$ และ $C_1$
 
-\subsection*{Gradient with respect to \texorpdfstring{$C_0$}{C0}}
+ให้ $e_i = y_i - C_0 - C_1 x_i^2$ 
 
+\textbf{Gradient เทียบกับ $C_0$:}
 \begin{align*}
-  \frac{\partial L}{\partial C_0}
-  &= \frac{\partial}{\partial C_0} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] \\
-  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_0} \\
-  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-1) \qquad \left(\text{since } \frac{\partial e_i}{\partial C_0} = -1\right) \\[6pt]
+  \frac{\partial L}{\partial C_0} &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_0} = \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-1)
 \end{align*}
+\begin{ansbox}
 \[
-  \boxed{\frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)}
+  \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)
 \]
+\end{ansbox}
 
-\subsection*{Gradient with respect to \texorpdfstring{$C_1$}{C1}}
-
+\textbf{Gradient เทียบกับ $C_1$:}
 \begin{align*}
-  \frac{\partial L}{\partial C_1}
-  &= \frac{\partial}{\partial C_1} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] \\
-  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_1} \\
-  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-x_i^2) \qquad \left(\text{since } \frac{\partial e_i}{\partial C_1} = -x_i^2\right) \\[6pt]
+  \frac{\partial L}{\partial C_1} &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_1} = \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-x_i^2)
 \end{align*}
+\begin{ansbox}
 \[
-  \boxed{\frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right) x_i^2}
+  \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right) x_i^2
 \]
+\end{ansbox}
 
 % ══════════════════════════════════════════════════════════════════════════════
-\section{Task 3 — Update Rules}
+\section*{3. กฎการอัปเดตพารามิเตอร์ (Update Rules)}
 
-At each iteration $t$, the parameters are updated by moving in the direction \textbf{opposite to the gradient}, scaled by the learning rate $\eta$:
+ในแต่ละรอบการวนซ้ำ (Iteration) $t$ พารามิเตอร์จะถูกปรับค่าตรงข้ามกับ Gradient โดยมีอัตราการเรียนรู้ (Learning Rate) $\eta$ ควบคุมขนาดของก้าว:
 
-\[
-  \boxed{C_0^{(t+1)} = C_0^{(t)} - \eta \cdot \frac{\partial L}{\partial C_0}}
-\]
-
-\[
-  \boxed{C_1^{(t+1)} = C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1}}
-\]
-
-Both parameters are updated \textbf{simultaneously} using gradients computed from the current values $C_0^{(t)}$ and $C_1^{(t)}$. The learning rate $\eta$ controls the size of each step:
-\begin{itemize}
-  \item Too large: may overshoot the minimum (oscillation/divergence)
-  \item Too small: converges slowly, requiring many iterations
-\end{itemize}
+\begin{ansbox}
+\begin{align*}
+  C_0^{(t+1)} &= C_0^{(t)} - \eta \cdot \frac{\partial L}{\partial C_0} \\
+  C_1^{(t+1)} &= C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1}
+\end{align*}
+\end{ansbox}
 
 % ══════════════════════════════════════════════════════════════════════════════
-\section{Task 4 — Implementation: Gradient Descent}
+\section*{4. สรุปผลและโค้ดการทำงานจริง}
 
-\subsection*{Hyperparameters}
-\begin{table}[H]
-\centering
-\begin{tabular}{ll}
-\toprule
-\textbf{Hyperparameter} & \textbf{Value} \\
-\midrule
-Learning rate $\eta$ & 0.01 \\
-Number of iterations & 5{,}000 \\
-Initial $C_0$ & 0.0 \\
-Initial $C_1$ & 0.0 \\
-\bottomrule
-\end{tabular}
-\end{table}
+เมื่อเขียนโค้ดด้วย NumPy พื้นฐาน และกำหนด hyperparameters คือ $\eta = 0.01$ จำนวน 5,000 รอบ พบว่าค่า Loss สามารถลู่เข้าหาจุดต่ำสุดได้อย่างสมบูรณ์ และพารามิเตอร์ $C_0, C_1$ ก็มีความเสถียร (รายละเอียดกราฟ ผลลัพธ์ และโค้ดอยู่ใน Appendix ด้านล่าง)
 
-\subsection*{Algorithm (Batch Gradient Descent)}
+\vspace{1cm}
+\begin{center}
+  \rule{0.5\textwidth}{0.4pt}
+\end{center}
+\vspace{1cm}
 
-At each iteration, using \textbf{all} $n = 100$ observations:
+\section*{Appendix: Full Jupyter Notebook Code \& Output}
 
-\begin{enumerate}
-  \item Compute predicted values: $\hat{y}_i = C_0 + C_1 x_i^2$
-  \item Compute residuals: $e_i = y_i - \hat{y}_i$
-  \item Compute MSE loss: $L = \frac{1}{n}\sum_i e_i^2$
-  \item Compute gradients: $\nabla_{C_0} = -\frac{2}{n}\sum_i e_i$, \quad $\nabla_{C_1} = -\frac{2}{n}\sum_i e_i x_i^2$
-  \item Update: $C_0 \leftarrow C_0 - \eta\,\nabla_{C_0}$, \quad $C_1 \leftarrow C_1 - \eta\,\nabla_{C_1}$
-\end{enumerate}
-
-The complete Python implementation is provided in the Appendix (Section~\ref{sec:appendix}).
-
-% ══════════════════════════════════════════════════════════════════════════════
-\section{Task 5 — Results}
-
-\subsection*{Loss Over Iterations}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.88\textwidth]{plot_2_loss_curve.pdf}
-  \caption{MSE loss as a function of gradient descent iteration. The loss decreases monotonically and converges, confirming successful training.}
-  \label{fig:loss}
-\end{figure}
-
-\subsection*{Coefficient Convergence}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.92\textwidth]{plot_3_coeff_trajectory.pdf}
-  \caption{Convergence of $C_0$ (intercept, left) and $C_1$ (quadratic coefficient, right) over 5{,}000 iterations. Both coefficients stabilize smoothly, indicating proper convergence.}
-  \label{fig:coeff}
-\end{figure}
-
-\subsection*{Fitted Model}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.80\textwidth]{plot_4_fitted_curve.pdf}
-  \caption{Fitted quadratic curve $\hat{y} = C_0 + C_1 x^2$ overlaid on the observed data. The model captures the overall negative trend effectively.}
-  \label{fig:fitted}
-\end{figure}
-
-\subsection*{Residuals per Observation}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.96\textwidth]{plot_5_residuals.pdf}
-  \caption{Residuals ($y_i - \hat{y}_i$) for each observation, sorted by $X$. Red: under-predicted; Blue: over-predicted. Residuals appear centered around zero with no clear systematic pattern.}
-  \label{fig:residuals}
-\end{figure}
-
-% ══════════════════════════════════════════════════════════════════════════════
-\section{Summary of Results}
-
-\begin{table}[H]
-\centering
-\caption{Summary of Gradient Descent Results}
-\begin{tabular}{ll}
-\toprule
-\textbf{Item} & \textbf{Result} \\
-\midrule
-Task 1 & MSE Loss: $L = \frac{1}{n}\sum_i(y_i - C_0 - C_1 x_i^2)^2$ \\[4pt]
-Task 2 & $\frac{\partial L}{\partial C_0} = -\frac{2}{n}\sum_i e_i$,\quad $\frac{\partial L}{\partial C_1} = -\frac{2}{n}\sum_i e_i x_i^2$ \\[4pt]
-Task 3 & $C_k^{(t+1)} = C_k^{(t)} - \eta\,\frac{\partial L}{\partial C_k}$ \\[4pt]
-Task 4 & Implemented in Python/NumPy from scratch (see Appendix) \\[4pt]
-Task 5 & Loss converges; final $C_0$ and $C_1$ shown in Appendix output \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-% ══════════════════════════════════════════════════════════════════════════════
-\newpage
-\section{Appendix: Full Jupyter Notebook Code \& Output}
-\label{sec:appendix}
-
-This section contains the complete Python code and execution output from \texttt{Assignment\_2\_GD.ipynb}, which was run using Python 3 with NumPy and Matplotlib.
+รายละเอียดต่อไปนี้คือโค้ด Python ที่ใช้แก้ปัญหาข้างต้น พร้อมผลลัพธ์และกราฟ (พิมพ์ด้วยฟอนต์ TH Sarabun New) ซึ่งได้รันจริงจาก Jupyter Notebook
 
 \input{notebook_appendix_2.tex}
 

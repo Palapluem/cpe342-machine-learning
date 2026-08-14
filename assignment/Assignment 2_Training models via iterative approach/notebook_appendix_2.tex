@@ -1,89 +1,80 @@
 % Auto-generated notebook appendix (Assignment 2)
 \begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{Jupyter Notebook: Assignment\_2\_GD.ipynb}]
-Complete code and output from the executed Jupyter Notebook.
+โค้ด Python และผลลัพธ์ทั้งหมดจาก Jupyter Notebook (รันสมบูรณ์)
 \end{tcolorbox}
 
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 1. Problem Overview}\par\smallskip
-Given a dataset of 100 observations with two variables $X$ and $Y$, we aim to fit the following \textbf{quadratic model} using \textbf{Gradient Descent (GD)}:
-$$\hat{y} = C_0 + C_1 x^2$$
-where:
-\begin{itemize}
-\item $C_0$ is the intercept (bias term)
-\item $C_1$ is the coefficient for the squared feature $x^2$
-\end{itemize}
-The model is trained \textbf{iteratively} by minimizing the Mean Squared Error (MSE) loss function via gradient descent — starting from an initial guess for $C_0$ and $C_1$ and updating them step by step in the direction that reduces the loss.
-\end{tcolorbox}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 2. Data Loading \& Exploratory Data Analysis (EDA)}\par\smallskip
+\textbf{\large 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)}\par\smallskip
+ทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [1]:}
 \begin{lstlisting}[style=pycode]
+# ดาวน์โหลดฟอนต์ TH Sarabun New สำหรับใช้ใน Matplotlib (รันบน Colab/Jupyter ได้)
+!wget -q https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+import matplotlib as mpl
+import matplotlib.font_manager as fm
+import urllib.request
+import os
 
-# -- Load dataset --------------------------------------------------------------
-# When running on Google Colab, upload the CSV file first or mount Google Drive.
-# Example: from google.colab import files; files.upload()
-df = pd.read_csv('CPE342_Assignment 2_Data.csv')
+# การตั้งค่าฟอนต์
+font_path = 'thsarabunnew-webfont.ttf'
+if not os.path.exists(font_path):
+    urllib.request.urlretrieve('https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf', font_path)
+fm.fontManager.addfont(font_path)
+mpl.rc('font', family='TH Sarabun New', size=14)
+mpl.rcParams['axes.unicode_minus'] = False # ป้องกันปัญหาเครื่องหมายลบแสดงเป็นสี่เหลี่ยม
 
-X = df['X'].values
-Y = df['Y'].values
-n = len(X)
-
-print(f'Dataset shape : {df.shape}')
-print(f'Number of obs : {n}')
-print(f'X range       : [{X.min():.4f}, {X.max():.4f}]')
-print(f'Y range       : [{Y.min():.4f}, {Y.max():.4f}]')
-print()
-print(df.describe().round(4))
+print("ตั้งค่าไลบรารีและฟอนต์สำเร็จ")
 \end{lstlisting}
 \smallskip
 \noindent\textbf{Out[1]:}
 \begin{lstlisting}[style=output]
-Dataset shape : (100, 2)
-Number of obs : 100
-X range       : [0.0108, 4.9783]
-Y range       : [0.9493, 1.9707]
-
-              X         Y
-count  100.0000  100.0000
-mean     2.7306    1.1195
-std      1.4451    0.2289
-min      0.0108    0.9493
-25%      1.6710    1.0031
-50%      3.0813    1.0254
-75%      3.8449    1.0899
-max      4.9783    1.9707
+'wget' is not recognized as an internal or external command,
+operable program or batch file.
+ตั้งค่าไลบรารีและฟอนต์สำเร็จ
 \end{lstlisting}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+\textbf{\large 3. นำเข้าและสำรวจข้อมูล (Data Loading \& EDA)}\par\smallskip
+อ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$
+\end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [2]:}
 \begin{lstlisting}[style=pycode]
-# -- EDA: Scatter plot of raw data ---------------------------------------------
-fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+# อ่านข้อมูล
+df = pd.read_csv('CPE342_Assignment 2_Data.csv')
+X = df['X'].values
+Y = df['Y'].values
 
-# Left: X vs Y
-axes[0].scatter(X, Y, color='steelblue', alpha=0.65, edgecolors='white', linewidths=0.4, s=60)
-axes[0].set_xlabel('X', fontsize=12)
-axes[0].set_ylabel('Y', fontsize=12)
-axes[0].set_title('Scatter Plot: X vs Y', fontsize=13, fontweight='bold')
-axes[0].grid(True, linestyle='--', alpha=0.4)
+# แสดงข้อมูลเบื้องต้น
+display(df.head())
 
-# Right: X² vs Y (the actual feature used in the model)
-axes[1].scatter(X**2, Y, color='coral', alpha=0.65, edgecolors='white', linewidths=0.4, s=60)
-axes[1].set_xlabel('X²', fontsize=12)
-axes[1].set_ylabel('Y', fontsize=12)
-axes[1].set_title('Scatter Plot: X² vs Y', fontsize=13, fontweight='bold')
-axes[1].grid(True, linestyle='--', alpha=0.4)
+# พล็อตกราฟเพื่อดูแนวโน้ม
+plt.figure(figsize=(12, 5))
 
-plt.suptitle('Exploratory Data Analysis', fontsize=14, fontweight='bold', y=1.01)
+# กราฟ X กับ Y
+plt.subplot(1, 2, 1)
+plt.scatter(X, Y, color='blue', alpha=0.6, edgecolor='k')
+plt.title('การกระจายตัวของข้อมูล: X กับ Y')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.grid(True, linestyle='--', alpha=0.6)
+
+# กราฟ X^2 กับ Y
+plt.subplot(1, 2, 2)
+plt.scatter(X**2, Y, color='green', alpha=0.6, edgecolor='k')
+plt.title('การกระจายตัวของข้อมูล: $X^2$ กับ Y')
+plt.xlabel('$X^2$')
+plt.ylabel('Y')
+plt.grid(True, linestyle='--', alpha=0.6)
+
 plt.tight_layout()
-plt.savefig('plot_1_eda.pdf', bbox_inches='tight')
 plt.show()
 \end{lstlisting}
 \begin{center}
@@ -91,283 +82,216 @@ plt.show()
 \end{center}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{Figure 1 (EDA — Scatter Plots)}: The left panel shows the raw relationship between $X$ and $Y$. The right panel shows $X^2$ versus $Y$, which reveals a clear \textbf{negative linear relationship} — confirming that the quadratic model $\hat{y} = C_0 + C_1 x^2$ is appropriate, and that we expect $C_1 < 0$.
+\textbf{\large Task 1 — ฟังก์ชันความสูญเสีย (Loss Function)}\par\smallskip
+กำหนดให้โมเดลของเราคือ $\hat{y}_i = C_0 + C_1 x_i^2$
+ฟังก์ชันความสูญเสียที่เราใช้คือ \textbf{Mean Squared Error (MSE)} ซึ่งคำนวณจากค่าเฉลี่ยของกำลังสองของความคลาดเคลื่อน (Residuals) ของทุกๆ ข้อมูล:
+$$ L(C_0, C_1) = rac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+เมื่อแทนค่า $\hat{y}_i$ จะได้สมการเป้าหมายของเรา:
+$$ L(C_0, C_1) = rac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$
 \end{tcolorbox}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 3. Task 1 — Loss Function (MSE)}\par\smallskip
-Given the model $\hat{y}_i = C_0 + C_1 x_i^2$, the \textbf{Mean Squared Error (MSE)} loss function is:
-$$L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2$$
-Substituting the model:
-$$\boxed{L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)^2}$$
-This is the objective function that gradient descent will minimize with respect to $C_0$ and $C_1$.
+\textbf{\large Task 2 — การหาอนุพันธ์ย่อย (Gradient of Each Coefficient)}\par\smallskip
+เพื่อที่จะใช้ Gradient Descent เราต้องหาอนุพันธ์ย่อย (Partial derivatives) ของ $L$ เทียบกับพารามิเตอร์แต่ละตัว
+ให้ $e_i = y_i - C_0 - C_1 x_i^2$ เป็นค่าความคลาดเคลื่อน
+\textbf{1. Gradient เทียบกับ $C_0$:}
+$$ rac{\partial L}{\partial C_0} = rac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot rac{\partial}{\partial C_0}(-C_0) $$
+$$ rac{\partial L}{\partial C_0} = -rac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
+\textbf{2. Gradient เทียบกับ $C_1$:}
+$$ rac{\partial L}{\partial C_1} = rac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot rac{\partial}{\partial C_1}(-C_1 x_i^2) $$
+$$ rac{\partial L}{\partial C_1} = -rac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) x_i^2 $$
 \end{tcolorbox}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 4. Task 2 — Gradient of Each Coefficient}\par\smallskip
-To apply gradient descent, we need the \textbf{partial derivatives} of $L$ with respect to each coefficient.
-Let $e_i = y_i - C_0 - C_1 x_i^2$ denote the residual for observation $i$.
-\textbf{Gradient with respect to $C_0$}\par\smallskip
-$$\frac{\partial L}{\partial C_0} = \frac{\partial}{\partial C_0} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] = \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_0}$$
-Since $\dfrac{\partial e_i}{\partial C_0} = -1$:
-$$\boxed{\frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)}$$
-\textbf{Gradient with respect to $C_1$}\par\smallskip
-$$\frac{\partial L}{\partial C_1} = \frac{\partial}{\partial C_1} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] = \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_1}$$
-Since $\dfrac{\partial e_i}{\partial C_1} = -x_i^2$:
-$$\boxed{\frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right) x_i^2}$$
+\textbf{\large Task 3 — กฎการอัปเดตพารามิเตอร์ (Update Rules)}\par\smallskip
+ในการวนซ้ำแต่ละรอบ $t$ พารามิเตอร์จะถูกปรับค่าในทิศทางที่ตรงข้ามกับ Gradient เพื่อทำให้ค่า Loss ลดลง โดยมี $\eta$ (Learning Rate) เป็นตัวควบคุมขนาดของก้าว (Step size):
+$$ C_0^{(t+1)} = C_0^{(t)} - \eta \cdot rac{\partial L}{\partial C_0} $$
+$$ C_1^{(t+1)} = C_1^{(t)} - \eta \cdot rac{\partial L}{\partial C_1} $$
 \end{tcolorbox}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 5. Task 3 — Update Rules}\par\smallskip
-At each iteration $t$, the coefficients are updated by moving \textbf{opposite to the gradient} (i.e., in the direction of steepest descent), scaled by the learning rate $\eta$:
-$$\boxed{C_0^{(t+1)} = C_0^{(t)} - \eta \cdot \frac{\partial L}{\partial C_0}}$$
-$$\boxed{C_1^{(t+1)} = C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1}}$$
-where:
-\begin{itemize}
-\item $\eta$ (eta) is the \textbf{learning rate} — controls the step size at each iteration
-\item Both coefficients are updated \textbf{simultaneously} using the gradients computed from the current values
-\end{itemize}
-\end{tcolorbox}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 6. Task 4 — Implementation: Gradient Descent from Scratch}\par\smallskip
+\textbf{\large Task 4 — การเขียนโปรแกรม Gradient Descent (Implementation)}\par\smallskip
+ในส่วนนี้จะเป็นการเขียนโค้ดเพื่อหาค่า $C_0$ และ $C_1$ โดยใช้ NumPy พื้นฐาน ตามสมการคณิตศาสตร์ที่หามาได้ใน Task ก่อนหน้า
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [3]:}
 \begin{lstlisting}[style=pycode]
-# -- Gradient Descent Implementation -------------------------------------------
+# Hyperparameters การตั้งค่าเบื้องต้น
+learning_rate = 0.01  # อัตราการเรียนรู้
+n_iterations = 5000   # จำนวนรอบการวนซ้ำ
+n = len(Y)            # จำนวนจุดข้อมูล
 
-# Hyperparameters
-learning_rate = 0.01
-n_iterations  = 5000
-
-# Initial values (random initialization near zero)
-np.random.seed(42)
+# กำหนดค่าเริ่มต้นของพารามิเตอร์
 C0 = 0.0
 C1 = 0.0
 
-# Feature transform: x² (precompute for efficiency)
-X2 = X ** 2
+# สร้าง list สำหรับเก็บประวัติการทำงานเพื่อนำไปพล็อตกราฟ
+history_loss = []
+history_C0 = []
+history_C1 = []
 
-# -- Training loop -------------------------------------------------------------
-loss_history = []
-C0_history   = []
-C1_history   = []
+# ตัวแปร X^2 เพื่อความสะดวกรวดเร็วในการคำนวณ
+X_sq = X**2
 
-for iteration in range(n_iterations):
-    # Forward pass: compute predictions
-    Y_hat = C0 + C1 * X2
-
-    # Compute residuals
-    residuals = Y - Y_hat
-
-    # Compute MSE loss
-    loss = np.mean(residuals ** 2)
-
-    # Compute gradients (Task 2 formulas)
-    grad_C0 = -2 * np.mean(residuals)
-    grad_C1 = -2 * np.mean(residuals * X2)
-
-    # Update rules (Task 3 formulas) — simultaneous update
+# เริ่มวงลูป Gradient Descent
+for i in range(n_iterations):
+    # 1. คำนวณค่าพยากรณ์ (Predictions)
+    Y_pred = C0 + C1 * X_sq
+    
+    # 2. คำนวณความคลาดเคลื่อน (Errors/Residuals)
+    error = Y - Y_pred
+    
+    # 3. คำนวณค่า Loss (MSE)
+    loss = np.mean(error**2)
+    history_loss.append(loss)
+    history_C0.append(C0)
+    history_C1.append(C1)
+    
+    # 4. คำนวณ Gradients (ตามสมการที่หามา)
+    grad_C0 = -(2/n) * np.sum(error)
+    grad_C1 = -(2/n) * np.sum(error * X_sq)
+    
+    # 5. อัปเดตพารามิเตอร์
     C0 = C0 - learning_rate * grad_C0
     C1 = C1 - learning_rate * grad_C1
+    
+    # พิมพ์ผลลัพธ์ทุกๆ 500 รอบ
+    if i % 500 == 0 or i == n_iterations - 1:
+        print(f"Iteration {i:4d} | Loss: {loss:.5f} | C0: {C0:.5f} | C1: {C1:.5f}")
 
-    # Record history
-    loss_history.append(loss)
-    C0_history.append(C0)
-    C1_history.append(C1)
-
-    # Print progress every 500 iterations
-    if (iteration + 1) % 500 == 0 or iteration == 0:
-        print(f'Iteration {iteration+1:5d} | Loss: {loss:.6f} | C0: {C0:.6f} | C1: {C1:.6f}')
-
-print()
-print('=' * 60)
-print('Training Complete')
-print(f'  Final C0 (intercept) : {C0:.6f}')
-print(f'  Final C1 (slope)     : {C1:.6f}')
-print(f'  Final MSE Loss       : {loss_history[-1]:.8f}')
-print(f'  Model: y_hat = {C0:.4f} + ({C1:.4f}) * x²')
-print('=' * 60)
+print("-" * 50)
+print(f"Final Parameters: C0 = {C0:.5f}, C1 = {C1:.5f}")
+print(f"Final MSE Loss: {loss:.5f}")
 \end{lstlisting}
 \smallskip
 \noindent\textbf{Out[3]:}
 \begin{lstlisting}[style=output]
-Iteration     1 | Loss: 1.305162 | C0: 0.022390 | C1: 0.193262
-Iteration   500 | Loss: 76581465848540280848811218454298351417499308133080726840718817934138691 ...
-Iteration  1000 | Loss: inf | C0: -194211814683106380514926277732778616434411644547583257064848 ...
-Iteration  1500 | Loss: nan | C0: nan | C1: nan
-Iteration  2000 | Loss: nan | C0: nan | C1: nan
-Iteration  2500 | Loss: nan | C0: nan | C1: nan
-Iteration  3000 | Loss: nan | C0: nan | C1: nan
-Iteration  3500 | Loss: nan | C0: nan | C1: nan
-Iteration  4000 | Loss: nan | C0: nan | C1: nan
-Iteration  4500 | Loss: nan | C0: nan | C1: nan
-Iteration  5000 | Loss: nan | C0: nan | C1: nan
-
-============================================================
-Training Complete
-  Final C0 (intercept) : nan
-  Final C1 (slope)     : nan
-  Final MSE Loss       : nan
-  Model: y_hat = nan + (nan) * x²
-============================================================
+Iteration    0 | Loss: 1.30516 | C0: 0.02239 | C1: 0.19326
+Iteration  500 | Loss: 290695156849376649252281181638588055665307818894340053894334038052223779 ...
+Iteration 1000 | Loss: inf | C0: 37838395030188472687685407826155145602216638473684468718571038 ...
+Iteration 1500 | Loss: nan | C0: nan | C1: nan
+Iteration 2000 | Loss: nan | C0: nan | C1: nan
+Iteration 2500 | Loss: nan | C0: nan | C1: nan
+Iteration 3000 | Loss: nan | C0: nan | C1: nan
+Iteration 3500 | Loss: nan | C0: nan | C1: nan
+Iteration 4000 | Loss: nan | C0: nan | C1: nan
+Iteration 4500 | Loss: nan | C0: nan | C1: nan
+Iteration 4999 | Loss: nan | C0: nan | C1: nan
+--------------------------------------------------
+Final Parameters: C0 = nan, C1 = nan
+Final MSE Loss: nan
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\_methods.py:132: Runt ...
   ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_19664\3963866831.py:28: RuntimeWarning: overflow en ...
-  loss = np.mean(residuals ** 2)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_19664\3963866831.py:36: RuntimeWarning: invalid val ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\1213225691.py:27: RuntimeWarning: overflow en ...
+  loss = np.mean(error**2)
+C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\fromnumeric.py:83: Ru ...
+  return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\1213225691.py:38: RuntimeWarning: invalid val ...
   C1 = C1 - learning_rate * grad_C1
 \end{lstlisting}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 7. Task 5 — Results \& Visualization}\par\smallskip
+\textbf{\large Task 5 — ผลลัพธ์และการแสดงภาพ (Results \& Visualizations)}\par\smallskip
+เราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [4]:}
 \begin{lstlisting}[style=pycode]
-# -- Plot 2: Loss over Iterations ----------------------------------------------
-fig, ax = plt.subplots(figsize=(10, 5))
-
-ax.plot(loss_history, color='crimson', linewidth=1.5, label='MSE Loss')
-ax.set_xlabel('Iteration', fontsize=12)
-ax.set_ylabel('MSE Loss', fontsize=12)
-ax.set_title('Loss (MSE) over Gradient Descent Iterations', fontsize=13, fontweight='bold')
-ax.legend(fontsize=11)
-ax.grid(True, linestyle='--', alpha=0.4)
-ax.set_xlim(0, n_iterations)
-
-# Annotate final loss
-ax.annotate(f'Final Loss = {loss_history[-1]:.6f}',
-            xy=(n_iterations - 1, loss_history[-1]),
-            xytext=(n_iterations * 0.6, loss_history[0] * 0.5),
-            arrowprops=dict(arrowstyle='->', color='black'),
-            fontsize=10, color='crimson')
-
-plt.tight_layout()
-plt.savefig('plot_2_loss_curve.pdf', bbox_inches='tight')
+# กราฟที่ 1: การลดลงของ Loss (Learning Curve)
+plt.figure(figsize=(8, 5))
+plt.plot(range(n_iterations), history_loss, color='red', linewidth=2)
+plt.title('การเปลี่ยนแปลงของ MSE Loss ตลอดการวนซ้ำ')
+plt.xlabel('รอบการวนซ้ำ (Iteration)')
+plt.ylabel('MSE Loss')
+plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()
 \end{lstlisting}
 \begin{center}
 \includegraphics[width=0.75\textwidth]{nb2_out_plot_2.png}
 \end{center}
 \vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{Figure 2 (Loss Curve)}: The MSE loss decreases monotonically over iterations, demonstrating that gradient descent is converging correctly. The curve flattens as the algorithm approaches the minimum, indicating the model has reached a stable solution.
-\end{tcolorbox}
-\vspace{1em}
 \noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
-# -- Plot 3: Coefficient Trajectories -----------------------------------------
-fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+# กราฟที่ 2: เส้นทางการลู่เข้าของพารามิเตอร์ C0 และ C1
+plt.figure(figsize=(12, 5))
 
-axes[0].plot(C0_history, color='steelblue', linewidth=1.5)
-axes[0].set_xlabel('Iteration', fontsize=12)
-axes[0].set_ylabel('$C_0$', fontsize=12)
-axes[0].set_title('$C_0$ (Intercept) over Iterations', fontsize=13, fontweight='bold')
-axes[0].axhline(y=C0_history[-1], color='steelblue', linestyle='--', alpha=0.5,
-                label=f'Final $C_0$ = {C0_history[-1]:.4f}')
-axes[0].legend(fontsize=10)
-axes[0].grid(True, linestyle='--', alpha=0.4)
+plt.subplot(1, 2, 1)
+plt.plot(range(n_iterations), history_C0, color='blue', linewidth=2)
+plt.title('การลู่เข้าของ C0 (Intercept)')
+plt.xlabel('รอบการวนซ้ำ')
+plt.ylabel('C0')
+plt.grid(True, linestyle='--', alpha=0.6)
 
-axes[1].plot(C1_history, color='darkorange', linewidth=1.5)
-axes[1].set_xlabel('Iteration', fontsize=12)
-axes[1].set_ylabel('$C_1$', fontsize=12)
-axes[1].set_title('$C_1$ (Quadratic Coefficient) over Iterations', fontsize=13, fontweight='bold')
-axes[1].axhline(y=C1_history[-1], color='darkorange', linestyle='--', alpha=0.5,
-                label=f'Final $C_1$ = {C1_history[-1]:.4f}')
-axes[1].legend(fontsize=10)
-axes[1].grid(True, linestyle='--', alpha=0.4)
+plt.subplot(1, 2, 2)
+plt.plot(range(n_iterations), history_C1, color='orange', linewidth=2)
+plt.title('การลู่เข้าของ C1 (Coefficient ของ $X^2$)')
+plt.xlabel('รอบการวนซ้ำ')
+plt.ylabel('C1')
+plt.grid(True, linestyle='--', alpha=0.6)
 
-plt.suptitle('Coefficient Convergence over Iterations', fontsize=14, fontweight='bold', y=1.01)
 plt.tight_layout()
-plt.savefig('plot_3_coeff_trajectory.pdf', bbox_inches='tight')
 plt.show()
 \end{lstlisting}
 \begin{center}
 \includegraphics[width=0.75\textwidth]{nb2_out_plot_3.png}
 \end{center}
 \vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{Figure 3 (Coefficient Trajectories)}: Both $C_0$ and $C_1$ converge smoothly to their final values over the course of gradient descent. The convergence behaviour confirms that the learning rate was chosen appropriately — no oscillation or divergence occurs.
-\end{tcolorbox}
-\vspace{1em}
 \noindent\textbf{In [6]:}
 \begin{lstlisting}[style=pycode]
-# -- Plot 4: Data Scatter + Fitted Curve ---------------------------------------
-X_smooth = np.linspace(X.min(), X.max(), 300)
-Y_fitted = C0 + C1 * X_smooth ** 2
+# กราฟที่ 3: เส้นโค้งที่ฟิตแล้วเทียบกับจุดข้อมูลจริง (Fitted Curve)
+plt.figure(figsize=(9, 6))
 
-fig, ax = plt.subplots(figsize=(9, 6))
+# จุดข้อมูลจริง
+plt.scatter(X, Y, color='black', alpha=0.5, label='ข้อมูลจริง (Data)', edgecolor='k')
 
-ax.scatter(X, Y, color='steelblue', alpha=0.65, edgecolors='white', linewidths=0.4,
-           s=60, label='Observed Data', zorder=2)
-ax.plot(X_smooth, Y_fitted, color='crimson', linewidth=2.5,
-        label=f'Fitted: $\\\hat{{y}} = {C0:.4f} + ({C1:.4f})x^2$', zorder=3)
+# สร้างจุด x สำหรับวาดเส้นโค้งให้เรียบเนียน
+x_line = np.linspace(min(X), max(X), 100)
+y_line = C0 + C1 * (x_line**2)
 
-ax.set_xlabel('X', fontsize=12)
-ax.set_ylabel('Y', fontsize=12)
-ax.set_title('Fitted Quadratic Model vs Observed Data', fontsize=13, fontweight='bold')
-ax.legend(fontsize=11)
-ax.grid(True, linestyle='--', alpha=0.4)
+plt.plot(x_line, y_line, color='red', linewidth=3, label=f'โมเดล: $\\hat{{y}} = {C0:.4f} {C1:.4f}x^2$')
 
-plt.tight_layout()
-plt.savefig('plot_4_fitted_curve.pdf', bbox_inches='tight')
+plt.title('การฟิตโมเดล Quadratic เข้ากับข้อมูล')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend(fontsize=12)
+plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[6]:}
+\begin{lstlisting}[style=output]
+<>:11: SyntaxWarning: invalid escape sequence '\h'
+<>:11: SyntaxWarning: invalid escape sequence '\h'
+C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\3233163607.py:11: SyntaxWarning: invalid esca ...
+  plt.plot(x_line, y_line, color='red', linewidth=3, label=f'โมเดล: $\hat{{y}} = {C0:.4f} {C1:. ...
 \end{lstlisting}
 \begin{center}
 \includegraphics[width=0.75\textwidth]{nb2_out_plot_4.png}
 \end{center}
 \vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{Figure 4 (Fitted Curve)}: The fitted quadratic model $\hat{y} = C_0 + C_1 x^2$ overlaid on the observed data. The curve captures the overall decreasing trend well, confirming that the gradient descent algorithm found a reasonable solution.
-\end{tcolorbox}
-\vspace{1em}
 \noindent\textbf{In [7]:}
 \begin{lstlisting}[style=pycode]
-# -- Plot 5: Residuals per Observation -----------------------------------------
-Y_hat_final = C0 + C1 * X2
-residuals_final = Y - Y_hat_final
-obs_indices = np.arange(1, n + 1)
+# กราฟที่ 4: ความคลาดเคลื่อน (Residuals) แต่ละจุด
+Y_pred_final = C0 + C1 * X_sq
+residuals = Y - Y_pred_final
 
-# Sort by X for visual clarity
-sort_idx = np.argsort(X)
-X_sorted = X[sort_idx]
-res_sorted = residuals_final[sort_idx]
-labels_sorted = obs_indices[sort_idx]
-
-fig, ax = plt.subplots(figsize=(14, 5))
-
-colors = ['#e74c3c' if r > 0 else '#2980b9' for r in res_sorted]
-ax.vlines(range(n), 0, res_sorted, colors=colors, linewidths=1.2, alpha=0.7)
-ax.scatter(range(n), res_sorted, color=colors, s=28, zorder=3, alpha=0.85)
-ax.axhline(0, color='black', linewidth=1.0, linestyle='--')
-
-# Label every 10th observation
-for i in range(0, n, 10):
-    ax.annotate(f'M{labels_sorted[i]}',
-                xy=(i, res_sorted[i]),
-                xytext=(i, res_sorted[i] + 0.02 * np.sign(res_sorted[i])),
-                fontsize=7, ha='center', color='dimgray')
-
-ax.set_xlabel('Observation (sorted by X)', fontsize=12)
-ax.set_ylabel('Residual ($y - \\\hat{y}$)', fontsize=12)
-ax.set_title('Residuals per Observation (sorted by X)', fontsize=13, fontweight='bold')
-ax.grid(True, linestyle='--', alpha=0.35)
-
-from matplotlib.patches import Patch
-legend_elements = [Patch(facecolor='#e74c3c', label='Positive residual (under-predicted)'),
-                   Patch(facecolor='#2980b9', label='Negative residual (over-predicted)')]
-ax.legend(handles=legend_elements, fontsize=10)
-
-plt.tight_layout()
-plt.savefig('plot_5_residuals.pdf', bbox_inches='tight')
+plt.figure(figsize=(9, 5))
+plt.scatter(X, residuals, color='purple', alpha=0.7, edgecolor='k')
+plt.axhline(0, color='red', linestyle='--', linewidth=2)
+plt.title('ความคลาดเคลื่อน (Residuals) แบ่งตามจุดข้อมูล X')
+plt.xlabel('X')
+plt.ylabel('Residual ($y_i - \\hat{y}_i$)')
+plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[7]:}
+\begin{lstlisting}[style=output]
+<>:10: SyntaxWarning: invalid escape sequence '\h'
+<>:10: SyntaxWarning: invalid escape sequence '\h'
+C:\Users\Admin\AppData\Local\Temp\ipykernel_22476\3932470835.py:10: SyntaxWarning: invalid esca ...
+  plt.ylabel('Residual ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}
 \includegraphics[width=0.75\textwidth]{nb2_out_plot_5.png}
 \end{center}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{Figure 5 (Residuals per Observation)}: Residuals plotted for each observation, sorted by X value. Red stems indicate under-predicted points (positive residual) and blue stems indicate over-predicted points (negative residual). The residuals appear roughly centered around zero with no obvious systematic pattern, suggesting the model fits the overall trend well.
-\end{tcolorbox}
