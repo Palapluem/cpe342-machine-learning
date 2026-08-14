@@ -31,6 +31,10 @@
 \usepackage{upquote}
 \tcbuselibrary{skins, breakable}
 
+\XeTeXlinebreaklocale "th"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\sloppy
+
 \definecolor{captioncol}{RGB}{80, 80, 80}
 \definecolor{accentblue}{RGB}{37, 99, 235}
 \definecolor{codebg}{RGB}{248, 250, 252}
@@ -237,7 +241,7 @@
 \end{figure}
 % ══════════════════════════════════════════════════════════════════════════════
 \needspace{8\baselineskip}
-\section*{Extra: การประเมินประสิทธิภาพของโมเดล (Mathematical Evaluation)}
+\section*{Extra: การประเมินประสิทธิภาพของโมเดล\\ \large(Mathematical Evaluation)}
 
 เพื่อประเมินความแม่นยำของโมเดล Machine Learning ในการทำนายค่า $y$ เราใช้ตัวชี้วัดคือ \textbf{Coefficient of Determination ($R^2$)} ซึ่งมีสูตรทางคณิตศาสตร์ดังนี้:
 \[

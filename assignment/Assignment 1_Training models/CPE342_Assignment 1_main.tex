@@ -31,6 +31,10 @@
 \usepackage{upquote}
 \tcbuselibrary{skins, breakable}
 
+\XeTeXlinebreaklocale "th"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\sloppy
+
 \definecolor{captioncol}{RGB}{80, 80, 80}
 \definecolor{accentblue}{RGB}{37, 99, 235}
 \definecolor{codebg}{RGB}{248, 250, 252}
@@ -240,8 +244,8 @@ $\sum$ & \textbf{55.0} & \textbf{87.0} & \textbf{583.0} & \textbf{385.0} \\
 \subsubsection*{วิธีที่ 0: สูตร $S_{xx}$, $S_{xy}$ (Closed-form จาก Normal Equations)}
 จาก Normal Equations สามารถแก้หาค่า $\beta$ ได้โดยตรงด้วยการนิยามทั้งสองแบบ:
 \begin{align*}
-    S_{xx} &= \sum_{i=1}^{n}(X_i - \bar{X})^2 = \sum X_i^2 - \frac{(\sum X_i)^2}{n} = 385 - \frac{55^2}{10} = 385 - 302.5 = 82.5 \\
-    S_{xy} &= \sum_{i=1}^{n}(X_i - \bar{X})(Y_i - \bar{Y}) = \sum X_iY_i - \frac{\sum X_i \sum Y_i}{n} = 583 - \frac{(55)(87)}{10} = 583 - 478.5 = 104.5
+    S_{xx} &= \sum_{i=1}^{n}(X_i - \bar{X})^2 = \sum X_i^2 - \frac{(\sum X_i)^2}{n} = 385 - \frac{55^2}{10} = 82.5 \\[4pt]
+    S_{xy} &= \sum_{i=1}^{n}(X_i - \bar{X})(Y_i - \bar{Y}) = \sum X_iY_i - \frac{\sum X_i \sum Y_i}{n} = 583 - \frac{(55)(87)}{10} = 104.5
 \end{align*}
 จะได้:
 \[
