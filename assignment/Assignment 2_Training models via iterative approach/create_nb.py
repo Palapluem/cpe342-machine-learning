@@ -7,22 +7,22 @@ cells = []
 # 1. Title & Problem Overview
 cells.append(nbf.v4.new_markdown_cell(
 r"""# CPE 342 Machine Learning — Assignment 2: Training Models
-**ผู้จัดทำ:** 67070501042 วิศิษฐ์ สุวรรณเนาว์
+**Author:** 67070501042 วิศิษฐ์ สุวรรณเนาว์
 
-## 1. ภาพรวมของปัญหา (Problem Overview)
-ในงานนี้เราจะใช้ **วิธีการวนซ้ำ (Iterative approach)** หรือที่เรียกว่า **Gradient Descent (GD)** เพื่อฝึกสอนโมเดล (Train model) ให้ฟิตเข้ากับชุดข้อมูลที่มี 100 จุดสังเกต ($n=100$) 
+## 1. Problem Overview
+In this assignment, we use an **iterative approach** (Gradient Descent) to train a model and fit it to a dataset of 100 observations ($n=100$). 
 
-เป้าหมายคือการสร้างโมเดลสมการพหุนามกำลังสอง (Quadratic model) ที่ไม่มีพจน์ $x$ เชิงเส้น:
+The goal is to fit a quadratic model without a linear $x$ term:
 $$ \hat{y} = C_0 + C_1 x^2 $$
-โดยที่:
-- $C_0$ คือ จุดตัดแกน Y (Intercept หรือ Bias)
-- $C_1$ คือ สัมประสิทธิ์ของตัวแปร $x^2$ (Slope of $x^2$)"""
+Where:
+- $C_0$ is the y-intercept (Bias)
+- $C_1$ is the coefficient of $x^2$ (Slope of $x^2$)"""
 ))
 
 # 2. Font & Library Setup
 cells.append(nbf.v4.new_markdown_cell(
-r"""## 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)
-ทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น"""
+r"""## 2. Library & Font Setup
+Loading libraries and downloading the Sarabun font to support Thai rendering in Matplotlib if needed."""
 ))
 cells.append(nbf.v4.new_code_cell(
 r"""# ดาวน์โหลดฟอนต์ TH Sarabun New สำหรับใช้ใน Matplotlib (รันบน Colab/Jupyter ได้)
@@ -44,13 +44,13 @@ fm.fontManager.addfont(font_path)
 mpl.rc('font', family='TH Sarabun New', size=14)
 mpl.rcParams['axes.unicode_minus'] = False # ป้องกันปัญหาเครื่องหมายลบแสดงเป็นสี่เหลี่ยม
 
-print("ตั้งค่าไลบรารีและฟอนต์สำเร็จ")"""
+print("Library and font setup complete")"""
 ))
 
 # 3. Data Loading
 cells.append(nbf.v4.new_markdown_cell(
-r"""## 3. นำเข้าและสำรวจข้อมูล (Data Loading & EDA)
-อ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$"""
+r"""## 3. Data Loading & Exploratory Data Analysis (EDA)
+Read the data from the CSV file and plot scatter plots to observe the relationship between $x$ and $y$."""
 ))
 cells.append(nbf.v4.new_code_cell(
 r"""# อ่านข้อมูล
@@ -86,37 +86,37 @@ plt.show()"""
 
 # 4. Task 1
 cells.append(nbf.v4.new_markdown_cell(
-r"""## Task 1 — ฟังก์ชันความสูญเสีย (Loss Function)
-กำหนดให้โมเดลของเราคือ $\hat{y}_i = C_0 + C_1 x_i^2$ 
+r"""## Task 1 — Loss Function
+Given our model $\hat{y}_i = C_0 + C_1 x_i^2$, 
 
-ฟังก์ชันความสูญเสียที่เราใช้คือ **Mean Squared Error (MSE)** ซึ่งคำนวณจากค่าเฉลี่ยของกำลังสองของความคลาดเคลื่อน (Residuals) ของทุกๆ ข้อมูล:
+The loss function we use is the **Mean Squared Error (MSE)**, which computes the average squared differences (residuals) across all data points:
 
 $$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
 
-เมื่อแทนค่า $\hat{y}_i$ จะได้สมการเป้าหมายของเรา:
+Substituting $\hat{y}_i$ gives our target equation:
 $$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$"""
 ))
 
 # 5. Task 2
 cells.append(nbf.v4.new_markdown_cell(
-r"""## Task 2 — การหาอนุพันธ์ย่อย (Gradient of Each Coefficient)
-เพื่อที่จะใช้ Gradient Descent เราต้องหาอนุพันธ์ย่อย (Partial derivatives) ของ $L$ เทียบกับพารามิเตอร์แต่ละตัว 
+r"""## Task 2 — Gradient of Each Coefficient
+To use Gradient Descent, we need to compute the partial derivatives of the loss function $L$ with respect to each parameter. 
 
-ให้ $e_i = y_i - C_0 - C_1 x_i^2$ เป็นค่าความคลาดเคลื่อน
+Let $e_i = y_i - C_0 - C_1 x_i^2$ be the residual error.
 
-**1. Gradient เทียบกับ $C_0$:**
+**1. Gradient with respect to $C_0$:**
 $$ \frac{\partial L}{\partial C_0} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_0}(-C_0) $$
 $$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
 
-**2. Gradient เทียบกับ $C_1$:**
+**2. Gradient with respect to $C_1$:**
 $$ \frac{\partial L}{\partial C_1} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_1}(-C_1 x_i^2) $$
 $$ \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) x_i^2 $$"""
 ))
 
 # 6. Task 3
 cells.append(nbf.v4.new_markdown_cell(
-r"""## Task 3 — กฎการอัปเดตพารามิเตอร์ (Update Rules)
-ในการวนซ้ำแต่ละรอบ $t$ พารามิเตอร์จะถูกปรับค่าในทิศทางที่ตรงข้ามกับ Gradient เพื่อทำให้ค่า Loss ลดลง โดยมี $\eta$ (Learning Rate) เป็นตัวควบคุมขนาดของก้าว (Step size):
+r"""## Task 3 — Update Rules
+In each iteration $t$, the parameters are updated in the opposite direction of the gradient to minimize the loss, scaled by the learning rate $\eta$:
 
 $$ C_0^{(t+1)} = C_0^{(t)} - \eta \cdot \frac{\partial L}{\partial C_0} $$
 $$ C_1^{(t+1)} = C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1} $$"""
@@ -124,56 +124,57 @@ $$ C_1^{(t+1)} = C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1} $$"""
 
 # 7. Task 4 (Code)
 cells.append(nbf.v4.new_markdown_cell(
-r"""## Task 4 — การเขียนโปรแกรม Gradient Descent (Implementation)
-ในส่วนนี้จะเป็นการเขียนโค้ดเพื่อหาค่า $C_0$ และ $C_1$ โดยใช้ NumPy พื้นฐาน ตามสมการคณิตศาสตร์ที่หามาได้ใน Task ก่อนหน้า"""
+r"""## Task 4 — Gradient Descent Implementation
+In this section, we implement the code to find $C_0$ and $C_1$ using basic NumPy, based on the mathematical equations derived in the previous tasks."""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# Hyperparameters การตั้งค่าเบื้องต้น
-learning_rate = 0.01  # อัตราการเรียนรู้
-n_iterations = 5000   # จำนวนรอบการวนซ้ำ
-n = len(Y)            # จำนวนจุดข้อมูล
+r"""# Hyperparameters
+learning_rate = 0.01  
+n_iterations = 5000   
+n = len(Y)            
 
-# กำหนดค่าเริ่มต้นของพารามิเตอร์
+# Initialize parameters
 C0 = 0.0
 C1 = 0.0
 
-# สร้าง list สำหรับเก็บประวัติการทำงานเพื่อนำไปพล็อตกราฟ
+# Prepare lists to store history (for visualization later)
 history_loss = []
 history_C0 = []
 history_C1 = []
 
-# ตัวแปร X^2 เพื่อความสะดวกรวดเร็วในการคำนวณ
+# Pre-compute X^2 to reduce computation inside the loop
 X_sq = X**2
 
-# เริ่มวงลูป Gradient Descent
+# Gradient Descent Loop
 for i in range(n_iterations):
-    # 1. คำนวณค่าพยากรณ์ (Predictions)
+    # 1. Calculate Predictions
     Y_pred = C0 + C1 * X_sq
     
-    # 2. คำนวณความคลาดเคลื่อน (Errors/Residuals)
+    # 2. Calculate Errors/Residuals
     error = Y - Y_pred
     
-    # 3. คำนวณค่า Loss (MSE)
+    # 3. Calculate Loss (MSE)
     loss = np.mean(error**2)
     history_loss.append(loss)
     history_C0.append(C0)
     history_C1.append(C1)
     
-    # 4. คำนวณ Gradients (ตามสมการที่หามา)
+    # 4. Calculate Gradients
     grad_C0 = -(2/n) * np.sum(error)
     grad_C1 = -(2/n) * np.sum(error * X_sq)
     
-    # 5. อัปเดตพารามิเตอร์
+    # 5. Update Parameters
     C0 = C0 - learning_rate * grad_C0
     C1 = C1 - learning_rate * grad_C1
     
-    # พิมพ์ผลลัพธ์ทุกๆ 500 รอบ
+    # Print progress every 500 iterations
     if i % 500 == 0 or i == n_iterations - 1:
         print(f"Iteration {i:4d} | Loss: {loss:.5f} | C0: {C0:.5f} | C1: {C1:.5f}")
 
 print("-" * 50)
-print(f"Final Parameters: C0 = {C0:.5f}, C1 = {C1:.5f}")
-print(f"Final MSE Loss: {loss:.5f}")"""
+print(f"Training complete over {n_iterations} iterations")
+print(f"Optimized Parameters: C0 = {C0:.4f}, C1 = {C1:.4f}")
+print(f"Final MSE Loss: {history_loss[-1]:.6f}")"""
 ))
 
 # 8. Task 5 (Visualizations)
