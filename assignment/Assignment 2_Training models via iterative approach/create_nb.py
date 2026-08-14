@@ -263,6 +263,41 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()"""
 ))
 
+# 9. Task 6 (Model Evaluation & Summary)
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Task 6 — Model Evaluation (R-squared & Summary Statistics)
+To mathematically evaluate the goodness of fit for our machine learning model, we calculate the Coefficient of Determination, also known as $R^2$.
+
+The formula for $R^2$ is:
+$$ R^2 = 1 - \frac{SS_{res}}{SS_{tot}} $$
+
+Where:
+- **Residual Sum of Squares ($SS_{res}$)** is the sum of the squared differences between the actual and predicted values:
+$$ SS_{res} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+- **Total Sum of Squares ($SS_{tot}$)** is the sum of the squared differences between the actual values and the mean of the actual values ($\bar{y}$):
+$$ SS_{tot} = \sum_{i=1}^{n} (y_i - \bar{y})^2 $$
+
+A higher $R^2$ score (closer to 1) indicates that our model's predictions closely match the actual data points."""
+))
+
+cells.append(nbf.v4.new_code_cell(
+r"""# Print summary statistics
+print("\n=== MODEL EVALUATION SUMMARY ===")
+print(f"Fitted parameters: C0 = {C0:.6f}, C1 = {C1:.6f}")
+print(f"Total Iterations: {len(history_loss)}")
+print(f"Initial loss: {history_loss[0]:.6f}")
+print(f"Final loss: {history_loss[-1]:.6f}")
+loss_reduction = (history_loss[0] - history_loss[-1]) / history_loss[0] * 100
+print(f"Loss reduction: {loss_reduction:.2f}%")
+
+# Calculate R-squared
+Y_mean = np.mean(Y)
+ss_res = np.sum((Y - Y_pred_final)**2)
+ss_tot = np.sum((Y - Y_mean)**2)
+r_squared = 1 - (ss_res / ss_tot)
+print(f"R-squared (R^2): {r_squared:.6f}")"""
+))
+
 nb['cells'] = cells
 
 with open('Assignment_2_GD.ipynb', 'w', encoding='utf-8') as f:

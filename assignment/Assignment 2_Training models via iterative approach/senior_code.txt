@@ -1,0 +1,159 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df_raw = pd.read_csv('/content/drive/MyDrive/CPE_KMUTT/Year3/Semester_1-68/CPE342_MachineLearning/CPE342_Lab/CPE342_Lab_Assignment2_TrainingModel_GradientDescent/A2.csv')
+df_raw.head()
+
+df = df_raw.sort_values(by='X')
+df.head()
+
+plt.figure(figsize=(8, 6))
+plt.scatter(df['X'], df['Y'])
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Scatter plot of X vs Y')
+plt.grid(True)
+plt.show()
+
+def loss_function(c0, c1, c2, x, y):
+  n = len(df)
+  y_hat = c0 + c1 * np.exp(c2 * x)
+  loss = (1/(2*n)) * np.sum((y - y_hat)**2)
+  return loss
+
+def compute_gradients(c0, c1, c2, x, y):
+  n = len(df)
+
+  # Compute predictions and errors
+  exp_term = np.exp(c2 * x)
+  y_hat = c0 + c1 * exp_term
+  error = y - y_hat
+
+  # Compute gradients
+  grad_c0 = -(1/n) * np.sum(error)
+  grad_c1 = -(1/n) * np.sum(error * exp_term)
+  grad_c2 = -(1/n) * np.sum(error * c1 * x * exp_term)
+
+  return grad_c0, grad_c1, grad_c2
+
+def update_coefficients(c0, c1, c2, grad_c0, grad_c1, grad_c2, learning_rate):
+  new_c0 = c0 - learning_rate * grad_c0
+  new_c1 = c1 - learning_rate * grad_c1
+  new_c2 = c2 - learning_rate * grad_c2
+
+  return new_c0, new_c1, new_c2
+
+def gradient_descent(x, y, initial_c0=1.0, initial_c1=1.0, initial_c2=1.0, learning_rate=0.01, max_iterations=1000, tolerance=1e-6):
+  # Initialize coefficients
+  c0, c1, c2 = initial_c0, initial_c1, initial_c2
+
+  # Track history
+  loss_history = []
+  coeff_history = {'c0': [], 'c1': [], 'c2': []}
+
+  print(f"\nStarting gradient descent with:")
+  print(f"Initial coefficients: c0={c0:.3f}, c1={c1:.3f}, c2={c2:.3f}")
+  print(f"Learning rate: {learning_rate}")
+  print(f"Max iterations: {max_iterations}")
+
+  for iteration in range(max_iterations):
+    # Compute current loss
+    current_loss = loss_function(c0, c1, c2, x, y)
+    loss_history.append(current_loss)
+
+    # Store current coefficients
+    coeff_history['c0'].append(c0)
+    coeff_history['c1'].append(c1)
+    coeff_history['c2'].append(c2)
+
+    # Compute gradients
+    grad_c0, grad_c1, grad_c2 = compute_gradients(c0, c1, c2, x, y)
+
+    # Update coefficients
+    c0, c1, c2 = update_coefficients(c0, c1, c2, grad_c0, grad_c1, grad_c2, learning_rate)
+
+    # Print progress every 100 iterations
+    if iteration % 100 == 0:
+      print(f"Iteration {iteration}: Loss = {current_loss:.6f}, "
+        f"c0={c0:.3f}, c1={c1:.3f}, c2={c2:.3f}")
+
+    # Check for convergence
+    if iteration > 0 and abs(loss_history[-1] - loss_history[-2]) < tolerance:
+      print(f"Converged at iteration {iteration}")
+      break
+
+  final_coefficients = [c0, c1, c2]
+  return final_coefficients, loss_history, coeff_history
+
+final_coeffs, loss_hist, coeff_hist = gradient_descent(
+    df['X'], df['Y'],
+    initial_c0=0.5, initial_c1=0.5, initial_c2=0.1,
+    learning_rate=1,  # Small learning rate for stability
+    max_iterations=2000
+)
+
+print(f"\nFinal coefficients:")
+print(f"c0 = {final_coeffs[0]:.6f}")
+print(f"c1 = {final_coeffs[1]:.6f}")
+print(f"c2 = {final_coeffs[2]:.6f}")
+print(f"Final loss = {loss_hist[-1]:.6f}")
+
+# Create subplots
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
+
+# Plot 1: Loss over iterations
+ax1.plot(loss_hist, 'b-', linewidth=2)
+ax1.set_xlabel('Iteration')
+ax1.set_ylabel('Loss')
+ax1.set_title('Loss Function Over Iterations')
+ax1.grid(True, alpha=0.3)
+ax1.set_yscale('log')  # Log scale to see convergence better
+
+# Plot 2: Coefficient evolution
+ax2.plot(coeff_hist['c0'], 'r-', label='c0', linewidth=2)
+ax2.plot(coeff_hist['c1'], 'g-', label='c1', linewidth=2)
+ax2.plot(coeff_hist['c2'], 'b-', label='c2', linewidth=2)
+ax2.set_xlabel('Iteration')
+ax2.set_ylabel('Coefficient Value')
+ax2.set_title('Coefficient Evolution During Training')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# Plot 3: Original data vs fitted model
+y_fitted = final_coeffs[0] + final_coeffs[1] * np.exp(final_coeffs[2] * df['X'])
+ax3.scatter(df['X'], df['Y'], alpha=0.6, color='blue', label='Original Data')
+ax3.plot(df['X'], y_fitted, 'r-', linewidth=2, label='Fitted Model')
+ax3.set_xlabel('x')
+ax3.set_ylabel('y')
+ax3.set_title('Original Data vs Fitted Model')
+ax3.legend()
+ax3.grid(True, alpha=0.3)
+
+# Plot 4: Residuals
+residuals = df['Y'] - y_fitted
+ax4.scatter(df['X'], residuals, alpha=0.6, color='purple')
+ax4.axhline(y=0, color='red', linestyle='--', linewidth=2)
+ax4.set_xlabel('x')
+ax4.set_ylabel('Residuals (y - y_fitted)')
+ax4.set_title('Residual Plot')
+ax4.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+# Print summary statistics
+print(f"\nSUMMARY:")
+# print(f"True coefficients (used to generate data): c0={true_c0}, c1={true_c1}, c2={true_c2}")
+print(f"Fitted coefficients: c0={final_coeffs[0]:.6f}, c1={final_coeffs[1]:.6f}, c2={final_coeffs[2]:.6f}")
+print(f"Number of iterations: {len(loss_hist)}")
+print(f"Final loss: {loss_hist[-1]:.6f}")
+print(f"Initial loss: {loss_hist[0]:.6f}")
+print(f"Loss reduction: {((loss_hist[0] - loss_hist[-1])/loss_hist[0]*100):.2f}%")
+
+# Calculate R-squared
+ss_res = np.sum((df['Y'] - y_fitted)**2)
+ss_tot = np.sum((df['Y'] - np.mean(df['Y']))**2)
+r_squared = 1 - (ss_res / ss_tot)
+print(f"R-squared: {r_squared:.6f}")
+
