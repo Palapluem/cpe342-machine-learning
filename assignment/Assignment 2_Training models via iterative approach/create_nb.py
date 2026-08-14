@@ -1,17 +1,33 @@
-% Auto-generated notebook appendix (Assignment 2)
-\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{Jupyter Notebook: Assignment\_2\_GD.ipynb}]
-โค้ด Python และผลลัพธ์ทั้งหมดจาก Jupyter Notebook (รันสมบูรณ์)
-\end{tcolorbox}
+import nbformat as nbf
 
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 2. Library \& Font Setup}\par\smallskip
-Loading required scientific libraries and configuring the system's Sarabun font to support clear typography and rendering in Matplotlib.
-\end{tcolorbox}
-\vspace{1em}
-\noindent\textbf{In [1]:}
-\begin{lstlisting}[style=pycode]
-import numpy as np
+nb = nbf.v4.new_notebook()
+
+cells = []
+
+# 1. Title & Problem Overview
+cells.append(nbf.v4.new_markdown_cell(
+r"""# CPE 342 Machine Learning — Assignment 2: Training Models via Iterative Approach
+**Author:** 67070501042 วิศิษฐ์ สุวรรณเนาว์
+
+## 1. Problem Overview
+In this assignment, we use an **iterative optimization approach** (Gradient Descent) to train a machine learning model and fit it to a dataset containing 100 observations ($n=100$).
+
+The target model is a **non-linear exponential model** of the form:
+$$ \hat{y} = C_0 + C_1 e^{C_2 x} $$
+
+Where:
+- $C_0$ is the constant baseline / intercept parameter
+- $C_1$ is the coefficient / scale factor of the exponential term
+- $C_2$ is the growth / decay rate in the exponent"""
+))
+
+# 2. Font & Library Setup
+cells.append(nbf.v4.new_markdown_cell(
+r"""## 2. Library & Font Setup
+Loading required scientific libraries and configuring the system's Sarabun font to support clear typography and rendering in Matplotlib."""
+))
+cells.append(nbf.v4.new_code_cell(
+r"""import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -31,47 +47,29 @@ plt.rcParams['font.family'] = 'Sarabun'
 plt.rcParams['font.size'] = 14
 plt.rcParams['axes.unicode_minus'] = False # Prevent minus sign rendering issues
 
-print("Library and font setup complete")
-\end{lstlisting}
-\smallskip
-\noindent\textbf{Out[1]:}
-\begin{lstlisting}[style=output]
-Library and font setup complete
-\end{lstlisting}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large 3. Data Loading \& Exploratory Data Analysis (EDA)}\par\smallskip
-Read the data from `CPE342\_Assignment 2\_Data.csv` and display the first few rows.
-\end{tcolorbox}
-\vspace{1em}
-\noindent\textbf{In [2]:}
-\begin{lstlisting}[style=pycode]
-# Read data
+print("Library and font setup complete")"""
+))
+
+# 3. Data Loading
+cells.append(nbf.v4.new_markdown_cell(
+r"""## 3. Data Loading & Exploratory Data Analysis (EDA)
+Read the data from `CPE342_Assignment 2_Data.csv` and display the first few rows."""
+))
+cells.append(nbf.v4.new_code_cell(
+r"""# Read data
 df = pd.read_csv('CPE342_Assignment 2_Data.csv')
 X = df['X'].values
 Y = df['Y'].values
 
 # Display first few rows
-df.head()
-\end{lstlisting}
-\smallskip
-\noindent\textbf{Out[2]:}
-\begin{lstlisting}[style=output]
-X         Y
-0  4.072280  0.981321
-1  1.724332  1.124653
-2  1.901981  1.042435
-3  4.914068  0.949332
-4  1.165868  1.186925
-\end{lstlisting}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-Now, let's plot scatter plots to observe the relationship and trends between $X$ and $Y$.
-\end{tcolorbox}
-\vspace{1em}
-\noindent\textbf{In [3]:}
-\begin{lstlisting}[style=pycode]
-# Plot graphs to observe trends
+df.head()"""
+))
+
+cells.append(nbf.v4.new_markdown_cell(
+r"""Now, let's plot scatter plots to observe the relationship and trends between $X$ and $Y$."""
+))
+cells.append(nbf.v4.new_code_cell(
+r"""# Plot graphs to observe trends
 plt.figure(figsize=(12, 5))
 
 # Plot X vs Y
@@ -92,98 +90,112 @@ plt.grid(True, linestyle='--', alpha=0.6)
 
 plt.tight_layout()
 plt.savefig('plot_1_eda.pdf', bbox_inches='tight')
-plt.show()
-\end{lstlisting}
-\begin{center}
-\includegraphics[width=\textwidth]{nb2_out_plot_1.png}
-\end{center}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 1 — Mean Squared Error (MSE) Loss Function}\par\smallskip
+plt.show()"""
+))
+
+# 4. Task 1 (Loss Function)
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Task 1 — Mean Squared Error (MSE) Loss Function
 Given our target exponential model:
 $$ \hat{y}_i = C_0 + C_1 e^{C_2 x_i} $$
-We define the \textbf{Mean Squared Error (MSE)} loss function $\mathcal{L}(C_0, C_1, C_2)$ across all $n$ data points, using a conventional factor of $\frac{1}{2n}$ to simplify algebra during differentiation:
+
+We define the **Mean Squared Error (MSE)** loss function $\mathcal{L}(C_0, C_1, C_2)$ across all $n$ data points, using a conventional factor of $\frac{1}{2n}$ to simplify algebra during differentiation:
 $$ \mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+
 Substituting the exponential model equation $\hat{y}_i = C_0 + C_1 e^{C_2 x_i}$ into the loss function yields:
-$$ \mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right)^2 $$
-\end{tcolorbox}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 2 — Derivation of Partial Derivatives (Gradients)}\par\smallskip
-To minimize the loss function $\mathcal{L}$ using Gradient Descent, we calculate the partial derivatives (gradients) with respect to each model parameter ($C_0, C_1, C_2$) using the \textbf{Chain Rule}.
-\textbf{1. General Chain Rule Formulation:}\par\smallskip
+$$ \mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right)^2 $$"""
+))
+
+# 5. Task 2 (Gradient of Each Coefficient)
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Task 2 — Derivation of Partial Derivatives (Gradients)
+To minimize the loss function $\mathcal{L}$ using Gradient Descent, we calculate the partial derivatives (gradients) with respect to each model parameter ($C_0, C_1, C_2$) using the **Chain Rule**.
+
+### 1. General Chain Rule Formulation:
 For any parameter $\theta \in \{C_0, C_1, C_2\}$:
 $$ \frac{\partial \mathcal{L}}{\partial \theta} = \frac{\partial}{\partial \theta} \left[ \frac{1}{2n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \right] $$
 $$ = \frac{1}{2n} \sum_{i=1}^{n} \frac{\partial}{\partial \theta} (y_i - \hat{y}_i)^2 $$
 $$ = \frac{1}{2n} \sum_{i=1}^{n} 2(y_i - \hat{y}_i) \cdot \frac{\partial}{\partial \theta}(y_i - \hat{y}_i) $$
 $$ = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \left(-\frac{\partial \hat{y}_i}{\partial \theta}\right) $$
 $$ = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \frac{\partial \hat{y}_i}{\partial \theta} $$
+
 ---
-\textbf{2. Gradient with respect to $C_0$:}\par\smallskip
+
+### 2. Gradient with respect to $C_0$:
 First, differentiate $\hat{y}_i = C_0 + C_1 e^{C_2 x_i}$ with respect to $C_0$:
 $$ \frac{\partial \hat{y}_i}{\partial C_0} = \frac{\partial}{\partial C_0} \left( C_0 + C_1 e^{C_2 x_i} \right) = 1 + 0 = 1 $$
+
 Substituting this back into the chain rule formula:
 $$ \frac{\partial \mathcal{L}}{\partial C_0} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot 1 $$
 $$ \boxed{\frac{\partial \mathcal{L}}{\partial C_0} = -\frac{1}{n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right)} $$
+
 ---
-\textbf{3. Gradient with respect to $C_1$:}\par\smallskip
+
+### 3. Gradient with respect to $C_1$:
 First, differentiate $\hat{y}_i = C_0 + C_1 e^{C_2 x_i}$ with respect to $C_1$:
 $$ \frac{\partial \hat{y}_i}{\partial C_1} = \frac{\partial}{\partial C_1} \left( C_0 + C_1 e^{C_2 x_i} \right) = 0 + e^{C_2 x_i} = e^{C_2 x_i} $$
+
 Substituting this back into the chain rule formula:
 $$ \frac{\partial \mathcal{L}}{\partial C_1} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot e^{C_2 x_i} $$
 $$ \boxed{\frac{\partial \mathcal{L}}{\partial C_1} = -\frac{1}{n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right) e^{C_2 x_i}} $$
+
 ---
-\textbf{4. Gradient with respect to $C_2$:}\par\smallskip
+
+### 4. Gradient with respect to $C_2$:
 First, differentiate $\hat{y}_i = C_0 + C_1 e^{C_2 x_i}$ with respect to $C_2$:
 $$ \frac{\partial \hat{y}_i}{\partial C_2} = \frac{\partial}{\partial C_2} \left( C_0 + C_1 e^{C_2 x_i} \right) = 0 + C_1 \frac{\partial}{\partial C_2} \left( e^{C_2 x_i} \right) $$
+
 Using the exponential derivative chain rule $\frac{d}{du}(e^u) = e^u \frac{du}{dx}$:
 $$ \frac{\partial}{\partial C_2} \left( e^{C_2 x_i} \right) = e^{C_2 x_i} \cdot \frac{\partial}{\partial C_2}(C_2 x_i) = x_i e^{C_2 x_i} $$
 $$ \Rightarrow \frac{\partial \hat{y}_i}{\partial C_2} = C_1 x_i e^{C_2 x_i} $$
+
 Substituting this back into the chain rule formula:
 $$ \frac{\partial \mathcal{L}}{\partial C_2} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \left( C_1 x_i e^{C_2 x_i} \right) $$
 $$ \boxed{\frac{\partial \mathcal{L}}{\partial C_2} = -\frac{1}{n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right) C_1 x_i e^{C_2 x_i}} $$
+
 ---
-\textbf{Summary of Complete Gradients:}\par\smallskip
+
+### Summary of Complete Gradients:
 $$
-\begin\{aligned\}
-\frac\{\partial \mathcal\{L\}\}\{\partial C\_0\} \&= -\frac\{1\}\{n\} \sum\_\{i=1\}\textasciicircum \{n\} (y\_i - \hat\{y\}\_i) \\[8pt]
-\frac\{\partial \mathcal\{L\}\}\{\partial C\_1\} \&= -\frac\{1\}\{n\} \sum\_\{i=1\}\textasciicircum \{n\} (y\_i - \hat\{y\}\_i) e\textasciicircum \{C\_2 x\_i\} \\[8pt]
-\frac\{\partial \mathcal\{L\}\}\{\partial C\_2\} \&= -\frac\{1\}\{n\} \sum\_\{i=1\}\textasciicircum \{n\} (y\_i - \hat\{y\}\_i) C\_1 x\_i e\textasciicircum \{C\_2 x\_i\}
-\end\{aligned\}
-$$
-\end{tcolorbox}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 3 — Parameter Update Rules}\par\smallskip
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial C_0} &= -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \\[8pt]
+\frac{\partial \mathcal{L}}{\partial C_1} &= -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) e^{C_2 x_i} \\[8pt]
+\frac{\partial \mathcal{L}}{\partial C_2} &= -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) C_1 x_i e^{C_2 x_i}
+\end{aligned}
+$$"""
+))
+
+# 6. Task 3 (Update Rules)
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Task 3 — Parameter Update Rules
 In each iteration $t$ of Gradient Descent, the model parameters are updated simultaneously by moving in the negative direction of their respective gradients, scaled by the learning rate $\eta$:
+
 $$ \theta^{(t+1)} = \theta^{(t)} - \eta \nabla_{\theta} \mathcal{L} $$
+
 Specifically, for each coefficient:
 $$ C_0^{(t+1)} = C_0^{(t)} - \eta \frac{\partial \mathcal{L}}{\partial C_0} $$
 $$ C_1^{(t+1)} = C_1^{(t)} - \eta \frac{\partial \mathcal{L}}{\partial C_1} $$
 $$ C_2^{(t+1)} = C_2^{(t)} - \eta \frac{\partial \mathcal{L}}{\partial C_2} $$
-\textbf{Where:}
-\begin{itemize}
-\item $C_0^{(t)}, C_1^{(t)}, C_2^{(t)}$: Current coefficient values at iteration $t$
-\item $\eta$: Learning rate (step size hyperparameter)
-\item $\frac{\partial \mathcal{L}}{\partial C_0}, \frac{\partial \mathcal{L}}{\partial C_1}, \frac{\partial \mathcal{L}}{\partial C_2}$: Partial derivative gradients calculated over all $n$ data points
-\end{itemize}
-\end{tcolorbox}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 4 — Gradient Descent Implementation}\par\smallskip
-We will now implement the Gradient Descent algorithm in Python using NumPy based on our derived mathematical formulas.
-\textbf{Hyperparameters \& Initial Conditions:}
-\begin{itemize}
-\item Learning Rate ($\eta$) = `1.0`
-\item Maximum Iterations (`max\_iterations`) = `2000`
-\item Convergence Tolerance (`tolerance`) = `1e-6`
-\item Initial Parameter Guesses: $C_0 = 0.5, C_1 = 0.5, C_2 = 0.1$
-\end{itemize}
-\end{tcolorbox}
-\vspace{1em}
-\noindent\textbf{In [4]:}
-\begin{lstlisting}[style=pycode]
-# Initialize hyperparameters
+
+**Where:**
+- $C_0^{(t)}, C_1^{(t)}, C_2^{(t)}$: Current coefficient values at iteration $t$
+- $\eta$: Learning rate (step size hyperparameter)
+- $\frac{\partial \mathcal{L}}{\partial C_0}, \frac{\partial \mathcal{L}}{\partial C_1}, \frac{\partial \mathcal{L}}{\partial C_2}$: Partial derivative gradients calculated over all $n$ data points"""
+))
+
+# 7. Task 4 (Gradient Descent Implementation)
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Task 4 — Gradient Descent Implementation
+We will now implement the Gradient Descent algorithm in Python using NumPy based on our derived mathematical formulas. 
+
+**Hyperparameters & Initial Conditions:**
+- Learning Rate ($\eta$) = `1.0`
+- Maximum Iterations (`max_iterations`) = `2000`
+- Convergence Tolerance (`tolerance`) = `1e-6`
+- Initial Parameter Guesses: $C_0 = 0.5, C_1 = 0.5, C_2 = 0.1$"""
+))
+cells.append(nbf.v4.new_code_cell(
+r"""# Initialize hyperparameters
 learning_rate = 1.0
 max_iterations = 2000
 tolerance = 1e-6
@@ -231,29 +243,20 @@ for i in range(max_iterations):
 
 print(f"Training completed in {len(history_loss)} iterations.")
 print(f"Final Parameters: C0 = {C0:.4f}, C1 = {C1:.4f}, C2 = {C2:.4f}")
-print(f"Final MSE Loss: {history_loss[-1]:.4f}")
-\end{lstlisting}
-\smallskip
-\noindent\textbf{Out[4]:}
-\begin{lstlisting}[style=output]
-Converged at iteration 269
-Training completed in 270 iterations.
-Final Parameters: C0 = 0.9927, C1 = 0.9587, C2 = -1.3296
-Final MSE Loss: 0.0005
-\end{lstlisting}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 5 — Results \& Visualizations}\par\smallskip
+print(f"Final MSE Loss: {history_loss[-1]:.4f}")"""
+))
+
+# 8. Task 5 (Visualizations)
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Task 5 — Results & Visualizations
 In this section, we analyze the training behavior and performance of our model using 4 diagnostic plots:
-1. \textbf{Loss Function Curve:} Convergence over iterations
-2. \textbf{Parameter Trajectory:} Evolution of $C_0, C_1, C_2$
-3. \textbf{Fitted Model vs Data:} Actual observations vs predicted curve
-4. \textbf{Residual Plot:} Distribution of errors ($y_i - \hat{y}_i$)
-\end{tcolorbox}
-\vspace{1em}
-\noindent\textbf{In [5]:}
-\begin{lstlisting}[style=pycode]
-# Save individual plots to PDF first (before creating subplots which resets state)
+1. **Loss Function Curve:** Convergence over iterations
+2. **Parameter Trajectory:** Evolution of $C_0, C_1, C_2$
+3. **Fitted Model vs Data:** Actual observations vs predicted curve
+4. **Residual Plot:** Distribution of errors ($y_i - \hat{y}_i$)"""
+))
+cells.append(nbf.v4.new_code_cell(
+r"""# Save individual plots to PDF first (before creating subplots which resets state)
 # Plot 1: Learning Curve
 plt.figure(figsize=(8, 5))
 plt.plot(range(len(history_loss)), history_loss, 'b-', linewidth=2)
@@ -283,7 +286,7 @@ plt.figure(figsize=(8, 5))
 x_line = np.linspace(min(X), max(X), 100)
 y_line = C0 + C1 * np.exp(C2 * x_line)
 plt.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
-plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
+plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.title('Original Data vs Fitted Model')
@@ -299,7 +302,7 @@ residuals = Y - Y_pred_final
 plt.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
 plt.axhline(0, color='red', linestyle='--', linewidth=2)
 plt.xlabel('X')
-plt.ylabel('Residuals ($y_i - \\hat{y}_i$)')
+plt.ylabel('Residuals ($y_i - \hat{y}_i$)')
 plt.title('Residual Plot')
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.savefig('plot_5_residuals.pdf', bbox_inches='tight')
@@ -328,7 +331,7 @@ ax2.grid(True, linestyle='--', alpha=0.6)
 
 # Plot 3: Fitted Curve vs Actual Data
 ax3.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
-ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
+ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
 ax3.set_xlabel('X')
 ax3.set_ylabel('Y')
 ax3.set_title('Original Data vs Fitted Model')
@@ -339,57 +342,33 @@ ax3.grid(True, linestyle='--', alpha=0.6)
 ax4.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
 ax4.axhline(0, color='red', linestyle='--', linewidth=2)
 ax4.set_xlabel('X')
-ax4.set_ylabel('Residuals ($y_i - \\hat{y}_i$)')
+ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
 ax4.set_title('Residual Plot')
 ax4.grid(True, linestyle='--', alpha=0.6)
 
 plt.tight_layout()
-plt.show()
-\end{lstlisting}
-\smallskip
-\noindent\textbf{Out[5]:}
-\begin{lstlisting}[style=output]
-<>:31: SyntaxWarning: invalid escape sequence '\h'
-<>:47: SyntaxWarning: invalid escape sequence '\h'
-<>:76: SyntaxWarning: invalid escape sequence '\h'
-<>:87: SyntaxWarning: invalid escape sequence '\h'
-<>:31: SyntaxWarning: invalid escape sequence '\h'
-<>:47: SyntaxWarning: invalid escape sequence '\h'
-<>:76: SyntaxWarning: invalid escape sequence '\h'
-<>:87: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_24900\3103374935.py:31: SyntaxWarning: invalid esca ...
-  plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_24900\3103374935.py:47: SyntaxWarning: invalid esca ...
-  plt.ylabel('Residuals ($y_i - \hat{y}_i$)')
-C:\Users\Admin\AppData\Local\Temp\ipykernel_24900\3103374935.py:76: SyntaxWarning: invalid esca ...
-  ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_24900\3103374935.py:87: SyntaxWarning: invalid esca ...
-  ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
-\end{lstlisting}
-\begin{center}
-\includegraphics[width=\textwidth]{nb2_out_plot_2.png}
-\end{center}
-\vspace{1em}
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Extra: Model Evaluation (R-squared \& Summary Statistics)}\par\smallskip
+plt.show()"""
+))
+
+# 9. Extra (Model Evaluation & Summary)
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Extra: Model Evaluation (R-squared & Summary Statistics)
 To mathematically evaluate the goodness of fit for our machine learning model, we calculate the Coefficient of Determination, also known as $R^2$.
+
 The formula for $R^2$ is:
 $$ R^2 = 1 - \frac{SS_{res}}{SS_{tot}} $$
+
 Where:
-\begin{itemize}
-\item \textbf{Residual Sum of Squares ($SS_{res}$)} is the sum of the squared differences between the actual and predicted values:
-\end{itemize}
+- **Residual Sum of Squares ($SS_{res}$)** is the sum of the squared differences between the actual and predicted values:
 $$ SS_{res} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
-\begin{itemize}
-\item \textbf{Total Sum of Squares ($SS_{tot}$)} is the sum of the squared differences between the actual values and the mean of the actual values ($\bar{y}$):
-\end{itemize}
+- **Total Sum of Squares ($SS_{tot}$)** is the sum of the squared differences between the actual values and the mean of the actual values ($\bar{y}$):
 $$ SS_{tot} = \sum_{i=1}^{n} (y_i - \bar{y})^2 $$
-A higher $R^2$ score (closer to 1) indicates that our model's predictions closely match the actual data points.
-\end{tcolorbox}
-\vspace{1em}
-\noindent\textbf{In [6]:}
-\begin{lstlisting}[style=pycode]
-# Print summary statistics
+
+A higher $R^2$ score (closer to 1) indicates that our model's predictions closely match the actual data points."""
+))
+
+cells.append(nbf.v4.new_code_cell(
+r"""# Print summary statistics
 print("\n=== MODEL EVALUATION SUMMARY ===")
 print(f"Fitted parameters: C0 = {C0:.6f}, C1 = {C1:.6f}, C2 = {C2:.6f}")
 print(f"Total Iterations: {len(history_loss)}")
@@ -403,16 +382,10 @@ Y_mean = np.mean(Y)
 ss_res = np.sum((Y - Y_pred_final)**2)
 ss_tot = np.sum((Y - Y_mean)**2)
 r_squared = 1 - (ss_res / ss_tot)
-print(f"R-squared (R^2): {r_squared:.6f}")
-\end{lstlisting}
-\smallskip
-\noindent\textbf{Out[6]:}
-\begin{lstlisting}[style=output]
-=== MODEL EVALUATION SUMMARY ===
-Fitted parameters: C0 = 0.992665, C1 = 0.958671, C2 = -1.329637
-Total Iterations: 270
-Initial loss: 0.046463
-Final loss: 0.000474
-Loss reduction: 98.98%
-R-squared (R^2): 0.981770
-\end{lstlisting}
+print(f"R-squared (R^2): {r_squared:.6f}")"""
+))
+
+nb['cells'] = cells
+
+with open('Assignment_2_GD.ipynb', 'w', encoding='utf-8') as f:
+    nbf.write(nb, f)
