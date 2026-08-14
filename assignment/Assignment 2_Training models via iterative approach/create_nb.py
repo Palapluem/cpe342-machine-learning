@@ -100,16 +100,31 @@ $$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$"""
 # 5. Task 2
 cells.append(nbf.v4.new_markdown_cell(
 r"""## Task 2 — Gradient of Each Coefficient
-To use Gradient Descent, we need to compute the partial derivatives of the loss function $L$ with respect to each parameter. 
+To compute the gradients of the loss function $L$ with respect to each parameter ($C_0$ and $C_1$), we apply the **chain rule**. 
 
-Let $e_i = y_i - C_0 - C_1 x_i^2$ be the residual error.
+For any coefficient $\theta$, the partial derivative is:
+$$ \frac{\partial L}{\partial \theta} = \frac{\partial}{\partial \theta} \left[ \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \right] $$
+$$ = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - \hat{y}_i) \cdot \frac{\partial}{\partial \theta}(y_i - \hat{y}_i) $$
+$$ = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \frac{\partial \hat{y}_i}{\partial \theta} $$
 
-**1. Gradient with respect to $C_0$:**
-$$ \frac{\partial L}{\partial C_0} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_0}(-C_0) $$
+---
+### 1. Gradient with respect to $C_0$:
+First, find $\frac{\partial \hat{y}_i}{\partial C_0}$:
+$$ \hat{y}_i = C_0 + C_1 x_i^2 $$
+$$ \frac{\partial \hat{y}_i}{\partial C_0} = \frac{\partial}{\partial C_0}(C_0 + C_1 x_i^2) = 1 + 0 = 1 $$
+
+Substituting this back into the chain rule formula:
+$$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot 1 $$
 $$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
 
-**2. Gradient with respect to $C_1$:**
-$$ \frac{\partial L}{\partial C_1} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_1}(-C_1 x_i^2) $$
+---
+### 2. Gradient with respect to $C_1$:
+First, find $\frac{\partial \hat{y}_i}{\partial C_1}$:
+$$ \hat{y}_i = C_0 + C_1 x_i^2 $$
+$$ \frac{\partial \hat{y}_i}{\partial C_1} = \frac{\partial}{\partial C_1}(C_0 + C_1 x_i^2) = 0 + x_i^2 = x_i^2 $$
+
+Substituting this back into the chain rule formula:
+$$ \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot x_i^2 $$
 $$ \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) x_i^2 $$"""
 ))
 

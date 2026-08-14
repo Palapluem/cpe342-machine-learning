@@ -92,13 +92,26 @@ $$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
 \textbf{\large Task 2 — Gradient of Each Coefficient}\par\smallskip
-To use Gradient Descent, we need to compute the partial derivatives of the loss function $L$ with respect to each parameter.
-Let $e_i = y_i - C_0 - C_1 x_i^2$ be the residual error.
-\textbf{1. Gradient with respect to $C_0$:}
-$$ \frac{\partial L}{\partial C_0} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_0}(-C_0) $$
+To compute the gradients of the loss function $L$ with respect to each parameter ($C_0$ and $C_1$), we apply the \textbf{chain rule}.
+For any coefficient $\theta$, the partial derivative is:
+$$ \frac{\partial L}{\partial \theta} = \frac{\partial}{\partial \theta} \left[ \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \right] $$
+$$ = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - \hat{y}_i) \cdot \frac{\partial}{\partial \theta}(y_i - \hat{y}_i) $$
+$$ = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \frac{\partial \hat{y}_i}{\partial \theta} $$
+---
+\textbf{1. Gradient with respect to $C_0$:}\par\smallskip
+First, find $\frac{\partial \hat{y}_i}{\partial C_0}$:
+$$ \hat{y}_i = C_0 + C_1 x_i^2 $$
+$$ \frac{\partial \hat{y}_i}{\partial C_0} = \frac{\partial}{\partial C_0}(C_0 + C_1 x_i^2) = 1 + 0 = 1 $$
+Substituting this back into the chain rule formula:
+$$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot 1 $$
 $$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
-\textbf{2. Gradient with respect to $C_1$:}
-$$ \frac{\partial L}{\partial C_1} = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - C_0 - C_1 x_i^2) \cdot \frac{\partial}{\partial C_1}(-C_1 x_i^2) $$
+---
+\textbf{2. Gradient with respect to $C_1$:}\par\smallskip
+First, find $\frac{\partial \hat{y}_i}{\partial C_1}$:
+$$ \hat{y}_i = C_0 + C_1 x_i^2 $$
+$$ \frac{\partial \hat{y}_i}{\partial C_1} = \frac{\partial}{\partial C_1}(C_0 + C_1 x_i^2) = 0 + x_i^2 = x_i^2 $$
+Substituting this back into the chain rule formula:
+$$ \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot x_i^2 $$
 $$ \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) x_i^2 $$
 \end{tcolorbox}
 \vspace{1em}
@@ -184,11 +197,11 @@ Optimized Parameters: C0 = nan, C1 = nan
 Final MSE Loss: nan
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\_methods.py:132: Runt ...
   ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\3501735774.py:27: RuntimeWarning: overflow en ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_7124\3501735774.py:27: RuntimeWarning: overflow enc ...
   loss = np.mean(error**2)
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\fromnumeric.py:83: Ru ...
   return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\3501735774.py:38: RuntimeWarning: invalid val ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_7124\3501735774.py:38: RuntimeWarning: invalid valu ...
   C1 = C1 - learning_rate * grad_C1
 \end{lstlisting}
 \vspace{1em}
@@ -264,7 +277,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:11: SyntaxWarning: invalid escape sequence '\h'
 <>:11: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\3158359308.py:11: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_7124\3158359308.py:11: SyntaxWarning: invalid escap ...
   plt.plot(x_line, y_line, color='red', linewidth=3, label=f'Model: $\hat{{y}} = {C0:.4f} + {C1 ...
 \end{lstlisting}
 \begin{center}
@@ -291,7 +304,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:10: SyntaxWarning: invalid escape sequence '\h'
 <>:10: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\198927625.py:10: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_7124\198927625.py:10: SyntaxWarning: invalid escape ...
   plt.ylabel('Residual ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}

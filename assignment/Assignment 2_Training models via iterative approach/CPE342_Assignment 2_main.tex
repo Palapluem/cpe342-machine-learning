@@ -125,24 +125,35 @@
 \needspace{10\baselineskip}
 \section*{2. การหาอนุพันธ์ย่อย (Gradient of Each Coefficient)}
 
-เพื่อใช้ Gradient Descent เราต้องหาอนุพันธ์ย่อย (Partial derivatives) ของ $L$ เทียบกับ $C_0$ และ $C_1$
+เพื่อใช้ Gradient Descent เราต้องหาอนุพันธ์ย่อย (Partial derivatives) ของ $L$ เทียบกับพารามิเตอร์แต่ละตัว โดยอาศัยกฎลูกโซ่ (Chain Rule)
 
-ให้ $e_i = y_i - C_0 - C_1 x_i^2$ 
-
-\textbf{Gradient เทียบกับ $C_0$:}
+สำหรับพารามิเตอร์ $\theta$ ใดๆ:
 \begin{align*}
-  \frac{\partial L}{\partial C_0} &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_0} = \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-1)
+  \frac{\partial L}{\partial \theta} &= \frac{\partial}{\partial \theta} \left[ \frac{1}{n} \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2 \right] \\
+  &= \frac{1}{n} \sum_{i=1}^{n} 2\left( y_i - \hat{y}_i \right) \cdot \frac{\partial}{\partial \theta}\left( y_i - \hat{y}_i \right) \\
+  &= -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right) \cdot \frac{\partial \hat{y}_i}{\partial \theta}
 \end{align*}
+
+\noindent\rule{\textwidth}{0.1pt}\vspace{4pt}
+
+\textbf{1) Gradient เทียบกับ $C_0$:} \\
+ขั้นแรก หา $\frac{\partial \hat{y}_i}{\partial C_0}$:
+\[
+  \frac{\partial \hat{y}_i}{\partial C_0} = \frac{\partial}{\partial C_0}\left( C_0 + C_1 x_i^2 \right) = 1
+\]
+แทนค่ากลับลงไปในสมการกฎลูกโซ่:
 \begin{ansbox}
 \[
   \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)
 \]
 \end{ansbox}
 
-\textbf{Gradient เทียบกับ $C_1$:}
-\begin{align*}
-  \frac{\partial L}{\partial C_1} &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_1} = \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-x_i^2)
-\end{align*}
+\textbf{2) Gradient เทียบกับ $C_1$:} \\
+ขั้นแรก หา $\frac{\partial \hat{y}_i}{\partial C_1}$:
+\[
+  \frac{\partial \hat{y}_i}{\partial C_1} = \frac{\partial}{\partial C_1}\left( C_0 + C_1 x_i^2 \right) = x_i^2
+\]
+แทนค่ากลับลงไปในสมการกฎลูกโซ่:
 \begin{ansbox}
 \[
   \frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right) x_i^2

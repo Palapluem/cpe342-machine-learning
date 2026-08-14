@@ -1,0 +1,161 @@
+# 1) Mean Squared Error (MSE) loss function
+$$
+\mathcal{L}(\theta) = \frac{1}{2n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+$$
+---
+# 2) Gradient of each coefficients
+Compute partial derivatives of the loss function with respect to each coefficient
+
+   
+Model: $$\hat{y} = c_{0} + c_{1} e^{c_2 x}$$
+
+Substituting the model:
+$$
+L = \frac{1}{2n} \sum_{i=1}^{n} (y_i - (c_0 + c_1 e^{c_2 x_i}))^2
+$$
+---
+For any coefficient $\theta$, we use the chain rule:
+
+$$
+\frac{\partial L}{\partial \theta} = \frac{\partial}{\partial \theta} \left[ \frac{1}{2n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \right]
+$$
+
+$$
+= \frac{1}{2n} \sum_{i=1}^{n} \frac{\partial}{\partial \theta} (y_i - \hat{y}_i)^2
+$$
+
+$$
+= \frac{1}{2n} \sum_{i=1}^{n} 2(y_i - \hat{y}_i) \cdot \frac{\partial}{\partial \theta}(y_i - \hat{y}_i)
+$$
+
+$$
+= \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \left(-\frac{\partial \hat{y}_i}{\partial \theta}\right)
+$$
+
+$$
+= -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \frac{\partial \hat{y}_i}{\partial \theta}
+$$
+
+
+---
+
+
+---
+## Find $\frac{\partial \hat{y}_i}{\partial c_0}$:
+
+$$
+\hat{y}_i = c_0 + c_1 e^{c_2 x_i}
+$$
+
+$$
+\frac{\partial \hat{y}_i}{\partial c_0} = \frac{\partial}{\partial c_0}(c_0 + c_1 e^{c_2 x_i}) = 1 + 0 = 1
+$$
+
+Therefore:
+
+$$
+\frac{\partial L}{\partial c_0} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot 1
+$$
+
+$$
+\boxed{\frac{\partial L}{\partial c_0} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)}
+$$
+___
+---
+## Find $\frac{\partial \hat{y}_i}{\partial c_1}$:
+
+
+$$
+\hat{y}_i = c_0 + c_1 e^{c_2 x_i}
+$$
+
+$$
+\frac{\partial \hat{y}_i}{\partial c_1} = \frac{\partial}{\partial c_1}(c_0 + c_1 e^{c_2 x_i}) = 0 + e^{c_2 x_i} = e^{c_2 x_i}
+$$
+
+Therefore:
+
+$$
+\frac{\partial L}{\partial c_1} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot e^{c_2 x_i}
+$$
+
+$$
+\boxed{\frac{\partial L}{\partial c_1} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) e^{c_2 x_i}}
+$$
+___
+---
+## Find $\frac{\partial \hat{y}_i}{\partial c_2}$:
+
+$$
+\hat{y}_i = c_0 + c_1 e^{c_2 x_i}
+$$
+
+$$
+\frac{\partial \hat{y}_i}{\partial c_2} = \frac{\partial}{\partial c_2}(c_0 + c_1 e^{c_2 x_i})
+$$
+
+$$
+= 0 + c_1 \frac{\partial}{\partial c_2}(e^{c_2 x_i})
+$$
+
+Using chain rule:
+$$
+\frac{\partial}{\partial c_2}(e^{c_2 x_i}) = e^{c_2 x_i} \cdot \frac{\partial}{\partial c_2}(c_2 x_i) = e^{c_2 x_i} \cdot x_i
+$$
+
+Therefore:
+$$
+\frac{\partial \hat{y}_i}{\partial c_2} = c_1 x_i e^{c_2 x_i}
+$$
+
+Substituting back:
+
+$$
+\frac{\partial L}{\partial c_2} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot (c_1 x_i e^{c_2 x_i})
+$$
+
+$$
+\boxed{\frac{\partial L}{\partial c_2} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) c_1 x_i e^{c_2 x_i}}
+$$
+___
+---
+## Complete set of gradients for gradient descent:
+
+$$
+\begin{align}
+\frac{\partial L}{\partial c_0} &= -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \\[10pt]
+\frac{\partial L}{\partial c_1} &= -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) e^{c_2 x_i} \\[10pt]
+\frac{\partial L}{\partial c_2} &= -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) c_1 x_i e^{c_2 x_i}
+\end{align}
+$$
+
+where $\hat{y}_i = c_0 + c_1 e^{c_2 x_i}$
+
+and $(y_i - \hat{y}_i)$ is the prediction error.
+---
+# 3) Update rules
+Update coefficients using gradient descent rule
+    
+Update rule: $$θ_{new} = θ_{old} - α ∇θ$$
+where $α$ is the learning rate and $∇θ$ is the gradient
+
+$$
+c_{0new} = c_{0old} - α \frac{\partial L}{\partial c_{0}}
+$$
+
+$$
+c_{1new} = c_{1old} - α \frac{\partial L}{\partial c_{1}}
+$$
+
+$$
+c_{2new} = c_{2old} - α \frac{\partial L}{\partial c_{2}}
+$$
+
+Args:
+* $c_0, c_1, c_2$: current coefficients
+* grad_c0, grad_c1, grad_c2: gradients
+* learning_rate: step size
+---
+# 4) Implement the gradient descent using the given data
+---
+# 5) Visualization
