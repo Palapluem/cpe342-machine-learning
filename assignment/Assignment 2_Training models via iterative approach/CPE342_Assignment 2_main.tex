@@ -167,9 +167,9 @@
 \end{ansbox}
 
 \textbf{3) Gradient เทียบกับ $C_2$:} \\
-ขั้นแรก หา $\frac{\partial \hat{y}_i}{\partial C_2}$:
+ขั้นแรก หา $\frac{\partial \hat{y}_i}{\partial C_2}$ โดยใช้กฎลูกโซ่สำหรับฟังก์ชันเอกซ์โพเนนเชียล:
 \[
-  \frac{\partial \hat{y}_i}{\partial C_2} = \frac{\partial}{\partial C_2}\left( C_0 + C_1 e^{C_2 x_i} \right) = C_1 \cdot x_i \cdot e^{C_2 x_i}
+  \frac{\partial \hat{y}_i}{\partial C_2} = \frac{\partial}{\partial C_2}\left( C_0 + C_1 e^{C_2 x_i} \right) = C_1 \cdot \frac{\partial}{\partial C_2}\left( e^{C_2 x_i} \right) = C_1 \cdot e^{C_2 x_i} \cdot \frac{\partial}{\partial C_2}(C_2 x_i) = C_1 x_i e^{C_2 x_i}
 \]
 แทนค่ากลับลงไปในสมการกฎลูกโซ่:
 \begin{ansbox}
