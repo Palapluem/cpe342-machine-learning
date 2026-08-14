@@ -20,7 +20,10 @@ $$ \hat{y} = C_0 + C_1 x^2 $$
 ))
 
 # 2. Font & Library Setup
-cells.append(nbf.v4.new_markdown_cell(r"## 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)\nทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น"))
+cells.append(nbf.v4.new_markdown_cell(
+r"""## 2. การตั้งค่าไลบรารีและฟอนต์ (Setup)
+ทำการโหลดฟอนต์ Sarabun เพื่อให้กราฟสามารถแสดงผลภาษาไทยได้ และนำเข้าไลบรารีที่จำเป็น"""
+))
 cells.append(nbf.v4.new_code_cell(
 r"""# ดาวน์โหลดฟอนต์ TH Sarabun New สำหรับใช้ใน Matplotlib (รันบน Colab/Jupyter ได้)
 !wget -q https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf
@@ -45,7 +48,10 @@ print("ตั้งค่าไลบรารีและฟอนต์สำ�
 ))
 
 # 3. Data Loading
-cells.append(nbf.v4.new_markdown_cell(r"## 3. นำเข้าและสำรวจข้อมูล (Data Loading & EDA)\nอ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$"))
+cells.append(nbf.v4.new_markdown_cell(
+r"""## 3. นำเข้าและสำรวจข้อมูล (Data Loading & EDA)
+อ่านข้อมูลจากไฟล์ CSV และพล็อตกราฟกระจายตัว (Scatter plot) เพื่อดูความสัมพันธ์ระหว่าง $x$ และ $y$"""
+))
 cells.append(nbf.v4.new_code_cell(
 r"""# อ่านข้อมูล
 df = pd.read_csv('CPE342_Assignment 2_Data.csv')
@@ -171,7 +177,10 @@ print(f"Final MSE Loss: {loss:.5f}")"""
 ))
 
 # 8. Task 5 (Visualizations)
-cells.append(nbf.v4.new_markdown_cell(r"## Task 5 — ผลลัพธ์และการแสดงภาพ (Results & Visualizations)\nเราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน"))
+cells.append(nbf.v4.new_markdown_cell(
+r"""## Task 5 — ผลลัพธ์และการแสดงภาพ (Results & Visualizations)
+เราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน"""
+))
 cells.append(nbf.v4.new_code_cell(
 r"""# กราฟที่ 1: การลดลงของ Loss (Learning Curve)
 plt.figure(figsize=(8, 5))
