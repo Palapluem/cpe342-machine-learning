@@ -1,0 +1,310 @@
+% -*- coding: utf-8 -*-
+\documentclass[12pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{upquote}
+\usepackage{needspace}
+
+% ── Page geometry ─────────────────────────────────────────────────────────────
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% ── Fonts ─────────────────────────────────────────────────────────────────────
+\setmainlanguage{thai}
+\setotherlanguage{english}
+\newfontfamily\thaifont[Script=Thai]{Sarabun}
+\newfontfamily\englishfont{Sarabun}
+\setmainfont{Sarabun}
+
+% ── Colors ────────────────────────────────────────────────────────────────────
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{pyblue}{RGB}{30,100,180}
+\definecolor{pygreen}{RGB}{0,128,0}
+\definecolor{pyorange}{RGB}{200,100,0}
+\definecolor{headerblue}{RGB}{30,80,160}
+\definecolor{accent}{RGB}{180,30,30}
+
+% ── Listings styles ───────────────────────────────────────────────────────────
+\lstdefinestyle{pycode}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  breakatwhitespace=false,
+  frame=single,
+  rulecolor=\color{codeframe},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=6pt,
+  keywordstyle=\color{pyblue}\bfseries,
+  stringstyle=\color{pyorange},
+  commentstyle=\color{pygreen}\itshape,
+  showstringspaces=false,
+  tabsize=4,
+  literate=
+    {α}{{\ensuremath{\alpha}}}1
+    {β}{{\ensuremath{\beta}}}1
+    {η}{{\ensuremath{\eta}}}1
+    {≈}{{\ensuremath{\approx}}}1
+    {²}{{\ensuremath{{}^2}}}1,
+}
+
+\lstdefinestyle{output}{
+  backgroundcolor=\color{white},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{codeframe},
+  numbers=none,
+  literate=
+    {α}{{\ensuremath{\alpha}}}1
+    {β}{{\ensuremath{\beta}}}1
+    {η}{{\ensuremath{\eta}}}1
+    {≈}{{\ensuremath{\approx}}}1
+    {²}{{\ensuremath{{}^2}}}1,
+}
+
+% ── tcolorbox ─────────────────────────────────────────────────────────────────
+\tcbuselibrary{skins,breakable}
+
+% ── Hyperref ──────────────────────────────────────────────────────────────────
+\hypersetup{colorlinks=true, linkcolor=headerblue, urlcolor=headerblue}
+
+% ── Title info ────────────────────────────────────────────────────────────────
+\title{
+  \vspace{-1cm}
+  {\large King Mongkut's University of Technology Thonburi}\\
+  {\large Faculty of Engineering, Department of Computer Engineering}\\[0.5em]
+  \textbf{\Large CPE 342 Machine Learning}\\[0.5em]
+  \textbf{\LARGE Assignment 2: Training Models via Iterative Approach}\\[0.5em]
+  {\large Gradient Descent — Quadratic Model Fitting}
+}
+\author{67070501042 วิศิษฐ์ สุวรรณเนาว์}
+\date{Submitted: September 2024}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Problem Overview}
+
+This assignment investigates the \textbf{iterative approach} to model training using \textbf{Gradient Descent (GD)}. Given a dataset of $n = 100$ observations with variables $X$ and $Y$, the objective is to fit the following \textbf{quadratic model}:
+
+\[
+  \hat{y} = C_0 + C_1 x^2
+\]
+
+where $C_0$ is the intercept (bias) and $C_1$ is the coefficient for the squared feature $x^2$.
+
+Unlike the closed-form Ordinary Least Squares approach (Assignment 1), gradient descent finds the optimal parameters \textit{iteratively} by repeatedly computing the gradient of the loss function and taking small steps in the direction of steepest descent.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Dataset Overview}
+
+The dataset \texttt{CPE342\_Assignment 2\_Data.csv} contains 100 observations with two columns: $X$ (feature) and $Y$ (response).
+
+\begin{table}[H]
+\centering
+\caption{Dataset Summary Statistics}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Variable} & \textbf{Min} & \textbf{Max} & \textbf{Mean} \\
+\midrule
+$X$ & 0.0108 & 4.9783 & 2.7306 \\
+$Y$ & 0.9493 & 1.9707 & 1.1195 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+An exploratory analysis (Figure~\ref{fig:eda}) reveals a \textbf{decreasing trend}: as $X$ increases, $Y$ tends to decrease. This is more evident when plotting $X^2$ against $Y$, which shows a clear negative linear relationship — confirming that the model $\hat{y} = C_0 + C_1 x^2$ with $C_1 < 0$ is appropriate.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{plot_1_eda.pdf}
+  \caption{Scatter plots of $X$ vs $Y$ (left) and $X^2$ vs $Y$ (right). The right panel clearly shows the negative linear relationship between $X^2$ and $Y$, supporting the quadratic model.}
+  \label{fig:eda}
+\end{figure}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Task 1 — Loss Function}
+
+Given the model $\hat{y}_i = C_0 + C_1 x_i^2$, the \textbf{Mean Squared Error (MSE)} loss function is defined as:
+
+\[
+  L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2
+\]
+
+Substituting the model expression:
+
+\[
+  \boxed{L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)^2}
+\]
+
+This is a smooth, convex function in $C_0$ and $C_1$, which guarantees that gradient descent will converge to the global minimum.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Task 2 — Gradient of Each Coefficient}
+
+To apply gradient descent, we compute the \textbf{partial derivative} of $L$ with respect to each parameter. Let $e_i = y_i - C_0 - C_1 x_i^2$ denote the residual for observation $i$.
+
+\subsection*{Gradient with respect to \texorpdfstring{$C_0$}{C0}}
+
+\begin{align*}
+  \frac{\partial L}{\partial C_0}
+  &= \frac{\partial}{\partial C_0} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] \\
+  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_0} \\
+  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-1) \qquad \left(\text{since } \frac{\partial e_i}{\partial C_0} = -1\right) \\[6pt]
+  \Aboxed{
+    \frac{\partial L}{\partial C_0} &= -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)
+  }
+\end{align*}
+
+\subsection*{Gradient with respect to \texorpdfstring{$C_1$}{C1}}
+
+\begin{align*}
+  \frac{\partial L}{\partial C_1}
+  &= \frac{\partial}{\partial C_1} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] \\
+  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_1} \\
+  &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-x_i^2) \qquad \left(\text{since } \frac{\partial e_i}{\partial C_1} = -x_i^2\right) \\[6pt]
+  \Aboxed{
+    \frac{\partial L}{\partial C_1} &= -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right) x_i^2
+  }
+\end{align*}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Task 3 — Update Rules}
+
+At each iteration $t$, the parameters are updated by moving in the direction \textbf{opposite to the gradient}, scaled by the learning rate $\eta$:
+
+\[
+  \boxed{C_0^{(t+1)} = C_0^{(t)} - \eta \cdot \frac{\partial L}{\partial C_0}}
+\]
+
+\[
+  \boxed{C_1^{(t+1)} = C_1^{(t)} - \eta \cdot \frac{\partial L}{\partial C_1}}
+\]
+
+Both parameters are updated \textbf{simultaneously} using gradients computed from the current values $C_0^{(t)}$ and $C_1^{(t)}$. The learning rate $\eta$ controls the size of each step:
+\begin{itemize}
+  \item Too large: may overshoot the minimum (oscillation/divergence)
+  \item Too small: converges slowly, requiring many iterations
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Task 4 — Implementation: Gradient Descent}
+
+\subsection*{Hyperparameters}
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Learning rate $\eta$ & 0.01 \\
+Number of iterations & 5{,}000 \\
+Initial $C_0$ & 0.0 \\
+Initial $C_1$ & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Algorithm (Batch Gradient Descent)}
+
+At each iteration, using \textbf{all} $n = 100$ observations:
+
+\begin{enumerate}
+  \item Compute predicted values: $\hat{y}_i = C_0 + C_1 x_i^2$
+  \item Compute residuals: $e_i = y_i - \hat{y}_i$
+  \item Compute MSE loss: $L = \frac{1}{n}\sum_i e_i^2$
+  \item Compute gradients: $\nabla_{C_0} = -\frac{2}{n}\sum_i e_i$, \quad $\nabla_{C_1} = -\frac{2}{n}\sum_i e_i x_i^2$
+  \item Update: $C_0 \leftarrow C_0 - \eta\,\nabla_{C_0}$, \quad $C_1 \leftarrow C_1 - \eta\,\nabla_{C_1}$
+\end{enumerate}
+
+The complete Python implementation is provided in the Appendix (Section~\ref{sec:appendix}).
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Task 5 — Results}
+
+\subsection*{Loss Over Iterations}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{plot_2_loss_curve.pdf}
+  \caption{MSE loss as a function of gradient descent iteration. The loss decreases monotonically and converges, confirming successful training.}
+  \label{fig:loss}
+\end{figure}
+
+\subsection*{Coefficient Convergence}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{plot_3_coeff_trajectory.pdf}
+  \caption{Convergence of $C_0$ (intercept, left) and $C_1$ (quadratic coefficient, right) over 5{,}000 iterations. Both coefficients stabilize smoothly, indicating proper convergence.}
+  \label{fig:coeff}
+\end{figure}
+
+\subsection*{Fitted Model}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.80\textwidth]{plot_4_fitted_curve.pdf}
+  \caption{Fitted quadratic curve $\hat{y} = C_0 + C_1 x^2$ overlaid on the observed data. The model captures the overall negative trend effectively.}
+  \label{fig:fitted}
+\end{figure}
+
+\subsection*{Residuals per Observation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{plot_5_residuals.pdf}
+  \caption{Residuals ($y_i - \hat{y}_i$) for each observation, sorted by $X$. Red: under-predicted; Blue: over-predicted. Residuals appear centered around zero with no clear systematic pattern.}
+  \label{fig:residuals}
+\end{figure}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Summary of Results}
+
+\begin{table}[H]
+\centering
+\caption{Summary of Gradient Descent Results}
+\begin{tabular}{ll}
+\toprule
+\textbf{Item} & \textbf{Result} \\
+\midrule
+Task 1 & MSE Loss: $L = \frac{1}{n}\sum_i(y_i - C_0 - C_1 x_i^2)^2$ \\[4pt]
+Task 2 & $\frac{\partial L}{\partial C_0} = -\frac{2}{n}\sum_i e_i$,\quad $\frac{\partial L}{\partial C_1} = -\frac{2}{n}\sum_i e_i x_i^2$ \\[4pt]
+Task 3 & $C_k^{(t+1)} = C_k^{(t)} - \eta\,\frac{\partial L}{\partial C_k}$ \\[4pt]
+Task 4 & Implemented in Python/NumPy from scratch (see Appendix) \\[4pt]
+Task 5 & Loss converges; final $C_0$ and $C_1$ shown in Appendix output \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Appendix: Full Jupyter Notebook Code \& Output}
+\label{sec:appendix}
+
+This section contains the complete Python code and execution output from \texttt{Assignment\_2\_GD.ipynb}, which was run using Python 3 with NumPy and Matplotlib.
+
+\input{notebook_appendix_2.tex}
+
+\end{document}
