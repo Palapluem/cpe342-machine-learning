@@ -25,7 +25,7 @@ r"""## 2. Library & Font Setup
 Loading libraries and downloading the Sarabun font to support Thai rendering in Matplotlib if needed."""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# ดาวน์โหลดฟอนต์ TH Sarabun New สำหรับใช้ใน Matplotlib (รันบน Colab/Jupyter ได้)
+r"""# Download TH Sarabun New font for Matplotlib
 !wget -q https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf
 
 import numpy as np
@@ -36,13 +36,13 @@ import matplotlib.font_manager as fm
 import urllib.request
 import os
 
-# การตั้งค่าฟอนต์
+# Font configuration
 font_path = 'thsarabunnew-webfont.ttf'
 if not os.path.exists(font_path):
     urllib.request.urlretrieve('https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf', font_path)
 fm.fontManager.addfont(font_path)
 mpl.rc('font', family='TH Sarabun New', size=14)
-mpl.rcParams['axes.unicode_minus'] = False # ป้องกันปัญหาเครื่องหมายลบแสดงเป็นสี่เหลี่ยม
+mpl.rcParams['axes.unicode_minus'] = False # Prevent minus sign rendering issues
 
 print("Library and font setup complete")"""
 ))
@@ -53,18 +53,18 @@ r"""## 3. Data Loading & Exploratory Data Analysis (EDA)
 Read the data from the CSV file and plot scatter plots to observe the relationship between $x$ and $y$."""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# อ่านข้อมูล
+r"""# Read data
 df = pd.read_csv('CPE342_Assignment 2_Data.csv')
 X = df['X'].values
 Y = df['Y'].values
 
-# แสดงข้อมูลเบื้องต้น
+# Display first few rows
 display(df.head())
 
-# พล็อตกราฟเพื่อดูแนวโน้ม
+# Plot graphs to observe trends
 plt.figure(figsize=(12, 5))
 
-# กราฟ X กับ Y
+# Plot X vs Y
 plt.subplot(1, 2, 1)
 plt.scatter(X, Y, color='blue', alpha=0.6, edgecolor='k')
 plt.title('Scatter plot of X vs Y')
@@ -72,7 +72,7 @@ plt.xlabel('X')
 plt.ylabel('Y')
 plt.grid(True, linestyle='--', alpha=0.6)
 
-# กราฟ X^2 กับ Y
+# Plot X^2 vs Y
 plt.subplot(1, 2, 2)
 plt.scatter(X**2, Y, color='green', alpha=0.6, edgecolor='k')
 plt.title('Scatter plot of $X^2$ vs Y')
@@ -183,7 +183,7 @@ r"""## Task 5 — ผลลัพธ์และการแสดงภาพ (
 เราจะมาดูกันว่าโมเดลที่เราเทรนมามีพฤติกรรมอย่างไร และฟิตกับข้อมูลได้ดีแค่ไหน"""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# กราฟที่ 1: การลดลงของ Loss (Learning Curve)
+r"""# Graph 1: Learning Curve (Loss over Iterations)
 plt.figure(figsize=(8, 5))
 plt.plot(range(n_iterations), history_loss, color='red', linewidth=2)
 plt.title('Learning Curve (MSE Loss per Iteration)')
@@ -193,7 +193,7 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()"""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# กราฟที่ 2: เส้นทางการลู่เข้าของพารามิเตอร์ C0 และ C1
+r"""# Graph 2: Convergence of parameters C0 and C1
 plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
@@ -214,13 +214,13 @@ plt.tight_layout()
 plt.show()"""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# กราฟที่ 3: เส้นโค้งที่ฟิตแล้วเทียบกับจุดข้อมูลจริง (Fitted Curve)
+r"""# Graph 3: Fitted Curve vs Actual Data
 plt.figure(figsize=(9, 6))
 
-# จุดข้อมูลจริง
+# Actual Data Points
 plt.scatter(X, Y, color='black', alpha=0.5, label='Actual Data', edgecolor='k')
 
-# สร้างจุด x สำหรับวาดเส้นโค้งให้เรียบเนียน
+# Create x points for a smooth curve
 x_line = np.linspace(min(X), max(X), 100)
 y_line = C0 + C1 * (x_line**2)
 
@@ -234,7 +234,7 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()"""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# กราฟที่ 4: ความคลาดเคลื่อน (Residuals) แต่ละจุด
+r"""# Graph 4: Residuals of the Model
 Y_pred_final = C0 + C1 * X_sq
 residuals = Y - Y_pred_final
 

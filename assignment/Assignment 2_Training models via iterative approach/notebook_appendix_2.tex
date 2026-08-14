@@ -11,7 +11,7 @@ Loading libraries and downloading the Sarabun font to support Thai rendering in 
 \vspace{1em}
 \noindent\textbf{In [1]:}
 \begin{lstlisting}[style=pycode]
-# ดาวน์โหลดฟอนต์ TH Sarabun New สำหรับใช้ใน Matplotlib (รันบน Colab/Jupyter ได้)
+# Download TH Sarabun New font for Matplotlib
 !wget -q https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf
 
 import numpy as np
@@ -22,13 +22,13 @@ import matplotlib.font_manager as fm
 import urllib.request
 import os
 
-# การตั้งค่าฟอนต์
+# Font configuration
 font_path = 'thsarabunnew-webfont.ttf'
 if not os.path.exists(font_path):
     urllib.request.urlretrieve('https://github.com/Phonbopit/sarabun-webfont/raw/master/fonts/thsarabunnew-webfont.ttf', font_path)
 fm.fontManager.addfont(font_path)
 mpl.rc('font', family='TH Sarabun New', size=14)
-mpl.rcParams['axes.unicode_minus'] = False # ป้องกันปัญหาเครื่องหมายลบแสดงเป็นสี่เหลี่ยม
+mpl.rcParams['axes.unicode_minus'] = False # Prevent minus sign rendering issues
 
 print("Library and font setup complete")
 \end{lstlisting}
@@ -47,18 +47,18 @@ Read the data from the CSV file and plot scatter plots to observe the relationsh
 \vspace{1em}
 \noindent\textbf{In [2]:}
 \begin{lstlisting}[style=pycode]
-# อ่านข้อมูล
+# Read data
 df = pd.read_csv('CPE342_Assignment 2_Data.csv')
 X = df['X'].values
 Y = df['Y'].values
 
-# แสดงข้อมูลเบื้องต้น
+# Display first few rows
 display(df.head())
 
-# พล็อตกราฟเพื่อดูแนวโน้ม
+# Plot graphs to observe trends
 plt.figure(figsize=(12, 5))
 
-# กราฟ X กับ Y
+# Plot X vs Y
 plt.subplot(1, 2, 1)
 plt.scatter(X, Y, color='blue', alpha=0.6, edgecolor='k')
 plt.title('Scatter plot of X vs Y')
@@ -66,7 +66,7 @@ plt.xlabel('X')
 plt.ylabel('Y')
 plt.grid(True, linestyle='--', alpha=0.6)
 
-# กราฟ X^2 กับ Y
+# Plot X^2 vs Y
 plt.subplot(1, 2, 2)
 plt.scatter(X**2, Y, color='green', alpha=0.6, edgecolor='k')
 plt.title('Scatter plot of $X^2$ vs Y')
@@ -184,11 +184,11 @@ Optimized Parameters: C0 = nan, C1 = nan
 Final MSE Loss: nan
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\_methods.py:132: Runt ...
   ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18124\3501735774.py:27: RuntimeWarning: overflow en ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\3501735774.py:27: RuntimeWarning: overflow en ...
   loss = np.mean(error**2)
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\fromnumeric.py:83: Ru ...
   return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18124\3501735774.py:38: RuntimeWarning: invalid val ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\3501735774.py:38: RuntimeWarning: invalid val ...
   C1 = C1 - learning_rate * grad_C1
 \end{lstlisting}
 \vspace{1em}
@@ -199,7 +199,7 @@ C:\Users\Admin\AppData\Local\Temp\ipykernel_18124\3501735774.py:38: RuntimeWarni
 \vspace{1em}
 \noindent\textbf{In [4]:}
 \begin{lstlisting}[style=pycode]
-# กราฟที่ 1: การลดลงของ Loss (Learning Curve)
+# Graph 1: Learning Curve (Loss over Iterations)
 plt.figure(figsize=(8, 5))
 plt.plot(range(n_iterations), history_loss, color='red', linewidth=2)
 plt.title('Learning Curve (MSE Loss per Iteration)')
@@ -214,7 +214,7 @@ plt.show()
 \vspace{1em}
 \noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
-# กราฟที่ 2: เส้นทางการลู่เข้าของพารามิเตอร์ C0 และ C1
+# Graph 2: Convergence of parameters C0 and C1
 plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
@@ -240,13 +240,13 @@ plt.show()
 \vspace{1em}
 \noindent\textbf{In [6]:}
 \begin{lstlisting}[style=pycode]
-# กราฟที่ 3: เส้นโค้งที่ฟิตแล้วเทียบกับจุดข้อมูลจริง (Fitted Curve)
+# Graph 3: Fitted Curve vs Actual Data
 plt.figure(figsize=(9, 6))
 
-# จุดข้อมูลจริง
+# Actual Data Points
 plt.scatter(X, Y, color='black', alpha=0.5, label='Actual Data', edgecolor='k')
 
-# สร้างจุด x สำหรับวาดเส้นโค้งให้เรียบเนียน
+# Create x points for a smooth curve
 x_line = np.linspace(min(X), max(X), 100)
 y_line = C0 + C1 * (x_line**2)
 
@@ -264,7 +264,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:11: SyntaxWarning: invalid escape sequence '\h'
 <>:11: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18124\1313811191.py:11: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\3158359308.py:11: SyntaxWarning: invalid esca ...
   plt.plot(x_line, y_line, color='red', linewidth=3, label=f'Model: $\hat{{y}} = {C0:.4f} + {C1 ...
 \end{lstlisting}
 \begin{center}
@@ -273,7 +273,7 @@ C:\Users\Admin\AppData\Local\Temp\ipykernel_18124\1313811191.py:11: SyntaxWarnin
 \vspace{1em}
 \noindent\textbf{In [7]:}
 \begin{lstlisting}[style=pycode]
-# กราฟที่ 4: ความคลาดเคลื่อน (Residuals) แต่ละจุด
+# Graph 4: Residuals of the Model
 Y_pred_final = C0 + C1 * X_sq
 residuals = Y - Y_pred_final
 
@@ -291,7 +291,7 @@ plt.show()
 \begin{lstlisting}[style=output]
 <>:10: SyntaxWarning: invalid escape sequence '\h'
 <>:10: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18124\1564452236.py:10: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_23556\198927625.py:10: SyntaxWarning: invalid escap ...
   plt.ylabel('Residual ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}
