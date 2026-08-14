@@ -4,6 +4,7 @@
 % ── Packages ──────────────────────────────────────────────────────────────────
 \usepackage{fontspec}
 \usepackage{polyglossia}
+\usepackage{mathtools}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{geometry}
 \usepackage{graphicx}
@@ -28,7 +29,9 @@
 \setotherlanguage{english}
 \newfontfamily\thaifont[Script=Thai]{Sarabun}
 \newfontfamily\englishfont{Sarabun}
+\newfontfamily\thaifonttt[Script=Thai]{Sarabun}
 \setmainfont{Sarabun}
+\setmonofont[Scale=0.88]{Courier New}
 
 % ── Colors ────────────────────────────────────────────────────────────────────
 \definecolor{codebg}{RGB}{245,245,245}
@@ -67,6 +70,9 @@
   backgroundcolor=\color{white},
   basicstyle=\ttfamily\small,
   breaklines=true,
+  breakatwhitespace=false,
+  columns=fullflexible,
+  keepspaces=true,
   frame=single,
   rulecolor=\color{codeframe},
   numbers=none,
@@ -172,9 +178,9 @@ To apply gradient descent, we compute the \textbf{partial derivative} of $L$ wit
   &= \frac{\partial}{\partial C_0} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] \\
   &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_0} \\
   &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-1) \qquad \left(\text{since } \frac{\partial e_i}{\partial C_0} = -1\right) \\[6pt]
-  \Aboxed{
-    \frac{\partial L}{\partial C_0} &= -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)
-  }
+\end{align*}
+\[
+  \boxed{\frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right)}
 \end{align*}
 
 \subsection*{Gradient with respect to \texorpdfstring{$C_1$}{C1}}
@@ -184,9 +190,9 @@ To apply gradient descent, we compute the \textbf{partial derivative} of $L$ wit
   &= \frac{\partial}{\partial C_1} \left[ \frac{1}{n} \sum_{i=1}^{n} e_i^2 \right] \\
   &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot \frac{\partial e_i}{\partial C_1} \\
   &= \frac{1}{n} \sum_{i=1}^{n} 2 e_i \cdot (-x_i^2) \qquad \left(\text{since } \frac{\partial e_i}{\partial C_1} = -x_i^2\right) \\[6pt]
-  \Aboxed{
-    \frac{\partial L}{\partial C_1} &= -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right) x_i^2
-  }
+\end{align*}
+\[
+  \boxed{\frac{\partial L}{\partial C_1} = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - C_0 - C_1 x_i^2 \right) x_i^2}
 \end{align*}
 
 % ══════════════════════════════════════════════════════════════════════════════
