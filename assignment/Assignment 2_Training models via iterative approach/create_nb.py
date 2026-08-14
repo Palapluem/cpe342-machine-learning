@@ -198,68 +198,48 @@ r"""## Task 5 — Results & Visualizations
 In this section, we analyze the behavior of our trained model and evaluate how well it fits the dataset using various plots."""
 ))
 cells.append(nbf.v4.new_code_cell(
-r"""# Graph 1: Learning Curve (Loss over Iterations)
-plt.figure(figsize=(8, 5))
-plt.plot(range(n_iterations), history_loss, color='red', linewidth=2)
-plt.title('Learning Curve (MSE Loss per Iteration)')
-plt.xlabel('Iteration')
-plt.ylabel('MSE Loss')
-plt.grid(True, linestyle='--', alpha=0.6)
-plt.show()"""
-))
-cells.append(nbf.v4.new_code_cell(
-r"""# Graph 2: Convergence of parameters C0 and C1
-plt.figure(figsize=(12, 5))
+r"""# Create subplots for a 2x2 grid visualization
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
 
-plt.subplot(1, 2, 1)
-plt.plot(range(n_iterations), history_C0, color='blue', linewidth=2)
-plt.title('Convergence of C0 (Intercept)')
-plt.xlabel('Iteration')
-plt.ylabel('C0')
-plt.grid(True, linestyle='--', alpha=0.6)
+# Plot 1: Learning Curve (Loss over Iterations)
+ax1.plot(range(n_iterations), history_loss, 'b-', linewidth=2)
+ax1.set_xlabel('Iteration')
+ax1.set_ylabel('MSE Loss')
+ax1.set_title('Loss Function Over Iterations')
+ax1.grid(True, linestyle='--', alpha=0.6)
+ax1.set_yscale('log') # Log scale to see convergence better
 
-plt.subplot(1, 2, 2)
-plt.plot(range(n_iterations), history_C1, color='orange', linewidth=2)
-plt.title('Convergence of C1 (Coefficient of $X^2$)')
-plt.xlabel('Iteration')
-plt.ylabel('C1')
-plt.grid(True, linestyle='--', alpha=0.6)
+# Plot 2: Convergence of parameters C0 and C1
+ax2.plot(range(n_iterations), history_C0, 'r-', label='C0 (Intercept)', linewidth=2)
+ax2.plot(range(n_iterations), history_C1, 'g-', label='C1 (Coefficient of $X^2$)', linewidth=2)
+ax2.set_xlabel('Iteration')
+ax2.set_ylabel('Parameter Value')
+ax2.set_title('Parameter Evolution During Training')
+ax2.legend()
+ax2.grid(True, linestyle='--', alpha=0.6)
 
-plt.tight_layout()
-plt.show()"""
-))
-cells.append(nbf.v4.new_code_cell(
-r"""# Graph 3: Fitted Curve vs Actual Data
-plt.figure(figsize=(9, 6))
-
-# Actual Data Points
-plt.scatter(X, Y, color='black', alpha=0.5, label='Actual Data', edgecolor='k')
-
-# Create x points for a smooth curve
+# Plot 3: Fitted Curve vs Actual Data
 x_line = np.linspace(min(X), max(X), 100)
 y_line = C0 + C1 * (x_line**2)
+ax3.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
+ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.4f} + {C1:.4f}x^2$')
+ax3.set_xlabel('X')
+ax3.set_ylabel('Y')
+ax3.set_title('Original Data vs Fitted Model')
+ax3.legend(fontsize=12)
+ax3.grid(True, linestyle='--', alpha=0.6)
 
-plt.plot(x_line, y_line, color='red', linewidth=3, label=f'Model: $\hat{{y}} = {C0:.4f} + {C1:.4f}x^2$')
-
-plt.title('Quadratic Model Fit')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.legend(fontsize=12)
-plt.grid(True, linestyle='--', alpha=0.6)
-plt.show()"""
-))
-cells.append(nbf.v4.new_code_cell(
-r"""# Graph 4: Residuals of the Model
+# Plot 4: Residuals
 Y_pred_final = C0 + C1 * X_sq
 residuals = Y - Y_pred_final
+ax4.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
+ax4.axhline(0, color='red', linestyle='--', linewidth=2)
+ax4.set_xlabel('X')
+ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
+ax4.set_title('Residual Plot')
+ax4.grid(True, linestyle='--', alpha=0.6)
 
-plt.figure(figsize=(9, 5))
-plt.scatter(X, residuals, color='purple', alpha=0.7, edgecolor='k')
-plt.axhline(0, color='red', linestyle='--', linewidth=2)
-plt.title('Residuals of the Model')
-plt.xlabel('X')
-plt.ylabel('Residual ($y_i - \hat{y}_i$)')
-plt.grid(True, linestyle='--', alpha=0.6)
+plt.tight_layout()
 plt.show()"""
 ))
 

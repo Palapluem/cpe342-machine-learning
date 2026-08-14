@@ -78,7 +78,7 @@ plt.tight_layout()
 plt.show()
 \end{lstlisting}
 \begin{center}
-\includegraphics[width=0.75\textwidth]{nb2_out_plot_1.png}
+\includegraphics[width=\textwidth]{nb2_out_plot_1.png}
 \end{center}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
@@ -197,11 +197,11 @@ Optimized Parameters: C0 = nan, C1 = nan
 Final MSE Loss: nan
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\_methods.py:132: Runt ...
   ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\3501735774.py:27: RuntimeWarning: overflow enc ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2560\3501735774.py:27: RuntimeWarning: overflow enc ...
   loss = np.mean(error**2)
 C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\numpy\_core\fromnumeric.py:83: Ru ...
   return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
-C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\3501735774.py:38: RuntimeWarning: invalid valu ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2560\3501735774.py:38: RuntimeWarning: invalid valu ...
   C1 = C1 - learning_rate * grad_C1
 \end{lstlisting}
 \vspace{1em}
@@ -212,103 +212,66 @@ In this section, we analyze the behavior of our trained model and evaluate how w
 \vspace{1em}
 \noindent\textbf{In [4]:}
 \begin{lstlisting}[style=pycode]
-# Graph 1: Learning Curve (Loss over Iterations)
-plt.figure(figsize=(8, 5))
-plt.plot(range(n_iterations), history_loss, color='red', linewidth=2)
-plt.title('Learning Curve (MSE Loss per Iteration)')
-plt.xlabel('Iteration')
-plt.ylabel('MSE Loss')
-plt.grid(True, linestyle='--', alpha=0.6)
-plt.show()
-\end{lstlisting}
-\begin{center}
-\includegraphics[width=0.75\textwidth]{nb2_out_plot_2.png}
-\end{center}
-\vspace{1em}
-\noindent\textbf{In [5]:}
-\begin{lstlisting}[style=pycode]
-# Graph 2: Convergence of parameters C0 and C1
-plt.figure(figsize=(12, 5))
+# Create subplots for a 2x2 grid visualization
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
 
-plt.subplot(1, 2, 1)
-plt.plot(range(n_iterations), history_C0, color='blue', linewidth=2)
-plt.title('Convergence of C0 (Intercept)')
-plt.xlabel('Iteration')
-plt.ylabel('C0')
-plt.grid(True, linestyle='--', alpha=0.6)
+# Plot 1: Learning Curve (Loss over Iterations)
+ax1.plot(range(n_iterations), history_loss, 'b-', linewidth=2)
+ax1.set_xlabel('Iteration')
+ax1.set_ylabel('MSE Loss')
+ax1.set_title('Loss Function Over Iterations')
+ax1.grid(True, linestyle='--', alpha=0.6)
+ax1.set_yscale('log') # Log scale to see convergence better
 
-plt.subplot(1, 2, 2)
-plt.plot(range(n_iterations), history_C1, color='orange', linewidth=2)
-plt.title('Convergence of C1 (Coefficient of $X^2$)')
-plt.xlabel('Iteration')
-plt.ylabel('C1')
-plt.grid(True, linestyle='--', alpha=0.6)
+# Plot 2: Convergence of parameters C0 and C1
+ax2.plot(range(n_iterations), history_C0, 'r-', label='C0 (Intercept)', linewidth=2)
+ax2.plot(range(n_iterations), history_C1, 'g-', label='C1 (Coefficient of $X^2$)', linewidth=2)
+ax2.set_xlabel('Iteration')
+ax2.set_ylabel('Parameter Value')
+ax2.set_title('Parameter Evolution During Training')
+ax2.legend()
+ax2.grid(True, linestyle='--', alpha=0.6)
+
+# Plot 3: Fitted Curve vs Actual Data
+x_line = np.linspace(min(X), max(X), 100)
+y_line = C0 + C1 * (x_line**2)
+ax3.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
+ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\hat{{y}} = {C0:.4f} + {C1:.4f}x^2$')
+ax3.set_xlabel('X')
+ax3.set_ylabel('Y')
+ax3.set_title('Original Data vs Fitted Model')
+ax3.legend(fontsize=12)
+ax3.grid(True, linestyle='--', alpha=0.6)
+
+# Plot 4: Residuals
+Y_pred_final = C0 + C1 * X_sq
+residuals = Y - Y_pred_final
+ax4.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
+ax4.axhline(0, color='red', linestyle='--', linewidth=2)
+ax4.set_xlabel('X')
+ax4.set_ylabel('Residuals ($y_i - \\hat{y}_i$)')
+ax4.set_title('Residual Plot')
+ax4.grid(True, linestyle='--', alpha=0.6)
 
 plt.tight_layout()
 plt.show()
 \end{lstlisting}
-\begin{center}
-\includegraphics[width=0.75\textwidth]{nb2_out_plot_3.png}
-\end{center}
-\vspace{1em}
-\noindent\textbf{In [6]:}
-\begin{lstlisting}[style=pycode]
-# Graph 3: Fitted Curve vs Actual Data
-plt.figure(figsize=(9, 6))
-
-# Actual Data Points
-plt.scatter(X, Y, color='black', alpha=0.5, label='Actual Data', edgecolor='k')
-
-# Create x points for a smooth curve
-x_line = np.linspace(min(X), max(X), 100)
-y_line = C0 + C1 * (x_line**2)
-
-plt.plot(x_line, y_line, color='red', linewidth=3, label=f'Model: $\\hat{{y}} = {C0:.4f} + {C1:.4f}x^2$')
-
-plt.title('Quadratic Model Fit')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.legend(fontsize=12)
-plt.grid(True, linestyle='--', alpha=0.6)
-plt.show()
-\end{lstlisting}
 \smallskip
-\noindent\textbf{Out[6]:}
+\noindent\textbf{Out[4]:}
 \begin{lstlisting}[style=output]
-<>:11: SyntaxWarning: invalid escape sequence '\h'
-<>:11: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\3158359308.py:11: SyntaxWarning: invalid escap ...
-  plt.plot(x_line, y_line, color='red', linewidth=3, label=f'Model: $\hat{{y}} = {C0:.4f} + {C1 ...
+<>:25: SyntaxWarning: invalid escape sequence '\h'
+<>:38: SyntaxWarning: invalid escape sequence '\h'
+<>:25: SyntaxWarning: invalid escape sequence '\h'
+<>:38: SyntaxWarning: invalid escape sequence '\h'
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2560\1276841915.py:25: SyntaxWarning: invalid escap ...
+  ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.4f} + {C1 ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_2560\1276841915.py:38: SyntaxWarning: invalid escap ...
+  ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
+C:\Users\Admin\AppData\Roaming\Python\Python312\site-packages\matplotlib\scale.py:270: RuntimeW ...
+  return np.power(self.base, values)
 \end{lstlisting}
 \begin{center}
-\includegraphics[width=0.75\textwidth]{nb2_out_plot_4.png}
-\end{center}
-\vspace{1em}
-\noindent\textbf{In [7]:}
-\begin{lstlisting}[style=pycode]
-# Graph 4: Residuals of the Model
-Y_pred_final = C0 + C1 * X_sq
-residuals = Y - Y_pred_final
-
-plt.figure(figsize=(9, 5))
-plt.scatter(X, residuals, color='purple', alpha=0.7, edgecolor='k')
-plt.axhline(0, color='red', linestyle='--', linewidth=2)
-plt.title('Residuals of the Model')
-plt.xlabel('X')
-plt.ylabel('Residual ($y_i - \\hat{y}_i$)')
-plt.grid(True, linestyle='--', alpha=0.6)
-plt.show()
-\end{lstlisting}
-\smallskip
-\noindent\textbf{Out[7]:}
-\begin{lstlisting}[style=output]
-<>:10: SyntaxWarning: invalid escape sequence '\h'
-<>:10: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_2236\198927625.py:10: SyntaxWarning: invalid escape ...
-  plt.ylabel('Residual ($y_i - \hat{y}_i$)')
-\end{lstlisting}
-\begin{center}
-\includegraphics[width=0.75\textwidth]{nb2_out_plot_5.png}
+\includegraphics[width=\textwidth]{nb2_out_plot_2.png}
 \end{center}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
@@ -328,7 +291,7 @@ $$ SS_{tot} = \sum_{i=1}^{n} (y_i - \bar{y})^2 $$
 A higher $R^2$ score (closer to 1) indicates that our model's predictions closely match the actual data points.
 \end{tcolorbox}
 \vspace{1em}
-\noindent\textbf{In [8]:}
+\noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
 # Print summary statistics
 print("\n=== MODEL EVALUATION SUMMARY ===")
@@ -347,7 +310,7 @@ r_squared = 1 - (ss_res / ss_tot)
 print(f"R-squared (R^2): {r_squared:.6f}")
 \end{lstlisting}
 \smallskip
-\noindent\textbf{Out[8]:}
+\noindent\textbf{Out[5]:}
 \begin{lstlisting}[style=output]
 === MODEL EVALUATION SUMMARY ===
 Fitted parameters: C0 = nan, C1 = nan

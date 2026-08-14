@@ -162,7 +162,7 @@ for i, cell in enumerate(nb['cells']):
                     with open(os.path.join(os.path.dirname(out_path), img_filename), 'wb') as img_f:
                         img_f.write(img_data)
                     tex_lines.append(r"\begin{center}")
-                    tex_lines.append(rf"\includegraphics[width=0.75\textwidth]{{{img_filename}}}")
+                    tex_lines.append(rf"\includegraphics[width=\textwidth]{{{img_filename}}}")
                     tex_lines.append(r"\end{center}")
                     img_count += 1
 
