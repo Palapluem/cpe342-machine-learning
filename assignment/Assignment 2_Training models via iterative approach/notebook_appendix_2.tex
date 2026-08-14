@@ -52,7 +52,17 @@ X = df['X'].values
 Y = df['Y'].values
 
 # Display first few rows
-display(df.head())
+df.head()
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[2]:}
+\begin{lstlisting}[style=output]
+X         Y
+0  4.072280  0.981321
+1  1.724332  1.124653
+2  1.901981  1.042435
+3  4.914068  0.949332
+4  1.165868  1.186925
 \end{lstlisting}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
@@ -239,9 +249,9 @@ plt.show()
 <>:39: SyntaxWarning: invalid escape sequence '\h'
 <>:26: SyntaxWarning: invalid escape sequence '\h'
 <>:39: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_4612\1694607884.py:26: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_25280\1694607884.py:26: SyntaxWarning: invalid esca ...
   ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_4612\1694607884.py:39: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_25280\1694607884.py:39: SyntaxWarning: invalid esca ...
   ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}

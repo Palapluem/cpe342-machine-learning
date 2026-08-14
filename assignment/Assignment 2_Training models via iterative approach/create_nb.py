@@ -60,7 +60,7 @@ X = df['X'].values
 Y = df['Y'].values
 
 # Display first few rows
-display(df.head())"""
+df.head()"""
 ))
 
 cells.append(nbf.v4.new_markdown_cell(
