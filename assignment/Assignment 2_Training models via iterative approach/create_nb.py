@@ -234,9 +234,9 @@ plt.tight_layout()
 plt.show()"""
 ))
 
-# 9. Task 6 (Model Evaluation & Summary)
+# 9. Extra (Model Evaluation & Summary)
 cells.append(nbf.v4.new_markdown_cell(
-r"""## Task 6 — Model Evaluation (R-squared & Summary Statistics)
+r"""## Bonus: Model Evaluation (R-squared & Summary Statistics)
 To mathematically evaluate the goodness of fit for our machine learning model, we calculate the Coefficient of Determination, also known as $R^2$.
 
 The formula for $R^2$ is:
