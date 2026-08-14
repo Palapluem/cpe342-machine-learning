@@ -51,7 +51,7 @@ print("Library and font setup complete")"""
 # 3. Data Loading
 cells.append(nbf.v4.new_markdown_cell(
 r"""## 3. Data Loading & Exploratory Data Analysis (EDA)
-Read the data from the CSV file and plot scatter plots to observe the relationship between $x$ and $y$."""
+Read the data from the CSV file and display the first few rows."""
 ))
 cells.append(nbf.v4.new_code_cell(
 r"""# Read data
@@ -60,9 +60,14 @@ X = df['X'].values
 Y = df['Y'].values
 
 # Display first few rows
-display(df.head())
+display(df.head())"""
+))
 
-# Plot graphs to observe trends
+cells.append(nbf.v4.new_markdown_cell(
+r"""Now, let's plot graphs to observe the relationship and trends between $x$ and $y$."""
+))
+cells.append(nbf.v4.new_code_cell(
+r"""# Plot graphs to observe trends
 plt.figure(figsize=(12, 5))
 
 # Plot X vs Y
@@ -85,41 +90,18 @@ plt.tight_layout()
 plt.show()"""
 ))
 
-# 4. Task 1
+# 4. Task 1 (Loss Function)
 cells.append(nbf.v4.new_markdown_cell(
-r"""## Task 1 — Loss Function
-Given our model $\hat{y}_i = C_0 + C_1 x_i^2$, 
+r"""## Task 1 — Mean Squared Error (MSE) Loss Function
+Our goal is to fit the dataset to the exponential model: $\hat{y} = C_0 + C_1 e^{C_2 x}$.
+We define the Mean Squared Error (MSE) loss function $L$, using $\frac{1}{2n}$ to simplify the derivative calculation:
 
-The loss function we use is the **Mean Squared Error (MSE)**, which computes the average squared differences (residuals) across all data points:
-
-$$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
-
-Substituting $\hat{y}_i$ gives our target equation:
-$$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$"""
+$$ L(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - (C_0 + C_1 e^{C_2 x_i}) \right)^2 $$"""
 ))
 
-# 5. Task 2
+# 5. Task 2 (Gradient of Each Coefficient)
 cells.append(nbf.v4.new_markdown_cell(
 r"""## Task 2 — Gradient of Each Coefficient
-To compute the gradients of the loss function $L$ with respect to each parameter ($C_0$ and $C_1$), we apply the **chain rule**. 
-
-For any coefficient $\theta$, the partial derivative is:
-$$ \frac{\partial L}{\partial \theta} = \frac{\partial}{\partial \theta} \left[ \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \right] $$
-$$ = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - \hat{y}_i) \cdot \frac{\partial}{\partial \theta}(y_i - \hat{y}_i) $$
-$$ = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \frac{\partial \hat{y}_i}{\partial \theta} $$
-
----
-### 1. Gradient with respect to $C_0$:
-First, find $\frac{\partial \hat{y}_i}{\partial C_0}$:
-$$ \hat{y}_i = C_0 + C_1 x_i^2 $$
-$$ \frac{\partial \hat{y}_i}{\partial C_0} = \frac{\partial}{\partial C_0}(C_0 + C_1 x_i^2) = 1 + 0 = 1 $$
-
-Substituting this back into the chain rule formula:
-$$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot 1 $$
-$$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
-
----
-### 2. Gradient with respect to $C_1$:
 To minimize the loss function, we calculate the partial derivatives (gradients) with respect to each parameter using the chain rule:
 
 1. **Gradient with respect to $C_0$:**

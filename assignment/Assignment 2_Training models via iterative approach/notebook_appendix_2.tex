@@ -41,7 +41,7 @@ Library and font setup complete
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
 \textbf{\large 3. Data Loading \& Exploratory Data Analysis (EDA)}\par\smallskip
-Read the data from the CSV file and plot scatter plots to observe the relationship between $x$ and $y$.
+Read the data from the CSV file and display the first few rows.
 \end{tcolorbox}
 \vspace{1em}
 \noindent\textbf{In [2]:}
@@ -53,7 +53,14 @@ Y = df['Y'].values
 
 # Display first few rows
 display(df.head())
-
+\end{lstlisting}
+\vspace{1em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
+Now, let's plot graphs to observe the relationship and trends between $x$ and $y$.
+\end{tcolorbox}
+\vspace{1em}
+\noindent\textbf{In [3]:}
+\begin{lstlisting}[style=pycode]
 # Plot graphs to observe trends
 plt.figure(figsize=(12, 5))
 
@@ -81,31 +88,14 @@ plt.show()
 \end{center}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
-\textbf{\large Task 1 — Loss Function}\par\smallskip
-Given our model $\hat{y}_i = C_0 + C_1 x_i^2$,
-The loss function we use is the \textbf{Mean Squared Error (MSE)}, which computes the average squared differences (residuals) across all data points:
-$$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
-Substituting $\hat{y}_i$ gives our target equation:
-$$ L(C_0, C_1) = \frac{1}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2)^2 $$
+\textbf{\large Task 1 — Mean Squared Error (MSE) Loss Function}\par\smallskip
+Our goal is to fit the dataset to the exponential model: $\hat{y} = C_0 + C_1 e^{C_2 x}$.
+We define the Mean Squared Error (MSE) loss function $L$, using $\frac{1}{2n}$ to simplify the derivative calculation:
+$$ L(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - (C_0 + C_1 e^{C_2 x_i}) \right)^2 $$
 \end{tcolorbox}
 \vspace{1em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=2pt,right=2pt,top=2pt,bottom=2pt]
 \textbf{\large Task 2 — Gradient of Each Coefficient}\par\smallskip
-To compute the gradients of the loss function $L$ with respect to each parameter ($C_0$ and $C_1$), we apply the \textbf{chain rule}.
-For any coefficient $\theta$, the partial derivative is:
-$$ \frac{\partial L}{\partial \theta} = \frac{\partial}{\partial \theta} \left[ \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \right] $$
-$$ = \frac{1}{n} \sum_{i=1}^{n} 2(y_i - \hat{y}_i) \cdot \frac{\partial}{\partial \theta}(y_i - \hat{y}_i) $$
-$$ = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \frac{\partial \hat{y}_i}{\partial \theta} $$
----
-\textbf{1. Gradient with respect to $C_0$:}\par\smallskip
-First, find $\frac{\partial \hat{y}_i}{\partial C_0}$:
-$$ \hat{y}_i = C_0 + C_1 x_i^2 $$
-$$ \frac{\partial \hat{y}_i}{\partial C_0} = \frac{\partial}{\partial C_0}(C_0 + C_1 x_i^2) = 1 + 0 = 1 $$
-Substituting this back into the chain rule formula:
-$$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot 1 $$
-$$ \frac{\partial L}{\partial C_0} = -\frac{2}{n} \sum_{i=1}^{n} (y_i - C_0 - C_1 x_i^2) $$
----
-\textbf{2. Gradient with respect to $C_1$:}\par\smallskip
 To minimize the loss function, we calculate the partial derivatives (gradients) with respect to each parameter using the chain rule:
 1. \textbf{Gradient with respect to $C_0$:}
 $$ \frac{\partial L}{\partial C_0} = -\frac{1}{n} \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right) $$
@@ -129,7 +119,7 @@ We will now implement the algorithm in Python.
 We set our learning rate $\eta = 1.0$, `max\_iterations = 2000`, and initialized parameters as $C_0=0.5, C_1=0.5, C_2=0.1$.
 \end{tcolorbox}
 \vspace{1em}
-\noindent\textbf{In [3]:}
+\noindent\textbf{In [4]:}
 \begin{lstlisting}[style=pycode]
 # Initialize hyperparameters
 learning_rate = 1.0
@@ -182,7 +172,7 @@ print(f"Final Parameters: C0 = {C0:.4f}, C1 = {C1:.4f}, C2 = {C2:.4f}")
 print(f"Final MSE Loss: {history_loss[-1]:.4f}")
 \end{lstlisting}
 \smallskip
-\noindent\textbf{Out[3]:}
+\noindent\textbf{Out[4]:}
 \begin{lstlisting}[style=output]
 Converged at iteration 269
 Training completed in 270 iterations.
@@ -195,7 +185,7 @@ Final MSE Loss: 0.0005
 In this section, we analyze the behavior of our trained model and evaluate how well it fits the dataset using various plots.
 \end{tcolorbox}
 \vspace{1em}
-\noindent\textbf{In [4]:}
+\noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
 # Create subplots for a 2x2 grid visualization
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
@@ -243,15 +233,15 @@ plt.tight_layout()
 plt.show()
 \end{lstlisting}
 \smallskip
-\noindent\textbf{Out[4]:}
+\noindent\textbf{Out[5]:}
 \begin{lstlisting}[style=output]
 <>:26: SyntaxWarning: invalid escape sequence '\h'
 <>:39: SyntaxWarning: invalid escape sequence '\h'
 <>:26: SyntaxWarning: invalid escape sequence '\h'
 <>:39: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_11388\1694607884.py:26: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_4612\1694607884.py:26: SyntaxWarning: invalid escap ...
   ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_11388\1694607884.py:39: SyntaxWarning: invalid esca ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_4612\1694607884.py:39: SyntaxWarning: invalid escap ...
   ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}
@@ -275,7 +265,7 @@ $$ SS_{tot} = \sum_{i=1}^{n} (y_i - \bar{y})^2 $$
 A higher $R^2$ score (closer to 1) indicates that our model's predictions closely match the actual data points.
 \end{tcolorbox}
 \vspace{1em}
-\noindent\textbf{In [5]:}
+\noindent\textbf{In [6]:}
 \begin{lstlisting}[style=pycode]
 # Print summary statistics
 print("\n=== MODEL EVALUATION SUMMARY ===")
@@ -294,7 +284,7 @@ r_squared = 1 - (ss_res / ss_tot)
 print(f"R-squared (R^2): {r_squared:.6f}")
 \end{lstlisting}
 \smallskip
-\noindent\textbf{Out[5]:}
+\noindent\textbf{Out[6]:}
 \begin{lstlisting}[style=output]
 === MODEL EVALUATION SUMMARY ===
 Fitted parameters: C0 = 0.992665, C1 = 0.958671, C2 = -1.329637
