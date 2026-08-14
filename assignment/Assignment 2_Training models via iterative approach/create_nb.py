@@ -67,7 +67,7 @@ plt.figure(figsize=(12, 5))
 # กราฟ X กับ Y
 plt.subplot(1, 2, 1)
 plt.scatter(X, Y, color='blue', alpha=0.6, edgecolor='k')
-plt.title('การกระจายตัวของข้อมูล: X กับ Y')
+plt.title('Scatter plot of X vs Y')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.grid(True, linestyle='--', alpha=0.6)
@@ -75,7 +75,7 @@ plt.grid(True, linestyle='--', alpha=0.6)
 # กราฟ X^2 กับ Y
 plt.subplot(1, 2, 2)
 plt.scatter(X**2, Y, color='green', alpha=0.6, edgecolor='k')
-plt.title('การกระจายตัวของข้อมูล: $X^2$ กับ Y')
+plt.title('Scatter plot of $X^2$ vs Y')
 plt.xlabel('$X^2$')
 plt.ylabel('Y')
 plt.grid(True, linestyle='--', alpha=0.6)
@@ -185,8 +185,8 @@ cells.append(nbf.v4.new_code_cell(
 r"""# กราฟที่ 1: การลดลงของ Loss (Learning Curve)
 plt.figure(figsize=(8, 5))
 plt.plot(range(n_iterations), history_loss, color='red', linewidth=2)
-plt.title('การเปลี่ยนแปลงของ MSE Loss ตลอดการวนซ้ำ')
-plt.xlabel('รอบการวนซ้ำ (Iteration)')
+plt.title('Learning Curve (MSE Loss per Iteration)')
+plt.xlabel('Iteration')
 plt.ylabel('MSE Loss')
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()"""
@@ -197,15 +197,15 @@ plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
 plt.plot(range(n_iterations), history_C0, color='blue', linewidth=2)
-plt.title('การลู่เข้าของ C0 (Intercept)')
-plt.xlabel('รอบการวนซ้ำ')
+plt.title('Convergence of C0 (Intercept)')
+plt.xlabel('Iteration')
 plt.ylabel('C0')
 plt.grid(True, linestyle='--', alpha=0.6)
 
 plt.subplot(1, 2, 2)
 plt.plot(range(n_iterations), history_C1, color='orange', linewidth=2)
-plt.title('การลู่เข้าของ C1 (Coefficient ของ $X^2$)')
-plt.xlabel('รอบการวนซ้ำ')
+plt.title('Convergence of C1 (Coefficient of $X^2$)')
+plt.xlabel('Iteration')
 plt.ylabel('C1')
 plt.grid(True, linestyle='--', alpha=0.6)
 
@@ -217,15 +217,15 @@ r"""# กราฟที่ 3: เส้นโค้งที่ฟิตแล�
 plt.figure(figsize=(9, 6))
 
 # จุดข้อมูลจริง
-plt.scatter(X, Y, color='black', alpha=0.5, label='ข้อมูลจริง (Data)', edgecolor='k')
+plt.scatter(X, Y, color='black', alpha=0.5, label='Actual Data', edgecolor='k')
 
 # สร้างจุด x สำหรับวาดเส้นโค้งให้เรียบเนียน
 x_line = np.linspace(min(X), max(X), 100)
 y_line = C0 + C1 * (x_line**2)
 
-plt.plot(x_line, y_line, color='red', linewidth=3, label=f'โมเดล: $\hat{{y}} = {C0:.4f} {C1:.4f}x^2$')
+plt.plot(x_line, y_line, color='red', linewidth=3, label=f'Model: $\hat{{y}} = {C0:.4f} + {C1:.4f}x^2$')
 
-plt.title('การฟิตโมเดล Quadratic เข้ากับข้อมูล')
+plt.title('Quadratic Model Fit')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.legend(fontsize=12)
@@ -240,7 +240,7 @@ residuals = Y - Y_pred_final
 plt.figure(figsize=(9, 5))
 plt.scatter(X, residuals, color='purple', alpha=0.7, edgecolor='k')
 plt.axhline(0, color='red', linestyle='--', linewidth=2)
-plt.title('ความคลาดเคลื่อน (Residuals) แบ่งตามจุดข้อมูล X')
+plt.title('Residuals of the Model')
 plt.xlabel('X')
 plt.ylabel('Residual ($y_i - \hat{y}_i$)')
 plt.grid(True, linestyle='--', alpha=0.6)
