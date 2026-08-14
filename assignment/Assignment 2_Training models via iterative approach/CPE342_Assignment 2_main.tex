@@ -103,6 +103,12 @@
   \hat{y} = C_0 + C_1 e^{C_2 x}
 \]
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_1_eda.pdf}
+    \caption{การวิเคราะห์ข้อมูลเบื้องต้น (EDA) แสดงความสัมพันธ์ระหว่างตัวแปร $X$ และ $Y$ (ซ้าย) และตัวแปร $X^2$ และ $Y$ (ขวา)}
+\end{figure}
+
 % ══════════════════════════════════════════════════════════════════════════════
 \needspace{8\baselineskip}
 \section*{1. ฟังก์ชันความสูญเสีย (Loss Function)}
@@ -204,14 +210,31 @@
 \needspace{8\baselineskip}
 \section*{5. ผลลัพธ์และการแสดงภาพ (Results \& Visualizations)}
 
-จากผลการฝึกสอนโมเดล พบว่าค่าที่เหมาะสมที่สุดสามารถลู่เข้าหาค่าสัมบูรณ์ได้อย่างรวดเร็ว โดยมีความคลาดเคลื่อน (Loss) ลดลงไปจนต่ำสุด
-จากการวิเคราะห์กราฟแสดงผลใน Appendix พบว่า:
-\begin{enumerate}[noitemsep, topsep=2pt]
-  \item \textbf{Learning Curve:} ค่า Loss ลดลงและลู่เข้าสู่จุดสมดุล (Converge) อย่างชัดเจน
-  \item \textbf{Parameter Convergence:} ค่า $C_0, C_1$ และ $C_2$ เคลื่อนตัวเข้าหาค่าคงที่ที่เสถียรได้อย่างมั่นคง
-  \item \textbf{Fitted Curve:} เส้นโค้งแบบเอกซ์โพเนนเชียล (Exponential Curve) ฟิตเข้ากับกลุ่มจุดข้อมูลได้ดีเยี่ยมและเป็นธรรมชาติ
-  \item \textbf{Residuals:} ความคลาดเคลื่อนกระจายตัวแบบสุ่มรอบๆ เส้น $0$ อย่างสมมาตร
-\end{enumerate}
+จากผลการฝึกสอนโมเดล พบว่าค่าที่เหมาะสมที่สุดสามารถลู่เข้าหาค่าสัมบูรณ์ได้อย่างรวดเร็ว โดยมีความคลาดเคลื่อน (Loss) ลดลงไปจนต่ำสุด โดยผลการวิเคราะห์และแสดงภาพของโมเดลประกอบด้วยหัวข้อดังต่อไปนี้:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_2_loss_curve.pdf}
+    \caption{\textbf{Learning Curve (Loss vs Iterations):} แสดงการลดลงอย่างรวดเร็วของค่า Loss (MSE) จนกระทั่งโมเดลเริ่มเสถียรและลู่เข้าหาค่าต่ำสุดอย่างแม่นยำ}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_3_coeff_trajectory.pdf}
+    \caption{\textbf{Parameter Evolution:} แสดงวิวัฒนาการและการปรับตัวของสัมประสิทธิ์ $C_0, C_1$ และ $C_2$ ในแต่ละรอบจนลู่เข้าหาค่าสัมบูรณ์อย่างมั่นคง}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_4_fitted_curve.pdf}
+    \caption{\textbf{Original Data vs Fitted Model:} แสดงจุดข้อมูลจริงเทียบกับเส้นพยากรณ์สมการเอกซ์โพเนนเชียล $\hat{y} = C_0 + C_1 e^{C_2 x}$ ที่ฟิตเข้ากับข้อมูลได้อย่างราบเรียบเป็นธรรมชาติ}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_5_residuals.pdf}
+    \caption{\textbf{Residual Plot:} แสดงการกระจายตัวของค่าเศษเหลือ (Residuals) รอบแกนสมมาตร 0 อย่างสุ่ม ไร้รูปแบบเชิงเส้นที่บ่งบอกถึงอคติของตัวแบบ}
+\end{figure}
 % ══════════════════════════════════════════════════════════════════════════════
 \needspace{8\baselineskip}
 \section*{Extra: การประเมินประสิทธิภาพของโมเดล (Mathematical Evaluation)}

@@ -91,6 +91,7 @@ plt.ylabel('Y')
 plt.grid(True, linestyle='--', alpha=0.6)
 
 plt.tight_layout()
+plt.savefig('plot_1_eda.pdf', bbox_inches='tight')
 plt.show()
 \end{lstlisting}
 \begin{center}
@@ -197,7 +198,59 @@ In this section, we analyze the behavior of our trained model and evaluate how w
 \vspace{1em}
 \noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
-# Create subplots for a 2x2 grid visualization
+# Save individual plots to PDF first (before creating subplots which resets state)
+# Plot 1: Learning Curve
+plt.figure(figsize=(8, 5))
+plt.plot(range(len(history_loss)), history_loss, 'b-', linewidth=2)
+plt.xlabel('Iteration')
+plt.ylabel('MSE Loss')
+plt.title('Loss Function Over Iterations')
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.yscale('log')
+plt.savefig('plot_2_loss_curve.pdf', bbox_inches='tight')
+plt.close()
+
+# Plot 2: Convergence of parameters
+plt.figure(figsize=(8, 5))
+plt.plot(range(len(history_C0)), history_C0, 'r-', label='C0', linewidth=2)
+plt.plot(range(len(history_C1)), history_C1, 'g-', label='C1', linewidth=2)
+plt.plot(range(len(history_C2)), history_C2, 'b-', label='C2', linewidth=2)
+plt.xlabel('Iteration')
+plt.ylabel('Parameter Value')
+plt.title('Parameter Evolution During Training')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.savefig('plot_3_coeff_trajectory.pdf', bbox_inches='tight')
+plt.close()
+
+# Plot 3: Fitted Curve vs Actual Data
+plt.figure(figsize=(8, 5))
+x_line = np.linspace(min(X), max(X), 100)
+y_line = C0 + C1 * np.exp(C2 * x_line)
+plt.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
+plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Original Data vs Fitted Model')
+plt.legend(fontsize=12)
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.savefig('plot_4_fitted_curve.pdf', bbox_inches='tight')
+plt.close()
+
+# Plot 4: Residuals
+plt.figure(figsize=(8, 5))
+Y_pred_final = C0 + C1 * np.exp(C2 * X)
+residuals = Y - Y_pred_final
+plt.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
+plt.axhline(0, color='red', linestyle='--', linewidth=2)
+plt.xlabel('X')
+plt.ylabel('Residuals ($y_i - \\hat{y}_i$)')
+plt.title('Residual Plot')
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.savefig('plot_5_residuals.pdf', bbox_inches='tight')
+plt.close()
+
+# Now create the combined 2x2 grid for notebook display
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
 
 # Plot 1: Learning Curve (Loss over Iterations)
@@ -206,7 +259,7 @@ ax1.set_xlabel('Iteration')
 ax1.set_ylabel('MSE Loss')
 ax1.set_title('Loss Function Over Iterations')
 ax1.grid(True, linestyle='--', alpha=0.6)
-ax1.set_yscale('log') # Log scale to see convergence better
+ax1.set_yscale('log')
 
 # Plot 2: Convergence of parameters
 ax2.plot(range(len(history_C0)), history_C0, 'r-', label='C0', linewidth=2)
@@ -219,8 +272,6 @@ ax2.legend()
 ax2.grid(True, linestyle='--', alpha=0.6)
 
 # Plot 3: Fitted Curve vs Actual Data
-x_line = np.linspace(min(X), max(X), 100)
-y_line = C0 + C1 * np.exp(C2 * x_line)
 ax3.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
 ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
 ax3.set_xlabel('X')
@@ -230,8 +281,6 @@ ax3.legend(fontsize=12)
 ax3.grid(True, linestyle='--', alpha=0.6)
 
 # Plot 4: Residuals
-Y_pred_final = C0 + C1 * np.exp(C2 * X)
-residuals = Y - Y_pred_final
 ax4.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
 ax4.axhline(0, color='red', linestyle='--', linewidth=2)
 ax4.set_xlabel('X')
@@ -245,13 +294,21 @@ plt.show()
 \smallskip
 \noindent\textbf{Out[5]:}
 \begin{lstlisting}[style=output]
-<>:26: SyntaxWarning: invalid escape sequence '\h'
-<>:39: SyntaxWarning: invalid escape sequence '\h'
-<>:26: SyntaxWarning: invalid escape sequence '\h'
-<>:39: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_9980\1694607884.py:26: SyntaxWarning: invalid escap ...
+<>:31: SyntaxWarning: invalid escape sequence '\h'
+<>:47: SyntaxWarning: invalid escape sequence '\h'
+<>:76: SyntaxWarning: invalid escape sequence '\h'
+<>:87: SyntaxWarning: invalid escape sequence '\h'
+<>:31: SyntaxWarning: invalid escape sequence '\h'
+<>:47: SyntaxWarning: invalid escape sequence '\h'
+<>:76: SyntaxWarning: invalid escape sequence '\h'
+<>:87: SyntaxWarning: invalid escape sequence '\h'
+C:\Users\Admin\AppData\Local\Temp\ipykernel_9784\3103374935.py:31: SyntaxWarning: invalid escap ...
+  plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_9784\3103374935.py:47: SyntaxWarning: invalid escap ...
+  plt.ylabel('Residuals ($y_i - \hat{y}_i$)')
+C:\Users\Admin\AppData\Local\Temp\ipykernel_9784\3103374935.py:76: SyntaxWarning: invalid escap ...
   ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_9980\1694607884.py:39: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_9784\3103374935.py:87: SyntaxWarning: invalid escap ...
   ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}
