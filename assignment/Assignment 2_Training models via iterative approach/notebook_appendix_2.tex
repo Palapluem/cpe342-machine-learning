@@ -1,15 +1,15 @@
 % Auto-generated notebook appendix (Assignment 2)
 \begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{Jupyter Notebook: Assignment\_2\_GD.ipynb}]
-โค้ด Python และผลลัพธ์ทั้งหมดจาก Jupyter Notebook (รันสมบูรณ์)
+โค้ดและผลลัพธ์ทั้งหมดด้านล่างเป็นการรันจริงจาก Jupyter Notebook
 \end{tcolorbox}
 
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large 2. Library \& Font Setup}\par\smallskip
 Loading required scientific libraries and configuring the system's Sarabun font to support clear typography and rendering in Matplotlib.
 \end{tcolorbox}
-\needspace{6\baselineskip}
+\needspace{5\baselineskip}
 \vspace{0.8em}
 \noindent\textbf{In [1]:}
 \begin{lstlisting}[style=pycode]
@@ -40,13 +40,13 @@ print("Library and font setup complete")
 \begin{lstlisting}[style=output]
 Library and font setup complete
 \end{lstlisting}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large 3. Data Loading \& Exploratory Data Analysis (EDA)}\par\smallskip
 Read the data from `CPE342\_Assignment 2\_Data.csv` and display the first few rows.
 \end{tcolorbox}
-\needspace{6\baselineskip}
+\needspace{5\baselineskip}
 \vspace{0.8em}
 \noindent\textbf{In [2]:}
 \begin{lstlisting}[style=pycode]
@@ -68,12 +68,12 @@ X         Y
 3  4.914068  0.949332
 4  1.165868  1.186925
 \end{lstlisting}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 Now, let's plot scatter plots to observe the relationship and trends between $X$ and $Y$.
 \end{tcolorbox}
-\needspace{6\baselineskip}
+\needspace{5\baselineskip}
 \vspace{0.8em}
 \noindent\textbf{In [3]:}
 \begin{lstlisting}[style=pycode]
@@ -101,9 +101,14 @@ plt.savefig('plot_1_eda.pdf', bbox_inches='tight')
 plt.show()
 \end{lstlisting}
 \begin{center}
-\includegraphics[width=\textwidth]{nb2_out_plot_1.png}
+\includegraphics[width=0.75\textwidth]{nb2_out_plot_1.png}
 \end{center}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 1 (Exploratory Data Analysis)}: Scatter plots of $X$ vs. $Y$ and $X^2$ vs. $Y$ illustrating the non-linear decaying relationship in the dataset, confirming the necessity of fitting an exponential model rather than a simple linear model.
+\end{tcolorbox}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Task 1 — Mean Squared Error (MSE) Loss Function}\par\smallskip
@@ -114,7 +119,7 @@ $$ \mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 
 Substituting the exponential model equation $\hat{y}_i = C_0 + C_1 e^{C_2 x_i}$ into the loss function yields:
 $$ \mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right)^2 $$
 \end{tcolorbox}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Task 2 — Derivation of Partial Derivatives (Gradients)}\par\smallskip
@@ -127,7 +132,7 @@ $$ = \frac{1}{2n} \sum_{i=1}^{n} 2(y_i - \hat{y}_i) \cdot \frac{\partial}{\parti
 $$ = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \cdot \left(-\frac{\partial \hat{y}_i}{\partial \theta}\right) $$
 $$ = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) \frac{\partial \hat{y}_i}{\partial \theta} $$
 \end{tcolorbox}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{2. Gradients with respect to $C_0$ and $C_1$:}\par\smallskip
@@ -143,7 +148,7 @@ $$ \frac{\partial \hat{y}_i}{\partial C_1} = \frac{\partial}{\partial C_1} \left
 Substituting this back into the chain rule formula:
 $$ \boxed{\frac{\partial \mathcal{L}}{\partial C_1} = -\frac{1}{n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right) e^{C_2 x_i}} $$
 \end{tcolorbox}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{3. Gradient with respect to $C_2$:}\par\smallskip
@@ -155,7 +160,7 @@ $$ \Rightarrow \frac{\partial \hat{y}_i}{\partial C_2} = C_1 x_i e^{C_2 x_i} $$
 Substituting this back into the chain rule formula:
 $$ \boxed{\frac{\partial \mathcal{L}}{\partial C_2} = -\frac{1}{n} \sum_{i=1}^{n} \left( y_i - \left(C_0 + C_1 e^{C_2 x_i}\right) \right) C_1 x_i e^{C_2 x_i}} $$
 \end{tcolorbox}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{4. Summary of Complete Gradients:}\par\smallskip
@@ -167,7 +172,7 @@ $$
 \end{aligned}
 $$
 \end{tcolorbox}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Task 3 — Parameter Update Rules}\par\smallskip
@@ -184,7 +189,7 @@ $$ C_2^{(t+1)} = C_2^{(t)} - \eta \frac{\partial \mathcal{L}}{\partial C_2} $$
 \item $\frac{\partial \mathcal{L}}{\partial C_0}, \frac{\partial \mathcal{L}}{\partial C_1}, \frac{\partial \mathcal{L}}{\partial C_2}$: Partial derivative gradients calculated over all $n$ data points
 \end{itemize}
 \end{tcolorbox}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Task 4 — Gradient Descent Implementation}\par\smallskip
@@ -197,7 +202,7 @@ We will now implement the Gradient Descent algorithm in Python using NumPy based
 \item Initial Parameter Guesses: $C_0 = 0.5, C_1 = 0.5, C_2 = 0.1$
 \end{itemize}
 \end{tcolorbox}
-\needspace{6\baselineskip}
+\needspace{5\baselineskip}
 \vspace{0.8em}
 \noindent\textbf{In [4]:}
 \begin{lstlisting}[style=pycode]
@@ -259,21 +264,16 @@ Training completed in 270 iterations.
 Final Parameters: C0 = 0.9927, C1 = 0.9587, C2 = -1.3296
 Final MSE Loss: 0.0005
 \end{lstlisting}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Task 5 — Results \& Visualizations}\par\smallskip
-In this section, we analyze the training behavior and performance of our model using 4 diagnostic plots:
-1. \textbf{Learning Curve (Loss over Iterations):} Displays the reduction in MSE Loss from $0.0465 \rightarrow 0.0005$ across iterations, proving smooth asymptotic convergence with learning rate $\eta = 1.0$.
-2. \textbf{Parameter Evolution (Trajectory):} Illustrates how parameters $C_0, C_1, C_2$ evolve from $(0.5, 0.5, 0.1)$ toward stable optimal values $(0.9927, 0.9587, -1.3296)$.
-3. \textbf{Fitted Model vs Original Data:} Compares the actual observations against the fitted non-linear curve $\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}$.
-4. \textbf{Residual Plot:} Shows that prediction residuals ($y_i - \hat{y}_i$) are randomly distributed around 0 with constant variance, verifying homoscedasticity and absence of systematic bias.
+In this section, we analyze the training behavior and diagnostic performance of our model through dedicated visualizations.
 \end{tcolorbox}
-\needspace{6\baselineskip}
+\needspace{5\baselineskip}
 \vspace{0.8em}
 \noindent\textbf{In [5]:}
 \begin{lstlisting}[style=pycode]
-# Save individual plots to PDF first (before creating subplots which resets state)
 # Plot 1: Learning Curve
 plt.figure(figsize=(8, 5))
 plt.plot(range(len(history_loss)), history_loss, 'b-', linewidth=2)
@@ -283,35 +283,71 @@ plt.title('Loss Function Over Iterations')
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.yscale('log')
 plt.savefig('plot_2_loss_curve.pdf', bbox_inches='tight')
-plt.close()
-
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{nb2_out_plot_2.png}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 2 (Learning Curve)}: Plot of MSE Loss over iterations (logarithmic scale) demonstrating rapid, monotonic convergence of the Gradient Descent algorithm from $0.0465 \rightarrow 0.0005$ (a $98.98\%$ reduction).
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [6]:}
+\begin{lstlisting}[style=pycode]
 # Plot 2: Convergence of parameters
 plt.figure(figsize=(8, 5))
-plt.plot(range(len(history_C0)), history_C0, 'r-', label='C0', linewidth=2)
-plt.plot(range(len(history_C1)), history_C1, 'g-', label='C1', linewidth=2)
-plt.plot(range(len(history_C2)), history_C2, 'b-', label='C2', linewidth=2)
+plt.plot(range(len(history_C0)), history_C0, 'r-', label='$C_0$', linewidth=2)
+plt.plot(range(len(history_C1)), history_C1, 'g-', label='$C_1$', linewidth=2)
+plt.plot(range(len(history_C2)), history_C2, 'b-', label='$C_2$', linewidth=2)
 plt.xlabel('Iteration')
 plt.ylabel('Parameter Value')
 plt.title('Parameter Evolution During Training')
-plt.legend()
+plt.legend(fontsize=12)
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.savefig('plot_3_coeff_trajectory.pdf', bbox_inches='tight')
-plt.close()
-
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{nb2_out_plot_3.png}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 3 (Parameter Evolution)}: Trajectories of coefficients $C_0, C_1, C_2$ across iterations, showing smooth and stable convergence from initial guesses $(0.5, 0.5, 0.1)$ toward optimal parameters $(0.9927, 0.9587, -1.3296)$.
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [7]:}
+\begin{lstlisting}[style=pycode]
 # Plot 3: Fitted Curve vs Actual Data
 plt.figure(figsize=(8, 5))
 x_line = np.linspace(min(X), max(X), 100)
 y_line = C0 + C1 * np.exp(C2 * x_line)
 plt.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
-plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
+plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.title('Original Data vs Fitted Model')
 plt.legend(fontsize=12)
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.savefig('plot_4_fitted_curve.pdf', bbox_inches='tight')
-plt.close()
-
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{nb2_out_plot_4.png}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 4 (Fitted Exponential Model)}: Actual data points plotted against the fitted exponential curve $\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}$, showing an accurate fit that captures the non-linear decay of the dataset.
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [8]:}
+\begin{lstlisting}[style=pycode]
 # Plot 4: Residuals
 plt.figure(figsize=(8, 5))
 Y_pred_final = C0 + C1 * np.exp(C2 * X)
@@ -319,13 +355,25 @@ residuals = Y - Y_pred_final
 plt.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
 plt.axhline(0, color='red', linestyle='--', linewidth=2)
 plt.xlabel('X')
-plt.ylabel('Residuals ($y_i - \\hat{y}_i$)')
+plt.ylabel('Residuals ($y_i - \\\hat{y}_i$)')
 plt.title('Residual Plot')
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.savefig('plot_5_residuals.pdf', bbox_inches='tight')
-plt.close()
-
-# Now create the combined 2x2 grid for notebook display
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{nb2_out_plot_5.png}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 5 (Residual Plot)}: Distribution of residuals ($y_i - \hat{y}_i$) scattered randomly around zero with constant variance, validating the assumption of homoscedasticity and confirming the absence of systematic bias.
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [9]:}
+\begin{lstlisting}[style=pycode]
+# Multi-panel combined summary dashboard
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
 
 # Plot 1: Learning Curve (Loss over Iterations)
@@ -337,9 +385,9 @@ ax1.grid(True, linestyle='--', alpha=0.6)
 ax1.set_yscale('log')
 
 # Plot 2: Convergence of parameters
-ax2.plot(range(len(history_C0)), history_C0, 'r-', label='C0', linewidth=2)
-ax2.plot(range(len(history_C1)), history_C1, 'g-', label='C1', linewidth=2)
-ax2.plot(range(len(history_C2)), history_C2, 'b-', label='C2', linewidth=2)
+ax2.plot(range(len(history_C0)), history_C0, 'r-', label='$C_0$', linewidth=2)
+ax2.plot(range(len(history_C1)), history_C1, 'g-', label='$C_1$', linewidth=2)
+ax2.plot(range(len(history_C2)), history_C2, 'b-', label='$C_2$', linewidth=2)
 ax2.set_xlabel('Iteration')
 ax2.set_ylabel('Parameter Value')
 ax2.set_title('Parameter Evolution During Training')
@@ -348,7 +396,7 @@ ax2.grid(True, linestyle='--', alpha=0.6)
 
 # Plot 3: Fitted Curve vs Actual Data
 ax3.scatter(X, Y, color='blue', alpha=0.6, label='Actual Data', edgecolor='k')
-ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
+ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\\\hat{{y}} = {C0:.2f} + {C1:.2f}e^{{{C2:.2f}x}}$')
 ax3.set_xlabel('X')
 ax3.set_ylabel('Y')
 ax3.set_title('Original Data vs Fitted Model')
@@ -359,37 +407,22 @@ ax3.grid(True, linestyle='--', alpha=0.6)
 ax4.scatter(X, residuals, color='purple', alpha=0.6, edgecolor='k')
 ax4.axhline(0, color='red', linestyle='--', linewidth=2)
 ax4.set_xlabel('X')
-ax4.set_ylabel('Residuals ($y_i - \\hat{y}_i$)')
+ax4.set_ylabel('Residuals ($y_i - \\\hat{y}_i$)')
 ax4.set_title('Residual Plot')
 ax4.grid(True, linestyle='--', alpha=0.6)
 
 plt.tight_layout()
 plt.show()
 \end{lstlisting}
-\smallskip
-\noindent\textbf{Out[5]:}
-\begin{lstlisting}[style=output]
-<>:31: SyntaxWarning: invalid escape sequence '\h'
-<>:47: SyntaxWarning: invalid escape sequence '\h'
-<>:76: SyntaxWarning: invalid escape sequence '\h'
-<>:87: SyntaxWarning: invalid escape sequence '\h'
-<>:31: SyntaxWarning: invalid escape sequence '\h'
-<>:47: SyntaxWarning: invalid escape sequence '\h'
-<>:76: SyntaxWarning: invalid escape sequence '\h'
-<>:87: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:31: SyntaxWarning: invalid esca ...
-  plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:47: SyntaxWarning: invalid esca ...
-  plt.ylabel('Residuals ($y_i - \hat{y}_i$)')
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:76: SyntaxWarning: invalid esca ...
-  ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:87: SyntaxWarning: invalid esca ...
-  ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
-\end{lstlisting}
 \begin{center}
-\includegraphics[width=\textwidth]{nb2_out_plot_2.png}
+\includegraphics[width=0.75\textwidth]{nb2_out_plot_6.png}
 \end{center}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 6 (Comprehensive Training Diagnostics)}: Multi-panel summary dashboard comparing the learning curve, parameter evolution, non-linear regression curve, and residual distribution in a unified view.
+\end{tcolorbox}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Extra: Model Evaluation (R-squared \& Summary Statistics)}\par\smallskip
@@ -407,9 +440,9 @@ $$ SS_{res} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
 $$ SS_{tot} = \sum_{i=1}^{n} (y_i - \bar{y})^2 $$
 A higher $R^2$ score ($0.9818$ or $98.18\%$) indicates that the exponential model captures almost all variation in the data.
 \end{tcolorbox}
-\needspace{6\baselineskip}
+\needspace{5\baselineskip}
 \vspace{0.8em}
-\noindent\textbf{In [6]:}
+\noindent\textbf{In [10]:}
 \begin{lstlisting}[style=pycode]
 # Print summary statistics
 print("\n=== MODEL EVALUATION SUMMARY ===")
@@ -425,10 +458,12 @@ Y_mean = np.mean(Y)
 ss_res = np.sum((Y - Y_pred_final)**2)
 ss_tot = np.sum((Y - Y_mean)**2)
 r_squared = 1 - (ss_res / ss_tot)
+print(f"Residual Sum of Squares (SS_res): {ss_res:.6f}")
+print(f"Total Sum of Squares (SS_tot): {ss_tot:.6f}")
 print(f"R-squared (R^2): {r_squared:.6f}")
 \end{lstlisting}
 \smallskip
-\noindent\textbf{Out[6]:}
+\noindent\textbf{Out[10]:}
 \begin{lstlisting}[style=output]
 === MODEL EVALUATION SUMMARY ===
 Fitted parameters: C0 = 0.992665, C1 = 0.958671, C2 = -1.329637
@@ -436,19 +471,27 @@ Total Iterations: 270
 Initial loss: 0.046463
 Final loss: 0.000474
 Loss reduction: 98.98%
+Residual Sum of Squares (SS_res): 0.094527
+Total Sum of Squares (SS_tot): 5.185142
 R-squared (R^2): 0.981770
 \end{lstlisting}
-\needspace{5\baselineskip}
+\needspace{4\baselineskip}
 \vspace{0.8em}
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Summary of Results}\par\smallskip
-| Task / Item | Formulation / Output | Description \& Meaning |
-| :--- | :--- | :--- |
-| \textbf{Task 1: Loss Function} | $\mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n}\sum (y_i - (C_0 + C_1 e^{C_2 x_i}))^2$ | Mean Squared Error (MSE) objective function |
-| \textbf{Task 2: Gradients} | $\nabla \mathcal{L} = \left[\frac{\partial\mathcal{L}}{\partial C_0}, \frac{\partial\mathcal{L}}{\partial C_1}, \frac{\partial\mathcal{L}}{\partial C_2}\right]^T$ | Analytical gradients derived via Chain Rule |
-| \textbf{Task 3: Update Rules} | $C_j^{(t+1)} = C_j^{(t)} - \eta \frac{\partial\mathcal{L}}{\partial C_j}$ | Simultaneous parameter updates ($\eta = 1.0$) |
-| \textbf{Task 4: Implementation} | Convergence in \textbf{270 iterations} | Trained using NumPy batch gradient descent |
-| \textbf{Task 5: Final Model} | $\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}$ | $C_0 \approx 0.9927, C_1 \approx 0.9587, C_2 \approx -1.3296$ |
-| \textbf{Task 5: Loss Reduction} | $0.046463 \rightarrow 0.000474$ | Total MSE loss reduction of \textbf{98.98\%} |
-| \textbf{Extra: Goodness of Fit} | $R^2 \approx 0.9818 \text{ (98.18\%)}$ | Model explains \textbf{98.18\%} of target variance |
+\resizebox{\linewidth}{!}{
+\begin{tabular}{l l l}
+\toprule
+\textbf{Task / Item} & \textbf{Formulation / Output} & \textbf{Description \& Meaning} \\
+\midrule
+\textbf{Task 1: Loss Function} & $\mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n}\sum (y_i - (C_0 + C_1 e^{C_2 x_i}))^2$ & Mean Squared Error (MSE) objective function \\
+\textbf{Task 2: Gradients} & $\nabla \mathcal{L} = \left[\frac{\partial\mathcal{L}}{\partial C_0}, \frac{\partial\mathcal{L}}{\partial C_1}, \frac{\partial\mathcal{L}}{\partial C_2}\right]^T$ & Analytical gradients derived via Chain Rule \\
+\textbf{Task 3: Update Rules} & $C_j^{(t+1)} = C_j^{(t)} - \eta \frac{\partial\mathcal{L}}{\partial C_j}$ & Simultaneous parameter updates ($\eta = 1.0$) \\
+\textbf{Task 4: Implementation} & Convergence in \textbf{270 iterations} & Trained using NumPy batch gradient descent \\
+\textbf{Task 5: Final Model} & $\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}$ & $C_0 \approx 0.9927, C_1 \approx 0.9587, C_2 \approx -1.3296$ \\
+\textbf{Task 5: Loss Reduction} & $0.046463 \rightarrow 0.000474$ & Total MSE loss reduction of \textbf{98.98\%} \\
+\textbf{Extra: Goodness of Fit} & $R^2 \approx 0.9818 \text{ (98.18\%)}$ & Model explains \textbf{98.18\%} of target variance \\
+\bottomrule
+\end{tabular}
+}
 \end{tcolorbox}
