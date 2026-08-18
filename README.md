@@ -74,6 +74,6 @@ cpe342-machine-learning/
 ---
 
 ## 👤 Author
-* **Wisit Suwannao (วิศิษฐ์ สุวรรณเนาว์)**
+* **Wisit Suwannao**
 * Student ID: `67070501042`
 * Department of Computer Engineering, KMUTT
