@@ -211,51 +211,89 @@
 กระบวนการจะทำการอัปเดตค่าพารามิเตอร์ซ้ำๆ และบันทึกค่าพารามิเตอร์กับค่า Loss ในแต่ละรอบ เพื่อนำไปประเมินประสิทธิภาพในขั้นตอนต่อไป
 
 % ══════════════════════════════════════════════════════════════════════════════
+% ══════════════════════════════════════════════════════════════════════════════
 \needspace{8\baselineskip}
 \section*{5. ผลลัพธ์และการแสดงภาพ (Results \& Visualizations)}
 
-จากผลการฝึกสอนโมเดล พบว่าค่าที่เหมาะสมที่สุดสามารถลู่เข้าหาค่าสัมบูรณ์ได้อย่างรวดเร็ว โดยมีความคลาดเคลื่อน (Loss) ลดลงไปจนต่ำสุด โดยผลการวิเคราะห์และแสดงภาพของโมเดลประกอบด้วยหัวข้อดังต่อไปนี้:
+จากผลการฝึกสอนโมเดลด้วย Batch Gradient Descent พบว่าโมเดลสามารถลู่เข้าสู่จุดต่ำสุดสัมพัทธ์ (Convergence) ได้ภายใน \textbf{270 รอบ} โดยค่าความคลาดเคลื่อน (Loss) ลดลงอย่างต่อเนื่องจนเสถียร ผลการวิเคราะห์และแสดงภาพของโมเดลมี 4 ส่วนสำคัญดังต่อไปนี้:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{plot_2_loss_curve.pdf}
-    \caption{\textbf{Learning Curve (Loss vs Iterations):} แสดงการลดลงอย่างรวดเร็วของค่า Loss (MSE) จนกระทั่งโมเดลเริ่มเสถียรและลู่เข้าหาค่าต่ำสุดอย่างแม่นยำ}
+    \includegraphics[width=0.78\textwidth]{plot_2_loss_curve.pdf}
+    \caption{\textbf{Learning Curve (Loss vs Iterations):} แสดงการลดลงอย่างรวดเร็วของค่า MSE Loss จากเริ่มต้น $0.0465$ สู่ค่าสุดท้าย $0.0005$ (ลดลง $98.98\%$) สะท้อนว่าการเลือก Learning Rate $\eta = 1.0$ มีความเหมาะสม ทำให้โมเดลลู่เข้าได้อย่างราบเรียบโดยไม่มีอาการแกว่ง (Oscillation) หรือหลุดขอบเขต (Overshooting)}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{plot_3_coeff_trajectory.pdf}
-    \caption{\textbf{Parameter Evolution:} แสดงวิวัฒนาการและการปรับตัวของสัมประสิทธิ์ $C_0, C_1$ และ $C_2$ ในแต่ละรอบจนลู่เข้าหาค่าสัมบูรณ์อย่างมั่นคง}
+    \includegraphics[width=0.78\textwidth]{plot_3_coeff_trajectory.pdf}
+    \caption{\textbf{Parameter Evolution:} แสดงเส้นทางการปรับค่าสัมประสิทธิ์ทั้ง 3 ตัว ($C_0, C_1, C_2$) ในแต่ละรอบการเทรน โดย $C_0$ ปรับตัวจาก $0.5 \rightarrow 0.9927$, $C_1$ ปรับตัวจาก $0.5 \rightarrow 0.9587$ และ $C_2$ ปรับตัวจาก $0.1 \rightarrow -1.3296$ จนลู่เข้าสู่ค่าที่เสถียรอย่างมั่นคง}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{plot_4_fitted_curve.pdf}
-    \caption{\textbf{Original Data vs Fitted Model:} แสดงจุดข้อมูลจริงเทียบกับเส้นพยากรณ์สมการเอกซ์โพเนนเชียล $\hat{y} = C_0 + C_1 e^{C_2 x}$ ที่ฟิตเข้ากับข้อมูลได้อย่างราบเรียบเป็นธรรมชาติ}
+    \includegraphics[width=0.78\textwidth]{plot_4_fitted_curve.pdf}
+    \caption{\textbf{Original Data vs Fitted Model:} แสดงการเปรียบเทียบระหว่างข้อมูลจริง 100 จุด กับเส้นโค้งทำนายของโมเดลเอกซ์โพเนนเชียล $\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}$ ซึ่งสามารถจับแนวโน้มความสัมพันธ์แบบ Exponential Decay ของข้อมูลได้อย่างแม่นยำและกลมกลืน}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{plot_5_residuals.pdf}
-    \caption{\textbf{Residual Plot:} แสดงการกระจายตัวของค่าเศษเหลือ (Residuals) รอบแกนสมมาตร 0 อย่างสุ่ม ไร้รูปแบบเชิงเส้นที่บ่งบอกถึงอคติของตัวแบบ}
+    \includegraphics[width=0.78\textwidth]{plot_5_residuals.pdf}
+    \caption{\textbf{Residual Plot:} แสดงการกระจายตัวของค่าเศษเหลือ ($e_i = y_i - \hat{y}_i$) พบว่าค่า Residuals กระจายตัวแบบสุ่ม (Randomly distributed) รอบแกนสมมาตร 0 และมีความแปรปรวนสม่ำเสมอ (Homoscedasticity) ไร้รูปแบบความโค้งตกค้าง ยืนยันว่าโมเดล Exponential เหมาะสมกับข้อมูลชุดนี้}
 \end{figure}
+
 % ══════════════════════════════════════════════════════════════════════════════
 \needspace{8\baselineskip}
 \section*{Extra: การประเมินประสิทธิภาพของโมเดล\\ \large(Mathematical Evaluation)}
 
-เพื่อประเมินความแม่นยำของโมเดล Machine Learning ในการทำนายค่า $y$ เราใช้ตัวชี้วัดคือ \textbf{Coefficient of Determination ($R^2$)} ซึ่งมีสูตรทางคณิตศาสตร์ดังนี้:
+เพื่อประเมินความแม่นยำของแบบจำลอง (Goodness of Fit) ในการทำนายค่า $y$ เราใช้ตัวชี้วัดคือ \textbf{Coefficient of Determination ($R^2$)} ซึ่งมีสูตรทางคณิตศาสตร์ดังนี้:
 \[
   R^2 = 1 - \frac{SS_{res}}{SS_{tot}}
 \]
 โดยที่:
 \begin{itemize}[noitemsep, topsep=2pt]
-  \item \textbf{Residual Sum of Squares ($SS_{res}$):} ผลรวมกำลังสองของความคลาดเคลื่อน (ความต่างระหว่างค่าจริงและค่าทำนาย)
-  \[ SS_{res} = \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2 \]
-  \item \textbf{Total Sum of Squares ($SS_{tot}$):} ผลรวมกำลังสองของความแปรปรวนทั้งหมดของข้อมูล (ความต่างระหว่างค่าจริงและค่าเฉลี่ย $\bar{y}$)
-  \[ SS_{tot} = \sum_{i=1}^{n} \left( y_i - \bar{y} \right)^2 \]
+  \item \textbf{Residual Sum of Squares ($SS_{res}$):} ผลรวมกำลังสองของความคลาดเคลื่อน
+  \[ SS_{res} = \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2 \approx 0.0948 \]
+  \item \textbf{Total Sum of Squares ($SS_{tot}$):} ผลรวมกำลังสองของความแปรปรวนทั้งหมดของข้อมูล
+  \[ SS_{tot} = \sum_{i=1}^{n} \left( y_i - \bar{y} \right)^2 \approx 5.2020 \]
 \end{itemize}
 
-ผลการคำนวณพบว่าโมเดลมีค่า $R^2$ และประสิทธิภาพอยู่ในเกณฑ์ที่สอดคล้องกับการลดลงของ Loss (รายละเอียดโค้ดคำนวณ $R^2$ และค่าทางสถิติทั้งหมดแสดงอยู่ใน Appendix ด้านล่าง)
+แทนค่าในสูตร:
+\[
+  R^2 = 1 - \frac{0.0948}{5.2020} = 1 - 0.0182 = 0.9818
+\]
+
+\begin{ansbox}
+\textbf{สรุป Extra:} \quad $\boxed{R^2 \approx 0.9818 \text{ (หรือ } 98.18\%)}$
+
+\textbf{การตีความค่า $R^2$:} หมายความว่า \textbf{98.18\% ของความแปรปรวนในตัวแปรเป้าหมาย $Y$ สามารถอธิบายได้ด้วยตัวแปร $X$ ผ่านโมเดล Exponential ที่เทรนขึ้น} บ่งชี้ว่าแบบจำลองมีความแม่นยำและมีความสามารถในการฟิตข้อมูลอยู่ในระดับดีเยี่ยม
+\end{ansbox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\needspace{8\baselineskip}
+\section*{สรุปผลลัพธ์ (Summary of Results)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l l}
+\toprule
+\textbf{หัวข้อ} & \textbf{ผลลัพธ์และคำตอบ} \\
+\midrule
+\textbf{Task 1} & Loss Function: $L(C_0, C_1, C_2) = \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - (C_0 + C_1 e^{C_2 x_i}) \right)^2$ \\[4pt]
+\textbf{Task 2} & Partial Derivative Gradients: \\
+                & \quad $\frac{\partial L}{\partial C_0} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)$ \\[2pt]
+                & \quad $\frac{\partial L}{\partial C_1} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) e^{C_2 x_i}$ \\[2pt]
+                & \quad $\frac{\partial L}{\partial C_2} = -\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i) C_1 x_i e^{C_2 x_i}$ \\[4pt]
+\textbf{Task 3} & Update Rules: $C_j^{(t+1)} = C_j^{(t)} - \eta \frac{\partial L}{\partial C_j} \quad (j \in \{0, 1, 2\})$ \\[4pt]
+\textbf{Task 4} & การเทรน Gradient Descent ($\eta = 1.0$, Tolerance $= 10^{-6}$): \\
+                & \quad ลู่เข้าสำเร็จที่รอบที่ \textbf{270} (จากขีดจำกัด 2,000 รอบ) \\[4pt]
+\textbf{Task 5} & ผลลัพธ์สัมประสิทธิ์และค่า Loss: \\
+                & \quad สัมประสิทธิ์: $\mathbf{C_0 \approx 0.9927}, \quad \mathbf{C_1 \approx 0.9587}, \quad \mathbf{C_2 \approx -1.3296}$ \\
+                & \quad สมการโมเดล: $\mathbf{\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}}$ \\
+                & \quad MSE Loss: $0.046463 \rightarrow \mathbf{0.000474}$ (ลดลง \textbf{98.98\%}) \\[4pt]
+\textbf{Extra}  & Goodness of Fit: $\mathbf{R^2 \approx 0.9818 \text{ (98.18\%)}}$ โมเดลมีความแม่นยำสูงมาก \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \clearpage
 

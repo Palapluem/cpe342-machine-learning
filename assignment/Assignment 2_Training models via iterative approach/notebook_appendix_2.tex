@@ -264,10 +264,10 @@ Final MSE Loss: 0.0005
 \begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
 \textbf{\large Task 5 — Results \& Visualizations}\par\smallskip
 In this section, we analyze the training behavior and performance of our model using 4 diagnostic plots:
-1. \textbf{Loss Function Curve:} Convergence over iterations
-2. \textbf{Parameter Trajectory:} Evolution of $C_0, C_1, C_2$
-3. \textbf{Fitted Model vs Data:} Actual observations vs predicted curve
-4. \textbf{Residual Plot:} Distribution of errors ($y_i - \hat{y}_i$)
+1. \textbf{Learning Curve (Loss over Iterations):} Displays the reduction in MSE Loss from $0.0465 \rightarrow 0.0005$ across iterations, proving smooth asymptotic convergence with learning rate $\eta = 1.0$.
+2. \textbf{Parameter Evolution (Trajectory):} Illustrates how parameters $C_0, C_1, C_2$ evolve from $(0.5, 0.5, 0.1)$ toward stable optimal values $(0.9927, 0.9587, -1.3296)$.
+3. \textbf{Fitted Model vs Original Data:} Compares the actual observations against the fitted non-linear curve $\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}$.
+4. \textbf{Residual Plot:} Shows that prediction residuals ($y_i - \hat{y}_i$) are randomly distributed around 0 with constant variance, verifying homoscedasticity and absence of systematic bias.
 \end{tcolorbox}
 \needspace{6\baselineskip}
 \vspace{0.8em}
@@ -377,13 +377,13 @@ plt.show()
 <>:47: SyntaxWarning: invalid escape sequence '\h'
 <>:76: SyntaxWarning: invalid escape sequence '\h'
 <>:87: SyntaxWarning: invalid escape sequence '\h'
-C:\Users\Admin\AppData\Local\Temp\ipykernel_1076\3103374935.py:31: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:31: SyntaxWarning: invalid esca ...
   plt.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_1076\3103374935.py:47: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:47: SyntaxWarning: invalid esca ...
   plt.ylabel('Residuals ($y_i - \hat{y}_i$)')
-C:\Users\Admin\AppData\Local\Temp\ipykernel_1076\3103374935.py:76: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:76: SyntaxWarning: invalid esca ...
   ax3.plot(x_line, y_line, 'r-', linewidth=3, label=f'Fitted Model: $\hat{{y}} = {C0:.2f} + {C1 ...
-C:\Users\Admin\AppData\Local\Temp\ipykernel_1076\3103374935.py:87: SyntaxWarning: invalid escap ...
+C:\Users\Admin\AppData\Local\Temp\ipykernel_18520\3103374935.py:87: SyntaxWarning: invalid esca ...
   ax4.set_ylabel('Residuals ($y_i - \hat{y}_i$)')
 \end{lstlisting}
 \begin{center}
@@ -398,14 +398,14 @@ The formula for $R^2$ is:
 $$ R^2 = 1 - \frac{SS_{res}}{SS_{tot}} $$
 Where:
 \begin{itemize}
-\item \textbf{Residual Sum of Squares ($SS_{res}$)} is the sum of the squared differences between the actual and predicted values:
+\item \textbf{Residual Sum of Squares ($SS_{res}$)} is the sum of squared differences between actual and predicted values:
 \end{itemize}
 $$ SS_{res} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
 \begin{itemize}
-\item \textbf{Total Sum of Squares ($SS_{tot}$)} is the sum of the squared differences between the actual values and the mean of the actual values ($\bar{y}$):
+\item \textbf{Total Sum of Squares ($SS_{tot}$)} is the sum of squared differences between actual values and their sample mean ($\bar{y}$):
 \end{itemize}
 $$ SS_{tot} = \sum_{i=1}^{n} (y_i - \bar{y})^2 $$
-A higher $R^2$ score (closer to 1) indicates that our model's predictions closely match the actual data points.
+A higher $R^2$ score ($0.9818$ or $98.18\%$) indicates that the exponential model captures almost all variation in the data.
 \end{tcolorbox}
 \needspace{6\baselineskip}
 \vspace{0.8em}
@@ -438,3 +438,17 @@ Final loss: 0.000474
 Loss reduction: 98.98%
 R-squared (R^2): 0.981770
 \end{lstlisting}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large Summary of Results}\par\smallskip
+| Task / Item | Formulation / Output | Description \& Meaning |
+| :--- | :--- | :--- |
+| \textbf{Task 1: Loss Function} | $\mathcal{L}(C_0, C_1, C_2) = \frac{1}{2n}\sum (y_i - (C_0 + C_1 e^{C_2 x_i}))^2$ | Mean Squared Error (MSE) objective function |
+| \textbf{Task 2: Gradients} | $\nabla \mathcal{L} = \left[\frac{\partial\mathcal{L}}{\partial C_0}, \frac{\partial\mathcal{L}}{\partial C_1}, \frac{\partial\mathcal{L}}{\partial C_2}\right]^T$ | Analytical gradients derived via Chain Rule |
+| \textbf{Task 3: Update Rules} | $C_j^{(t+1)} = C_j^{(t)} - \eta \frac{\partial\mathcal{L}}{\partial C_j}$ | Simultaneous parameter updates ($\eta = 1.0$) |
+| \textbf{Task 4: Implementation} | Convergence in \textbf{270 iterations} | Trained using NumPy batch gradient descent |
+| \textbf{Task 5: Final Model} | $\hat{y} = 0.9927 + 0.9587 e^{-1.3296 x}$ | $C_0 \approx 0.9927, C_1 \approx 0.9587, C_2 \approx -1.3296$ |
+| \textbf{Task 5: Loss Reduction} | $0.046463 \rightarrow 0.000474$ | Total MSE loss reduction of \textbf{98.98\%} |
+| \textbf{Extra: Goodness of Fit} | $R^2 \approx 0.9818 \text{ (98.18\%)}$ | Model explains \textbf{98.18\%} of target variance |
+\end{tcolorbox}
