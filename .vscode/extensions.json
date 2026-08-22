@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-toolsai.jupyter",
+    "ms-toolsai.jupyter-renderers",
+    "james-yu.latex-workshop",
+    "tomoki1207.pdf",
+    "yzhang.markdown-all-in-one",
+    "pkief.material-icon-theme",
+    "mechatroner.rainbow-csv"
+  ]
+}
