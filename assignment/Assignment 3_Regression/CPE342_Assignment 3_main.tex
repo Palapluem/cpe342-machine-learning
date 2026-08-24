@@ -1,0 +1,385 @@
+% Compile: xelatex CPE342_Assignment 3_main.tex (รัน 2 รอบ)
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{thai}
+\setotherlanguage{english}
+
+\setmainfont{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+    BoldItalicFont = Sarabun-BoldItalic,
+]
+% แก้ปัญหา polyglossia: monospace font ต้องรองรับ Thai script
+\newfontfamily\thaifonttt{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+]
+
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{needspace}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{upquote}
+\tcbuselibrary{skins, breakable}
+
+\XeTeXlinebreaklocale "th"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\sloppy
+
+\definecolor{captioncol}{RGB}{80, 80, 80}
+\definecolor{accentblue}{RGB}{37, 99, 235}
+\definecolor{codebg}{RGB}{248, 250, 252}
+\definecolor{codeframe}{RGB}{203, 213, 225}
+\definecolor{keyword}{RGB}{124, 58, 237}
+\definecolor{string}{RGB}{22, 163, 74}
+\definecolor{comment}{RGB}{100, 116, 139}
+\definecolor{output}{RGB}{30, 58, 138}
+\captionsetup{font={small, color=captioncol}, justification=centering}
+
+\lstdefinestyle{pycode}{
+    language=Python,
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{keyword}\bfseries,
+    stringstyle=\color{string},
+    commentstyle=\color{comment}\itshape,
+    numberstyle=\tiny\color{comment},
+    numbers=left,
+    numbersep=8pt,
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    xleftmargin=16pt,
+    xrightmargin=4pt,
+    literate={≈}{{$\approx$}}1 {α}{{$\alpha$}}1 {β}{{$\beta$}}1 {λ}{{$\lambda$}}1 {Λ}{{$\Lambda$}}1 {χ}{{$\chi$}}1
+}
+
+\lstdefinestyle{output}{
+    basicstyle=\ttfamily\small\color{output},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    numbers=none,
+    xleftmargin=8pt,
+    xrightmargin=4pt,
+    breaklines=true,
+    literate={≈}{{$\approx$}}1 {α}{{$\alpha$}}1 {β}{{$\beta$}}1 {λ}{{$\lambda$}}1 {Λ}{{$\Lambda$}}1 {χ}{{$\chi$}}1
+}
+
+\widowpenalty=10000
+\clubpenalty=10000
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=14pt}
+
+\newtcolorbox{ansbox}[1][]{
+    colback=green!5!white, colframe=green!50!black,
+    boxrule=0.5pt, arc=4pt, left=8pt, right=8pt, top=5pt, bottom=5pt, #1
+}
+
+% =================================================================
+\begin{document}
+
+\begin{center}
+    {\Large\textbf{CPE 342 Machine Learning}}\\[2pt]
+    {\Large\textbf{Assignment 3: Regression — Survival Analysis}}\\[4pt]
+    {\large Activity: Estimating Customer Lifetime on Telco Churn Dataset}\\[6pt]
+    \textcolor{accentblue}{67070501042 วิศิษฐ์ สุวรรณเนาว์ (WISIT SUWANNAO)}
+\end{center}
+
+\noindent\rule{\textwidth}{0.4pt}\vspace{4pt}
+
+\section{Problem Overview \& Objectives (บทนำและภาพรวมของปัญหา)}
+
+ในงานมอบหมายส่วนของ Activity นี้ เราศึกษาและวิเคราะห์พฤติกรรมการคงอยู่และการยกเลิกบริการของลูกค้า (Customer Retention \& Churn Dynamics) โดยประยุกต์ใช้ระเบียบวิธี \textbf{การวิเคราะห์การอยู่รอด (Survival Analysis)} ด้วยตัวประมาณค่าแบบนอนพารามิเตอร์ \textbf{Kaplan-Meier Estimator} บนชุดข้อมูล \texttt{Telco-Churn.csv} ซึ่งประกอบด้วยข้อมูลลูกค้ารวม $N = 7,043$ ราย
+
+\subsection{วัตถุประสงค์หลักของการวิเคราะห์}
+\begin{enumerate}[leftmargin=18pt, itemsep=2pt]
+    \item เพื่อสร้างตัวแปรระยะเวลาการใช้บริการ $T = \text{tenure}$ (หน่วย: เดือน) และตัวบ่งชี้การเกิดเหตุการณ์ยกเลิกบริการ $E = \mathbb{I}(\text{Churn} == \text{'Yes'})$
+    \item เพื่อจัดการปัญหา \textbf{ข้อมูลถูกจำกัดช่วงทางขวา (Right-Censoring)} สำหรับลูกค้าที่ยังคงใช้บริการอยู่ ณ ปัจจุบัน ($E = 0$)
+    \item เพื่อประมาณค่าฟังก์ชันการอยู่รอดของประชากรโดยรวม $\hat{S}(t)$ พร้อมคำนวณช่วงความเชื่อมั่น 95\% ด้วยสูตรของ Greenwood
+    \item เพื่อเปรียบเทียบวิถีการอยู่รอดและความเสี่ยงในการยกเลิกบริการระหว่างช่องทางการชำระเงินทั้ง 4 รูปแบบ (\texttt{PaymentMethod}): \textbf{Electronic check}, \textbf{Mailed check}, \textbf{Bank transfer (automatic)} และ \textbf{Credit card (automatic)}
+    \item เพื่อทดสอบนัยสำคัญทางสถิติด้วยการทดสอบ \textbf{Log-Rank Test} (ทั้งแบบ Multivariate และ Pairwise) เพื่อยืนยันความแตกต่างของเส้นโค้งการอยู่รอดอย่างมีนัยสำคัญ ($p < 0.001$)
+    \item เพื่อนำผลลัพธ์เชิงปริมาณและค่าความน่าจะเป็น ณ ช่วงเวลาสำคัญ ($t = 12, 24, 36, 48, 60, 72$ เดือน) ไปแปลผลเชิงธุรกิจและเสนอแนะแนวทางลดอัตราการยกเลิกบริการ (Churn Mitigation Strategy)
+\end{enumerate}
+
+\section{Theoretical Framework (กรอบทฤษฎีและคณิตศาสตร์ จาก Lecture 4)}
+
+\subsection{ข้อจำกัดของ Regression ทั่วไปกับข้อมูล Time-to-Event}
+ในการวิเคราะห์ข้อมูลระยะเวลาจนกระทั่งเกิดเหตุการณ์ (Time-to-Event Data) เช่น การยกเลิกบริการของลูกค้า การใช้สมการถดถอยเชิงเส้น (Linear Regression) หรือ Logistic Regression ทั่วไปมีข้อจำกัดร้ายแรงดังนี้ (อิงตาม Lecture 4 หน้า 27--33):
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{การติดปัญหา Right-Censoring}: ลูกค้าส่วนใหญ่ ($73.46\%$) ยังไม่ยกเลิกบริการในวันที่เก็บข้อมูล เรารู้เพียงว่าระยะเวลาของลูกค้าเหล่านี้มีค่าอย่างน้อยเท่ากับ $t$ ($T \ge t$) แต่ไม่รู้เวลาสิ้นสุดจริง หากตัดข้อมูลเหล่านี้ทิ้งจะเกิดภาวะความลำเอียงจากการคัดออก (Selection Bias) หรือหากนับว่า $t$ คือเวลาสิ้นสุด โมเดลจะประเมินอายุขัยของลูกค้าต่ำกว่าความเป็นจริง (Underestimation)
+    \item \textbf{การแจกแจงแบบเบ้และค่าเป็นบวกเสมอ}: ตัวแปรเวลา $T \ge 0$ มีลักษณะการแจกแจงแบบเบ้ขวา (Positive Skewness) ซึ่งละเมิดข้อสมมติฐาน Normal Distribution ของ Ordinary Least Squares (OLS)
+    \item \textbf{Logistic Regression ขาดมิติของเวลา}: Logistic Regression สนใจเพียงแค่ว่าเกิดเหตุการณ์หรือไม่ ณ จุดสิ้นสุดการทดลอง แต่ไม่สามารถตอบได้ว่าลูกค้ายกเลิกบริการที่เวลาใด หรือความน่าจะเป็นที่จะอยู่รอดผ่านปีที่ 1 หรือปีที่ 2 เป็นเท่าใด
+\end{itemize}
+
+\subsection{นิยามทางคณิตศาสตร์ของฟังก์ชันการอยู่รอดและฟังก์ชันความเสี่ยง}
+กำหนดให้ $T \ge 0$ เป็นตัวแปรสุ่มชนิดต่อเนื่องแทนระยะเวลาจนกว่าจะเกิดเหตุการณ์ โดยมีฟังก์ชันความหนาแน่นความน่าจะเป็น $f(t)$ และฟังก์ชันการแจกแจงสะสม $F(t) = P(T < t)$
+
+\subsubsection{1. ฟังก์ชันการอยู่รอด (Survival Function: $S(t)$)}
+ฟังก์ชัน $S(t)$ คือความน่าจะเป็นที่ลูกค้ารายหนึ่งจะยังคงใช้บริการอยู่เกินกว่าเวลา $t$
+\begin{equation}
+    S(t) = P(T \ge t) = 1 - F(t) = \int_t^\infty f(u)\,du
+\end{equation}
+โดยมีคุณสมบัติทางคณิตศาสตร์คือ: $S(0) = 1$ (ณ จุดเริ่มต้น ลูกค้าทุกคนยังอยู่), $S(\infty) = 0$ (เมื่อเวลาผ่านไปไม่สิ้นสุด ทุกคนจะเกิดเหตุการณ์) และ $S(t)$ เป็นฟังก์ชันลดลงทางเดียวหรือไม่เพิ่มขึ้น (Monotonically Non-increasing)
+
+\subsubsection{2. ฟังก์ชันความเสี่ยง (Hazard Function: $\lambda(t)$ หรือ $h(t)$)}
+ฟังก์ชัน $\lambda(t)$ แทนอัตราความเสี่ยงขณะใดขณะหนึ่ง (Instantaneous Failure Rate) ที่ลูกค้าซึ่งรอดชีวิตมาจนถึงเวลา $t$ จะยกเลิกบริการในช่วงเวลาถัดไปสั้น ๆ $\Delta t$
+\begin{equation}
+    \lambda(t) = \lim_{\Delta t \to 0} \frac{P(t \le T < t + \Delta t \mid T \ge t)}{\Delta t} = \frac{f(t)}{S(t)} = -\frac{d}{dt} \ln S(t)
+\end{equation}
+
+\subsubsection{3. ฟังก์ชันความเสี่ยงสะสม (Cumulative Hazard Function: $\Lambda(t)$)}
+คือผลรวมสะสมของความเสี่ยงตั้งแต่จุดเริ่มต้นจนถึงเวลา $t$
+\begin{equation}
+    \Lambda(t) = \int_0^t \lambda(u)\,du = -\ln S(t) \iff S(t) = \exp\left(-\Lambda(t)\right)
+\end{equation}
+
+\subsection{ตัวประมาณค่า Kaplan-Meier (Product-Limit Estimator)}
+ในการประมาณค่า $S(t)$ แบบนอนพารามิเตอร์โดยไม่สมมติรูปแบบการแจกแจงล่วงหน้า Kaplan \& Meier (1958) ได้พัฒนาสูตรผลคูณสะสม (Product-Limit Formula):
+\begin{equation}
+    \hat{S}(t) = \prod_{t_i \le t} \left(1 - \frac{d_i}{n_i}\right)
+\end{equation}
+เมื่อ:
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item $t_1 < t_2 < \dots < t_k$ คือลำดับเวลาที่เกิดเหตุการณ์ยกเลิกบริการจริง
+    \item $d_i$ คือจำนวนลูกค้าที่เกิดเหตุการณ์ยกเลิกบริการ ณ เวลา $t_i$
+    \item $n_i$ คือจำนวนลูกค้าที่ยังคงมีความเสี่ยง (Risk Set) ณ จุดเวลาก่อน $t_i$ ($n_i$ รวมทั้งผู้ที่กำลังจะยกเลิกและผู้ที่ถูกเซนเซอร์หลังเวลา $t_i$)
+\end{itemize}
+
+ช่วงความเชื่อมั่น 95\% คำนวณผ่านความแปรปรวนของ Greenwood (\textbf{Greenwood's Formula}):
+\begin{equation}
+    \widehat{\text{Var}}(\hat{S}(t)) = \hat{S}(t)^2 \sum_{t_i \le t} \frac{d_i}{n_i(n_i - d_i)}
+\end{equation}
+\begin{equation}
+    95\% \text{ Confidence Interval: } \hat{S}(t) \pm 1.96 \cdot \sqrt{\widehat{\text{Var}}(\hat{S}(t))}
+\end{equation}
+
+\subsection{การทดสอบสมมติฐาน Log-Rank Test}
+เพื่อทดสอบว่าฟังก์ชันการอยู่รอดของกลุ่มลูกค้า $K$ กลุ่มมีความแตกต่างกันอย่างมีนัยสำคัญหรือไม่ กำหนดสมมติฐาน:
+\begin{align*}
+    H_0 &: S_1(t) = S_2(t) = \dots = S_K(t) \quad (\text{ทุกกลุ่มมีวิถีการอยู่รอดเหมือนกัน}) \\
+    H_1 &: \text{มีอย่างน้อยหนึ่งกลุ่มที่มีฟังก์ชันการอยู่รอดแตกต่างออกไป}
+\end{align*}
+สถิติทดสอบ Log-Rank ($\chi^2$) เปรียบเทียบผลต่างระหว่างจำนวนเหตุการณ์ที่สังเกตได้จริง ($O_j$) กับค่าคาดหมายภายใต้ $H_0$ ($E_j$):
+\begin{equation}
+    \chi^2 = \sum_{j=1}^K \frac{(O_j - E_j)^2}{V_j} \sim \chi^2(K - 1)
+\end{equation}
+
+\section{Dataset Overview \& Preprocessing (ชุดข้อมูลและการเตรียมตัวแปร)}
+
+ชุดข้อมูล \texttt{Telco-Churn.csv} มีโครงสร้างขนาด $7,043$ แถว และ $21$ คอลัมน์ โดยประกอบด้วยตัวแปรที่นำมาใช้ในการวิเคราะห์ดังนี้:
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{Duration Variable ($T$)}: คอลัมน์ \texttt{tenure} แทนระยะเวลา (เดือน) ที่ลูกค้าผูกพันกับผู้ให้บริการ ($0 \le T \le 72$)
+    \item \textbf{Event Indicator ($E$)}: คอลัมน์ \texttt{Churn} แปลงเป็น $E = 1$ เมื่อ Churn = `Yes' (เกิดเหตุการณ์) และ $E = 0$ เมื่อ Churn = `No' (ถูก Right-Censored)
+    \item \textbf{Segmentation Covariate}: คอลัมน์ \texttt{PaymentMethod} แบ่งเป็น 4 กลุ่ม ได้แก่ Electronic check, Mailed check, Bank transfer (automatic) และ Credit card (automatic)
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{สถิติเชิงพรรณนาภาพรวมของชุดข้อมูล Telco Churn ($N = 7,043$)}
+\resizebox{0.95\textwidth}{!}{%
+\begin{tabular}{l c c c}
+\toprule
+\textbf{กลุ่มสถานะลูกค้า (Status)} & \textbf{จำนวน (Observations)} & \textbf{สัดส่วน (\%)} & \textbf{ค่าเฉลี่ย Tenure (เดือน)} \\
+\midrule
+ลูกค้าที่ยกเลิกบริการจริง (Churned Events: $E=1$) & 1,869 & 26.54\% & 17.98 \\
+ลูกค้าที่ยังคงใช้บริการอยู่ (Censored: $E=0$) & 5,174 & 73.46\% & 37.57 \\
+\midrule
+\textbf{รวมประชากรทั้งหมด (Total Cohort)} & \textbf{7,043} & \textbf{100.00\%} & \textbf{32.37} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Experimental Results \& Diagnostic Plots (ผลลัพธ์การวิเคราะห์และกราฟสถิติ)}
+
+\subsection{1. เส้นโค้งการอยู่รอดของประชากรโดยรวม (Overall Survival Curve)}
+จากการฟิตโมเดล Kaplan-Meier บนกลุ่มลูกค้าทั้งหมด $7,043$ ราย ได้เส้นโค้งการอยู่รอดดังแสดงใน Figure 1
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{plot_1_overall_km.pdf}
+    \caption{\textbf{Overall Customer Kaplan-Meier Survival Curve $\hat{S}(t)$}: เส้นโค้งการอยู่รอดของลูกค้าภาพรวม ($N=7,043$) พร้อมช่วงความเชื่อมั่น 95\% โดยแสดงค่าความน่าจะเป็น ณ ช่วงเวลาสำคัญ $S(12)=83.9\%$, $S(24)=78.4\%$, $S(48)=68.8\%$ และ $S(72)=58.7\%$}
+\end{figure}
+
+\noindent
+\textbf{การแปลผล Figure 1}: ค่าความน่าจะเป็นในการอยู่รอดของลูกค้าภาพรวมลดลงอย่างต่อเนื่องแต่คงตัวได้ดี โดยมีลูกค้าถึง $83.9\%$ ที่อยู่รอดเกิน 1 ปี และ $58.7\%$ ที่ยังคงใช้บริการอยู่จนถึงสิ้นสุดการศึกษาที่ 6 ปี (72 เดือน) เนื่องจากมีผู้รอดชีวิตเกิน $50\%$ ตลอด 72 เดือน ค่ามัธยฐานการอยู่รอด (Median Survival Time) จึงมากกว่า 72 เดือน (Not reached within study window)
+
+\subsection{2. เปรียบเทียบเส้นโค้งการอยู่รอดตามช่องทางการชำระเงิน (Survival Curves by Payment Method)}
+เมื่อจำแนกลูกค้าออกเป็น 4 กลุ่มตามช่องทางการชำระเงิน ได้เส้นโค้งเปรียบเทียบดังแสดงใน Figure 2 และ Figure 3
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_2_km_by_payment.pdf}
+    \caption{\textbf{Comparative Kaplan-Meier Survival Curves by Payment Method}: เปรียบเทียบเส้นโค้งการอยู่รอดระหว่าง 4 ช่องทางชำระเงิน พบว่ากลุ่ม Electronic check มีอัตราการลดลงของความน่าจะเป็นในการอยู่รอดรวดเร็วและรุนแรงที่สุด โดยตัดผ่านเส้นมัธยฐานที่ $t=47.0$ เดือน}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{plot_3_km_grid_by_payment.pdf}
+    \caption{\textbf{Individual Kaplan-Meier Facet Plots with 95\% CI}: กราฟแยกย่อย $2 \times 2$ พร้อมแถบช่วงความเชื่อมั่น 95\% แบบ Greenwood แสดงให้เห็นความแม่นยำสูงเนื่องจากขนาดกลุ่มตัวอย่างที่ใหญ่ ($n \ge 1,522$ ในทุกกลุ่ม)}
+\end{figure}
+
+\subsection{3. การวิเคราะห์ความเสี่ยงสะสม (Cumulative Hazard Function Analysis)}
+ฟังก์ชันความเสี่ยงสะสม $\Lambda(t) = -\ln S(t)$ แสดงอัตราการสะสมของความเสี่ยงในการยกเลิกบริการตามระยะเวลาการใช้งาน ดังแสดงใน Figure 4
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_4_cumulative_hazard.pdf}
+    \caption{\textbf{Cumulative Hazard Curves $\Lambda(t)$ by Payment Method}: เส้นความเสี่ยงสะสมของกลุ่ม Electronic check มีความชันสูงมาก ($\Lambda(72) > 1.2$) บ่งชี้ว่าลูกค้ารายใหม่ที่เลือกจ่ายด้วยช่องทางนี้มีความเสี่ยงในการยกเลิกบริการสูงตลอดทุกช่วงเวลา ต่างจากระบบอัตโนมัติที่มีความเสี่ยงสะสมคงที่ในระดับต่ำ ($\Lambda(72) \approx 0.28 - 0.30$)}
+\end{figure}
+
+\subsection{4. การแจกแจงอัตรา Churn และระยะเวลา Tenure}
+Figure 5 แสดงอัตรา Churn (\%) เปรียบเทียบกับกล่องการแจกแจงระยะเวลา Tenure ของลูกค้าแต่ละกลุ่ม
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{plot_5_churn_distribution.pdf}
+    \caption{\textbf{Churn Rate \& Tenure Distribution by Payment Method}: ซ้าย: อัตรา Churn ของ Electronic check สูงถึง $45.3\%$ ขวา: แผนภาพ Boxplot แสดงค่ามัธยฐาน Tenure ของกลุ่มระบบตัดเงินอัตโนมัติที่สูงถึงประมาณ $43$ เดือน}
+\end{figure}
+
+\subsection{5. ตารางสรุปผลลัพธ์เชิงปริมาณ (Quantitative Summary of Results)}
+\begin{table}[H]
+\centering
+\caption{สรุปผลการวิเคราะห์การอยู่รอดเชิงปริมาณ จำแนกตามช่องทางการชำระเงิน}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c c c c c c}
+\toprule
+\textbf{Payment Method} & \textbf{Sample $n$} & \textbf{Churn $d$} & \textbf{Censor $c$} & \textbf{Churn Rate} & \textbf{Median Surv.} & \textbf{Mean Tenure} & \textbf{$S(12)$} & \textbf{$S(24)$} & \textbf{$S(36)$} & \textbf{$S(48)$} & \textbf{$S(72)$} \\
+\midrule
+\textbf{Electronic check} & 2,365 & 1,071 & 1,294 & 45.3\% & \textbf{47.0 mo.} & 25.2 mo. & 0.727 & 0.624 & 0.553 & 0.493 & 0.295 \\
+\textbf{Mailed check} & 1,612 & 308 & 1,304 & 19.1\% & > 72 mo. & 21.8 mo. & 0.828 & 0.797 & 0.769 & 0.740 & 0.726 \\
+\textbf{Bank transfer (auto)} & 1,544 & 258 & 1,286 & 16.7\% & > 72 mo. & 43.7 mo. & 0.931 & 0.902 & 0.878 & 0.847 & 0.745 \\
+\textbf{Credit card (auto)} & 1,522 & 232 & 1,290 & 15.2\% & > 72 mo. & 43.3 mo. & 0.945 & 0.913 & 0.887 & 0.855 & 0.758 \\
+\midrule
+\textbf{Overall Population} & \textbf{7,043} & \textbf{1,869} & \textbf{5,174} & \textbf{26.5\%} & \textbf{> 72 mo.} & \textbf{32.4 mo.} & \textbf{0.839} & \textbf{0.784} & \textbf{0.738} & \textbf{0.688} & \textbf{0.587} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{6. ผลการทดสอบทางสถิติ Log-Rank Test}
+\begin{table}[H]
+\centering
+\caption{ผลการทดสอบความแตกต่างของเส้นโค้งการอยู่รอด (Multivariate \& Pairwise Log-Rank Tests)}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c}
+\toprule
+\textbf{การเปรียบเทียบ (Comparison)} & \textbf{Chi-Square ($\chi^2$)} & \textbf{$p$-value} & \textbf{ข้อสรุปทางสถิติ ($\alpha=0.001$)} \\
+\midrule
+\textbf{Multivariate (All 4 Groups)} & \textbf{865.2395} & \textbf{$3.07 \times 10^{-187}$} & \textbf{ปฏิเสธ $H_0$ (แตกต่างกันอย่างมีนัยสำคัญยิ่ง)} \\
+\midrule
+Bank transfer (auto) vs Credit card (auto) & 0.8683 & $0.3514$ & ไม่แตกต่างกันทางสถิติ ($H_0$ ถูกยอมรับ) \\
+Electronic check vs Bank transfer (auto) & 510.0351 & $< 10^{-100}$ & แตกต่างกันอย่างมีนัยสำคัญยิ่ง \\
+Electronic check vs Credit card (auto) & 539.7402 & $< 10^{-100}$ & แตกต่างกันอย่างมีนัยสำคัญยิ่ง \\
+Electronic check vs Mailed check & 152.4555 & $< 10^{-30}$ & แตกต่างกันอย่างมีนัยสำคัญยิ่ง \\
+Mailed check vs Bank transfer (auto) & 51.0719 & $< 10^{-11}$ & แตกต่างกันอย่างมีนัยสำคัญยิ่ง \\
+Mailed check vs Credit card (auto) & 64.8152 & $< 10^{-14}$ & แตกต่างกันอย่างมีนัยสำคัญยิ่ง \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{In-depth Discussion \& Business Insights (การอภิปรายผลเชิงลึก)}
+
+\subsection{1. การวิเคราะห์กลุ่มความเสี่ยงสูง: Electronic Check}
+ลูกค้ากลุ่มที่ชำระผ่าน \textbf{Electronic check} เป็นกลุ่มที่มีขนาดใหญ่ที่สุด ($n = 2,365$ หรือ $33.58\%$ ของประชากร) แต่กลับมีอัตราการยกเลิกบริการสูงที่สุดถึง \textbf{$45.3\%$} ($1,071$ ราย) และมี \textbf{Median Survival Time เท่ากับ $47.0$ เดือน} 
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{พฤติกรรมและความเสียดทานในการชำระ (Payment Friction)}: การจ่ายผ่านเช็คอิเล็กทรอนิกส์มักเป็นการจ่ายแบบ Manual ในแต่ละรอบบิล ทำให้ลูกค้าต้องเผชิญกับ ``จุดตัดสินใจ (Decision Point)'' ทุก ๆ เดือนว่าจะชำระต่อหรือยกเลิกบริการ
+    \item \textbf{ความสัมพันธ์กับสัญญาแบบ Month-to-Month}: กลุ่มลูกค้าเช็คอิเล็กทรอนิกส์ส่วนใหญ่มีสัดส่วนสัญญาแบบรายเดือนสูง ทำให้ความยืดหยุ่นในการยกเลิกบริการทำได้ง่ายกว่ากลุ่มที่มีสัญญาระยะยาว
+\end{itemize}
+
+\subsection{2. ประสิทธิภาพของระบบชำระเงินอัตโนมัติ (Automatic Payment Channels)}
+กลุ่มลูกค้าที่ใช้ \textbf{Bank transfer (automatic)} และ \textbf{Credit card (automatic)} มีคุณลักษณะการอยู่รอดที่ดีเยี่ยมและใกล้เคียงกันมาก โดยผลการทดสอบ Pairwise Log-Rank ยืนยันว่าไม่มีความแตกต่างกันอย่างมีนัยสำคัญทางสถิติ ($p = 0.3514$):
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item อัตรา Churn ต่ำมากเพียง $15.2\% - 16.7\%$ 
+    \item ค่าความน่าจะเป็นในการอยู่รอดเกิน 2 ปี ($S(24)$) สูงเกิน $90\%$ ($90.2\% - 91.3\%$)
+    \item \textbf{กลไกเชิงพฤติกรรม}: ระบบตัดเงินอัตโนมัติช่วยขจัดความตระหนักรู้ถึงค่าใช้จ่ายในแต่ละรอบบิล (Pain of Paying) และลดความยุ่งยากในการทำธุรกรรม ส่งผลให้ลูกค้าคงสถานะการใช้บริการอย่างยาวนาน
+\end{itemize}
+
+\subsection{3. พฤติกรรมเฉพาะตัวของกลุ่ม Mailed Check}
+กลุ่ม \textbf{Mailed check} มีอัตรา Churn รวมค่อนข้างต่ำ ($19.1\%$) และมีค่า $S(72) = 72.6\%$ แต่มีค่าเฉลี่ย Tenure สั้น ($21.8$ เดือน):
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item ในช่วง 12 เดือนแรก มีอัตราการลดลงของเส้นการอยู่รอดที่ค่อนข้างชัน ($S(12) = 82.8\%$) ซึ่งสะท้อนถึงกลุ่มผู้ทดลองใช้บริการระยะสั้น
+    \item แต่เมื่อลูกค้ากลุ่มนี้ผ่านช่วง 24 เดือนแรกไปได้ เส้นโค้งการอยู่รอดจะแบนราบลงอย่างเห็นได้ชัด ($S(72) = 72.6\%$) แสดงว่าลูกค้าที่เหลืออยู่คือกลุ่มผู้ใช้ที่มีความภักดีสูง (Brand Loyalists) เช่น กลุ่มผู้สูงอายุหรือลูกค้าดั้งเดิม
+\end{itemize}
+
+\section{Strategic Recommendations (ข้อเสนอแนะเชิงกลยุทธ์)}
+
+\begin{ansbox}
+\textbf{ข้อเสนอแนะเชิงกลยุทธ์สำหรับฝ่ายบริหารและฝ่ายการตลาด:}
+\begin{enumerate}[leftmargin=16pt, itemsep=2pt]
+    \item \textbf{แคมเปญกระตุ้นการเปลี่ยนผ่านสู่ Auto-Pay (Incentivize Auto-Pay Migration)}: มอบส่วนลดพิเศษ เช่น ส่วนลดค่าบริการ \$5 ต่อเดือน เป็นเวลา 6 เดือน สำหรับลูกค้าที่เปลี่ยนช่องทางจาก Electronic check หรือ Mailed check มาเป็นระบบตัดบัตรเครดิตหรือบัญชีธนาคารอัตโนมัติ ซึ่งจะช่วยลด Churn Rate ได้ทันทีกว่า 28--30\%
+    \item \textbf{การแทรกแซงเชิงรุกในช่วง Tenure 0--12 เดือน (Early Onboarding Intervention)}: จากกราฟ Hazard อัตราเสี่ยงต่อการยกเลิกจะสะสมตัวเร็วที่สุดในช่วงปีแรก ควรจัดทีม Customer Success ติดตามความพึงพอใจและเสนอสัญญารายปีพร้อมข้อเสนอพิเศษก่อนที่ลูกค้าจะเข้าสู่เดือนที่ 12
+    \item \textbf{ระบบแจ้งเตือนและชำระเงินแบบ One-Click Billing}: ปรับปรุงกระบวนการชำระเงินของ Electronic check ให้มีความสะดวกรวดเร็ว ลดความยุ่งยากของขั้นตอนทางธุรกรรมเพื่อลดแรงจูงใจในการยกเลิกบริการ
+\end{enumerate}
+\end{ansbox}
+
+\section{Conclusion (สรุปผลการดำเนินงาน)}
+
+การวิเคราะห์การอยู่รอดด้วยแบบจำลอง Kaplan-Meier บนชุดข้อมูล Telco Churn ช่วยให้เราเข้าใจพลวัตของระยะเวลาในการคงอยู่ของลูกค้าได้อย่างแม่นยำเหนือกว่าแบบจำลองการถดถอยทั่วไป ผลการทดสอบทางสถิติ Log-Rank Test ($\chi^2 = 865.24, p = 3.07 \times 10^{-187}$) ชี้ชัดว่าช่องทางการชำระเงินเป็นปัจจัยที่มีอิทธิพลต่อความอยู่รอดของลูกค้าอย่างมีนัยสำคัญยิ่ง โดยกลุ่มระบบตัดเงินอัตโนมัติมีประสิทธิภาพในการรักษาฐานลูกค้าสูงสุด ($S(24) > 90\%$) ในขณะที่กลุ่ม Electronic check เป็นกลุ่มความเสี่ยงสูงที่ต้องได้รับการปรับปรุงเชิงกลยุทธ์อย่างเร่งด่วน
+
+\newpage
+\appendix
+\section{Source Code Implementation (ภาคผนวก: โค้ดโปรแกรมภาษา Python)}
+
+\begin{lstlisting}[style=pycode, caption={โปรแกรมการวิเคราะห์การอยู่รอด Kaplan-Meier และ Log-Rank Test บน Telco Churn Dataset}]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from lifelines import KaplanMeierFitter, NelsonAalenFitter
+from lifelines.statistics import multivariate_logrank_test, pairwise_logrank_test
+
+# 1. Load data and extract time-to-event variables
+df = pd.read_csv('Telco-Churn.csv')
+T = df['tenure']
+E = (df['Churn'] == 'Yes').astype(int)
+
+# 2. Overall Kaplan-Meier Survival Estimation
+kmf_overall = KaplanMeierFitter()
+kmf_overall.fit(T, event_observed=E, label='All Customers (N = 7,043)')
+
+# 3. Segmented Survival by Payment Method
+methods = ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)']
+kmf_dict = {}
+
+plt.figure(figsize=(9, 5.5))
+ax = plt.subplot(111)
+
+for method in methods:
+    mask = (df['PaymentMethod'] == method)
+    kmf = KaplanMeierFitter()
+    kmf.fit(T[mask], event_observed=E[mask], label=method)
+    kmf_dict[method] = kmf
+    kmf.plot_survival_function(ax=ax, ci_show=True)
+
+plt.title('Kaplan-Meier Survival Curves by Payment Method')
+plt.xlabel('Tenure (Months)')
+plt.ylabel('Survival Probability S(t)')
+plt.ylim(0, 1.05)
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.savefig('plot_2_km_by_payment.pdf', bbox_inches='tight')
+plt.show()
+
+# 4. Multivariate Log-Rank Test
+logrank_res = multivariate_logrank_test(T, df['PaymentMethod'], E)
+print(f"Chi-square: {logrank_res.test_statistic:.4f}, p-value: {logrank_res.p_value:.4e}")
+
+# 5. Pairwise Log-Rank Test
+pairwise_res = pairwise_logrank_test(T, df['PaymentMethod'], E)
+print(pairwise_res.summary)
+\end{lstlisting}
+
+\end{document}

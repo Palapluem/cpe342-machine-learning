@@ -23,6 +23,14 @@ cpe342-machine-learning/
 │       ├── CPE342_Assignment 2_main.tex      # LaTeX source report
 │       ├── CPE342_Assignment 2_main.pdf      # Compiled report
 │       └── CPE342_Assignment 2_Full Result.pdf# Complete merged submission
+│   │
+│   └── Assignment 3_Regression/
+│       ├── Assignment_3_Regression.ipynb      # Jupyter Notebook implementation
+│       ├── Lab&Assignment_regression.ipynb    # Coursework notebook
+│       ├── Telco-Churn.csv                    # Dataset (N = 7,043)
+│       ├── CPE342_Assignment 3_main.tex      # LaTeX source report
+│       ├── CPE342_Assignment 3_main.pdf      # Compiled report
+│       └── plot_1_*.pdf to plot_5_*.pdf       # High-resolution vector figures
 │
 ├── lecture/                                   # Lecture slides and demo notebooks
 │   ├── Lecture 1–12 PDFs
@@ -64,10 +72,26 @@ cpe342-machine-learning/
 
 ---
 
+### [Assignment 3: Regression — Survival Analysis (Telco Customer Churn)](./assignment/Assignment%203_Regression/)
+* **Topic:** Time-to-Event Modeling and Non-Parametric Survival Analysis on Customer Churn Data ($N = 7,043$).
+* **Key Tasks:**
+  * Formulation of duration $T = \text{tenure}$ (months) and binary event indicator $E = \mathbb{I}(\text{Churn} == \text{'Yes'})$ with Right-Censoring handling.
+  * Mathematical definitions and derivation of Survival Function $S(t)$, Hazard Function $\lambda(t)$, and Cumulative Hazard $\Lambda(t) = -\ln S(t)$ based on Lecture 4.
+  * Non-parametric Kaplan-Meier estimation $\hat{S}(t) = \prod (1 - d_i/n_i)$ with Greenwood's 95% confidence intervals.
+  * Comparative survival segmentation across payment methods (`Electronic check`, `Mailed check`, `Bank transfer (auto)`, `Credit card (auto)`).
+  * Cumulative Hazard analysis via Nelson-Aalen estimator.
+  * Hypothesis testing via Multivariate Log-Rank Test ($\chi^2 = 865.24, p = 3.07 \times 10^{-187}$) and Pairwise Log-Rank tests.
+  * Milestone retention probabilities calculation ($t = 12, 24, 36, 48, 60, 72$ months) and business churn mitigation strategies.
+* **Deliverables:**
+  * [`Assignment_3_Regression.ipynb`](./assignment/Assignment%203_Regression/Assignment_3_Regression.ipynb)
+  * [`CPE342_Assignment 3_main.pdf`](./assignment/Assignment%203_Regression/CPE342_Assignment%203_main.pdf)
+
+---
+
 ## 🛠️ Environment & Prerequisites
 
 * **Python:** 3.10+
-* **Core Libraries:** `numpy`, `pandas`, `matplotlib`, `scipy`, `jupyter`
+* **Core Libraries:** `numpy`, `pandas`, `matplotlib`, `scipy`, `lifelines`, `statsmodels`, `seaborn`, `jupyter`
 * **Typography:** TH Sarabun New / Sarabun font support for Matplotlib charts
 * **Report Compilation:** XeLaTeX / TeX Live / MiKTeX (Polyglossia + Sarabun font)
 
