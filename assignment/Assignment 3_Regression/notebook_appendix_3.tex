@@ -297,19 +297,22 @@ We perform the \textbf{Multivariate Log-Rank Test} to test $H_0: S_1(t) = S_2(t)
 \begin{lstlisting}[style=pycode]
 # --- Log-Rank Hypothesis Testing ---
 logrank_res = multivariate_logrank_test(T, df['PaymentMethod'], E)
-print("="*85)
-print("MULTIVARIATE LOG-RANK TEST RESULTS (H0: All Survival Curves are Identical)")
-print("="*85)
-print(f"Test Statistic (Chi-Square): {logrank_res.test_statistic:.4f}")
-print(f"p-value:                      {logrank_res.p_value:.4e}")
-print(f"Degrees of Freedom:           {logrank_res.degrees_of_freedom}")
-print(f"Conclusion:                   Reject H0 at alpha = 0.001 (Highly Significant Disparities)")
+print("="*60)
+print("MULTIVARIATE LOG-RANK TEST RESULTS")
+print("="*60)
+print(f"Chi-Square: {logrank_res.test_statistic:.4f}")
+print(f"p-value:    {logrank_res.p_value:.4e}")
+print(f"df:         {logrank_res.degrees_of_freedom}")
+print(f"Conclusion: Reject H0 at alpha = 0.001")
 
 pairwise_res = pairwise_logrank_test(T, df['PaymentMethod'], E)
-print("\n" + "="*85)
+print("\n" + "="*60)
 print("PAIRWISE LOG-RANK TEST SUMMARY")
-print("="*85)
-print(pairwise_res.summary[['test_statistic', 'p', '-log2(p)']])
+print("="*60)
+for pair, row in pairwise_res.summary.iterrows():
+    p_val = row['p']
+    p_str = f"{p_val:.4e}" if p_val < 0.001 else f"{p_val:.4f}"
+    print(f"{pair[0][:15]:<16} vs {pair[1][:15]:<16} | chi2={row['test_statistic']:>7.2f} | p={p_str}")
 
 # --- Quantitative Summary Table ---
 summary_list = []
@@ -341,38 +344,35 @@ for m in methods:
     })
 
 sum_df = pd.DataFrame(summary_list)
-print("\n" + "="*85)
-print("COMPREHENSIVE SURVIVAL ANALYSIS SUMMARY TABLE")
-print("="*85)
+print("\n" + "="*60)
+print("COMPREHENSIVE SURVIVAL SUMMARY TABLE")
+print("="*60)
 sum_df
 \end{lstlisting}
 \smallskip
 \noindent\textbf{Out[7]}:
 \begin{lstlisting}[style=output]
-=====================================================================================
-MULTIVARIATE LOG-RANK TEST RESULTS (H0: All Survival Curves are Identical)
-=====================================================================================
-Test Statistic (Chi-Square): 865.2395
-p-value:                      3.0665e-187
-Degrees of Freedom:           3
-Conclusion:                   Reject H0 at alpha = 0.001 (Highly Significant Disparities)
+============================================================
+MULTIVARIATE LOG-RANK TEST RESULTS
+============================================================
+Chi-Square: 865.2395
+p-value:    3.0665e-187
+df:         3
+Conclusion: Reject H0 at alpha = 0.001
 
-=====================================================================================
+============================================================
 PAIRWISE LOG-RANK TEST SUMMARY
-=====================================================================================
-                                                   test_statistic  ...    -log2(p)
-Bank transfer (automatic) Credit card (automatic)        0.868295  ...    1.508700
-                          Electronic check             510.035059  ...  372.738314
-                          Mailed check                  51.071855  ...   40.030516
-Credit card (automatic)   Electronic check             539.740177  ...  394.206708
-                          Mailed check                  64.815174  ...   50.110602
-Electronic check          Mailed check                 152.455455  ...  113.934547
+============================================================
+Bank transfer (  vs Credit card (au  | chi2=   0.87 | p=0.3514
+Bank transfer (  vs Electronic chec  | chi2= 510.04 | p=6.2314e-113
+Bank transfer (  vs Mailed check     | chi2=  51.07 | p=8.9046e-13
+Credit card (au  vs Electronic chec  | chi2= 539.74 | p=2.1476e-119
+Credit card (au  vs Mailed check     | chi2=  64.82 | p=8.2263e-16
+Electronic chec  vs Mailed check     | chi2= 152.46 | p=5.0383e-35
 
-[6 rows x 3 columns]
-
-=====================================================================================
-COMPREHENSIVE SURVIVAL ANALYSIS SUMMARY TABLE
-=====================================================================================
+============================================================
+COMPREHENSIVE SURVIVAL SUMMARY TABLE
+============================================================
               Payment Method  Sample (n)  ...  S(60 mo.)  S(72 mo.)
 0           Electronic check        2365  ...      0.413      0.295
 1               Mailed check        1612  ...      0.732      0.726
