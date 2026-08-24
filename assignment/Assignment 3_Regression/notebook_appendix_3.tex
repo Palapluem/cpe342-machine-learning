@@ -46,6 +46,14 @@ df[['customerID', 'tenure', 'PaymentMethod', 'Contract', 'MonthlyCharges', 'Tota
 Telco Churn Dataset Loaded Successfully. Total Observations N = 7,043
 Observed Churn Events (E=1): 1,869 (26.54%)
 Right-Censored Retained Customers (E=0): 5,174 (73.46%)
+   customerID  tenure  ... TotalCharges Churn
+0  7590-VHVEG       1  ...        29.85    No
+1  5575-GNVDE      34  ...       1889.5    No
+2  3668-QPYBK       2  ...       108.15   Yes
+3  7795-CFOCW      45  ...      1840.75    No
+4  9237-HQITU       2  ...       151.65   Yes
+
+[5 rows x 7 columns]
 \end{lstlisting}
 \needspace{4\baselineskip}
 \vspace{0.8em}
@@ -365,6 +373,13 @@ Electronic check          Mailed check                 152.455455  ...  113.9345
 =====================================================================================
 COMPREHENSIVE SURVIVAL ANALYSIS SUMMARY TABLE
 =====================================================================================
+              Payment Method  Sample (n)  ...  S(60 mo.)  S(72 mo.)
+0           Electronic check        2365  ...      0.413      0.295
+1               Mailed check        1612  ...      0.732      0.726
+2  Bank transfer (automatic)        1544  ...      0.804      0.745
+3    Credit card (automatic)        1522  ...      0.831      0.758
+
+[4 rows x 13 columns]
 \end{lstlisting}
 \needspace{4\baselineskip}
 \vspace{0.8em}
