@@ -26,10 +26,10 @@ cpe342-machine-learning/
 │   │
 │   └── Assignment 3_Regression/
 │       ├── Assignment_3_Regression.ipynb      # Jupyter Notebook implementation
-│       ├── Lab&Assignment_regression.ipynb    # Coursework notebook
 │       ├── Telco-Churn.csv                    # Dataset (N = 7,043)
 │       ├── CPE342_Assignment 3_main.tex      # LaTeX source report
 │       ├── CPE342_Assignment 3_main.pdf      # Compiled report
+│       ├── notebook_appendix_3.tex           # LaTeX appendix with executed notebook cells
 │       └── plot_1_*.pdf to plot_5_*.pdf       # High-resolution vector figures
 │
 ├── lecture/                                   # Lecture slides and demo notebooks

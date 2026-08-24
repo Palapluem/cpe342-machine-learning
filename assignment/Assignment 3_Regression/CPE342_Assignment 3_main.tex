@@ -333,53 +333,10 @@ Mailed check vs Credit card (auto) & 64.8152 & $< 10^{-14}$ & แตกต่า
 
 \newpage
 \appendix
-\section{Source Code Implementation (ภาคผนวก: โค้ดโปรแกรมภาษา Python)}
+\section*{Appendix: Full Jupyter Notebook Code \& Output}
 
-\begin{lstlisting}[style=pycode, caption={โปรแกรมการวิเคราะห์การอยู่รอด Kaplan-Meier และ Log-Rank Test บน Telco Churn Dataset}]
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from lifelines import KaplanMeierFitter, NelsonAalenFitter
-from lifelines.statistics import multivariate_logrank_test, pairwise_logrank_test
+รายละเอียดต่อไปนี้คือโค้ด Python ที่ใช้แก้ปัญหาและวิเคราะห์ชุดข้อมูล Telco Churn พร้อมผลลัพธ์และกราฟทั้งหมด ซึ่งได้รันจริงจาก Jupyter Notebook (\texttt{Assignment\_3\_Regression.ipynb})
 
-# 1. Load data and extract time-to-event variables
-df = pd.read_csv('Telco-Churn.csv')
-T = df['tenure']
-E = (df['Churn'] == 'Yes').astype(int)
-
-# 2. Overall Kaplan-Meier Survival Estimation
-kmf_overall = KaplanMeierFitter()
-kmf_overall.fit(T, event_observed=E, label='All Customers (N = 7,043)')
-
-# 3. Segmented Survival by Payment Method
-methods = ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)']
-kmf_dict = {}
-
-plt.figure(figsize=(9, 5.5))
-ax = plt.subplot(111)
-
-for method in methods:
-    mask = (df['PaymentMethod'] == method)
-    kmf = KaplanMeierFitter()
-    kmf.fit(T[mask], event_observed=E[mask], label=method)
-    kmf_dict[method] = kmf
-    kmf.plot_survival_function(ax=ax, ci_show=True)
-
-plt.title('Kaplan-Meier Survival Curves by Payment Method')
-plt.xlabel('Tenure (Months)')
-plt.ylabel('Survival Probability S(t)')
-plt.ylim(0, 1.05)
-plt.grid(True, linestyle='--', alpha=0.5)
-plt.savefig('plot_2_km_by_payment.pdf', bbox_inches='tight')
-plt.show()
-
-# 4. Multivariate Log-Rank Test
-logrank_res = multivariate_logrank_test(T, df['PaymentMethod'], E)
-print(f"Chi-square: {logrank_res.test_statistic:.4f}, p-value: {logrank_res.p_value:.4e}")
-
-# 5. Pairwise Log-Rank Test
-pairwise_res = pairwise_logrank_test(T, df['PaymentMethod'], E)
-print(pairwise_res.summary)
-\end{lstlisting}
+\input{notebook_appendix_3.tex}
 
 \end{document}
