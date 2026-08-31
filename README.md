@@ -33,7 +33,7 @@ cpe342-machine-learning/
 │   │   └── plot_1_*.pdf to plot_5_*.pdf       # High-resolution vector figures
 │   │
 │   └── Assignment 4_Tree-based and Ensemble Models/
-│       ├── Assignment_4_Tree_and_Ensemble.ipynb # Jupyter Notebook implementation
+│       ├── Assignment_4_Tree-Based_and_Ensemble_Models.ipynb # Jupyter Notebook implementation
 │       ├── MBA.csv                            # Dataset (N = 6,194, Labeled = 1,000)
 │       ├── CPE342_Assignment 4_main.tex      # LaTeX source report
 │       ├── CPE342_Assignment 4_main.pdf      # Compiled report (29 pages)
@@ -108,7 +108,7 @@ cpe342-machine-learning/
   * Feature importance analysis identifying GMAT, GPA, Work Experience, and Industry as primary decision determinants ($>80\%$ importance).
   * Hyperparameter validation curves for tree depth (`max_depth`) and ensemble scaling (`n_estimators`).
 * **Deliverables:**
-  * [`Assignment_4_Tree_and_Ensemble.ipynb`](./assignment/Assignment%204_Tree-based%20and%20Ensemble%20Models/Assignment_4_Tree_and_Ensemble.ipynb)
+  * [`Assignment_4_Tree-Based_and_Ensemble_Models.ipynb`](./assignment/Assignment%204_Tree-based%20and%20Ensemble%20Models/Assignment_4_Tree-Based_and_Ensemble_Models.ipynb)
   * [`CPE342_Assignment 4_main.pdf`](./assignment/Assignment%204_Tree-based%20and%20Ensemble%20Models/CPE342_Assignment%204_main.pdf)
 
 ---
