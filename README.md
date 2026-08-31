@@ -16,21 +16,29 @@ cpe342-machine-learning/
 │   │   ├── CPE342_Assignment 1_main.pdf       # Compiled report
 │   │   └── CPE342_Assignment 1_Full Result.pdf # Complete merged submission
 │   │
-│   └── Assignment 2_Training models via iterative approach/
-│       ├── Assignment_2_GD.ipynb              # Jupyter Notebook implementation
-│       ├── CPE342_Assignment 2_Data.csv       # Training dataset (n = 100)
-│       ├── CPE342_Assignment 2_Problem.pdf    # Problem specification
-│       ├── CPE342_Assignment 2_main.tex      # LaTeX source report
-│       ├── CPE342_Assignment 2_main.pdf      # Compiled report
-│       └── CPE342_Assignment 2_Full Result.pdf# Complete merged submission
+│   ├── Assignment 2_Training models via iterative approach/
+│   │   ├── Assignment_2_GD.ipynb              # Jupyter Notebook implementation
+│   │   ├── CPE342_Assignment 2_Data.csv       # Training dataset (n = 100)
+│   │   ├── CPE342_Assignment 2_Problem.pdf    # Problem specification
+│   │   ├── CPE342_Assignment 2_main.tex      # LaTeX source report
+│   │   ├── CPE342_Assignment 2_main.pdf      # Compiled report
+│   │   └── CPE342_Assignment 2_Full Result.pdf# Complete merged submission
 │   │
-│   └── Assignment 3_Regression/
-│       ├── Assignment_3_Regression.ipynb      # Jupyter Notebook implementation
-│       ├── Telco-Churn.csv                    # Dataset (N = 7,043)
-│       ├── CPE342_Assignment 3_main.tex      # LaTeX source report
-│       ├── CPE342_Assignment 3_main.pdf      # Compiled report
-│       ├── notebook_appendix_3.tex           # LaTeX appendix with executed notebook cells
-│       └── plot_1_*.pdf to plot_5_*.pdf       # High-resolution vector figures
+│   ├── Assignment 3_Regression/
+│   │   ├── Assignment_3_Regression.ipynb      # Jupyter Notebook implementation
+│   │   ├── Telco-Churn.csv                    # Dataset (N = 7,043)
+│   │   ├── CPE342_Assignment 3_main.tex      # LaTeX source report
+│   │   ├── CPE342_Assignment 3_main.pdf      # Compiled report
+│   │   ├── notebook_appendix_3.tex           # LaTeX appendix with executed notebook cells
+│   │   └── plot_1_*.pdf to plot_5_*.pdf       # High-resolution vector figures
+│   │
+│   └── Assignment 4_Tree-based and Ensemble Models/
+│       ├── Assignment_4_Tree_and_Ensemble.ipynb # Jupyter Notebook implementation
+│       ├── MBA.csv                            # Dataset (N = 6,194, Labeled = 1,000)
+│       ├── CPE342_Assignment 4_main.tex      # LaTeX source report
+│       ├── CPE342_Assignment 4_main.pdf      # Compiled report (29 pages)
+│       ├── notebook_appendix_4.tex           # LaTeX appendix with executed notebook cells
+│       └── plot_1_*.pdf to plot_6_*.pdf       # High-resolution vector figures
 │
 ├── lecture/                                   # Lecture slides and demo notebooks
 │   ├── Lecture 1–12 PDFs
@@ -88,16 +96,35 @@ cpe342-machine-learning/
 
 ---
 
+### [Assignment 4: Tree-Based and Ensemble Models (MBA Admission Prediction)](./assignment/Assignment%204_Tree-based%20and%20Ensemble%20Models/)
+* **Topic:** Tree-based supervised classification, Bagging, Random Subspace, and Gradient Boosting on MBA Admissions Data ($N = 6,194$, Labeled Cohort $N = 1,000$).
+* **Key Tasks:**
+  * Mathematical formulation of Entropy $H(S)$, Information Gain $IG(S, A)$, Gini Impurity, and Tree Pruning (CCP).
+  * Variance reduction theory of Bagging ($\text{Var} = \rho \sigma^2 + \frac{1-\rho}{B}\sigma^2$) and Random Subspace feature sampling in Random Forest.
+  * Gradient Boosting formulation via additive pseudo-residuals $r_{im} = -\left[\frac{\partial L}{\partial F(x_i)}\right]$.
+  * Implementation and benchmark of 3 models: **Decision Tree**, **Random Forest**, and **Gradient Boosting**.
+  * Handling 9:1 class imbalance (`Admit: 90%`, `Waitlist: 10%`) via cost-sensitive weighting (`class_weight='balanced'`) and stratified sampling.
+  * Comparative evaluation across Confusion Matrices, Precision, Recall, F1-Score, ROC Curves, and 5-Fold Stratified Cross-Validation.
+  * Feature importance analysis identifying GMAT, GPA, Work Experience, and Industry as primary decision determinants ($>80\%$ importance).
+  * Hyperparameter validation curves for tree depth (`max_depth`) and ensemble scaling (`n_estimators`).
+* **Deliverables:**
+  * [`Assignment_4_Tree_and_Ensemble.ipynb`](./assignment/Assignment%204_Tree-based%20and%20Ensemble%20Models/Assignment_4_Tree_and_Ensemble.ipynb)
+  * [`CPE342_Assignment 4_main.pdf`](./assignment/Assignment%204_Tree-based%20and%20Ensemble%20Models/CPE342_Assignment%204_main.pdf)
+
+---
+
 ## 🛠️ Environment & Prerequisites
 
 * **Python:** 3.10+
-* **Core Libraries:** `numpy`, `pandas`, `matplotlib`, `scipy`, `lifelines`, `statsmodels`, `seaborn`, `jupyter`
+* **Core Libraries:** `numpy`, `pandas`, `scikit-learn`, `matplotlib`, `scipy`, `lifelines`, `statsmodels`, `seaborn`, `jupyter`
 * **Typography:** TH Sarabun New / Sarabun font support for Matplotlib charts
 * **Report Compilation:** XeLaTeX / TeX Live / MiKTeX (Polyglossia + Sarabun font)
 
 ---
 
 ## 👤 Author
-* **Wisit Suwannao**
-* Student ID: `67070501042`
-* Department of Computer Engineering, KMUTT
+
+* **Wisit Suwannao (วิศิษฐ์ สุวรรณเนาว์)**
+* **Student ID:** 67070501042
+* **Department:** Computer Engineering, Faculty of Engineering
+* **Institution:** King Mongkut's University of Technology Thonburi (KMUTT)

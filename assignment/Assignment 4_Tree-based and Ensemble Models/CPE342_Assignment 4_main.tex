@@ -1,0 +1,368 @@
+% Compile: xelatex "CPE342_Assignment 4_main.tex" (รัน 2 รอบ)
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{thai}
+\setotherlanguage{english}
+
+\setmainfont{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+    BoldItalicFont = Sarabun-BoldItalic,
+]
+\newfontfamily\thaifonttt{Sarabun}[
+    BoldFont       = Sarabun-Bold,
+    ItalicFont     = Sarabun-Italic,
+]
+
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{needspace}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{upquote}
+\tcbuselibrary{skins, breakable}
+
+\XeTeXlinebreaklocale "th"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\sloppy
+
+\definecolor{captioncol}{RGB}{80, 80, 80}
+\definecolor{accentblue}{RGB}{37, 99, 235}
+\definecolor{codebg}{RGB}{248, 250, 252}
+\definecolor{codeframe}{RGB}{203, 213, 225}
+\definecolor{keyword}{RGB}{124, 58, 237}
+\definecolor{string}{RGB}{22, 163, 74}
+\definecolor{comment}{RGB}{100, 116, 139}
+\definecolor{output}{RGB}{30, 58, 138}
+\captionsetup{font={small, color=captioncol}, justification=centering}
+
+\lstdefinestyle{pycode}{
+    language=Python,
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{keyword}\bfseries,
+    stringstyle=\color{string},
+    commentstyle=\color{comment}\itshape,
+    numberstyle=\tiny\color{comment},
+    numbers=left,
+    numbersep=8pt,
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    xleftmargin=16pt,
+    xrightmargin=4pt,
+    literate={≈}{{$\approx$}}1 {α}{{$\alpha$}}1 {β}{{$\beta$}}1 {λ}{{$\lambda$}}1 {Λ}{{$\Lambda$}}1 {χ}{{$\chi$}}1 {η}{{$\eta$}}1 {ρ}{{$\rho$}}1 {σ}{{$\sigma$}}1
+}
+
+\lstdefinestyle{output}{
+    basicstyle=\ttfamily\scriptsize\color{output},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    numbers=none,
+    xleftmargin=8pt,
+    xrightmargin=4pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    literate={≈}{{$\approx$}}1 {α}{{$\alpha$}}1 {β}{{$\beta$}}1 {λ}{{$\lambda$}}1 {Λ}{{$\Lambda$}}1 {χ}{{$\chi$}}1 {η}{{$\eta$}}1 {ρ}{{$\rho$}}1 {σ}{{$\sigma$}}1
+}
+
+\widowpenalty=10000
+\clubpenalty=10000
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=14pt}
+
+\newtcolorbox{ansbox}[1][]{
+    colback=green!5!white, colframe=green!50!black,
+    boxrule=0.5pt, arc=4pt, left=8pt, right=8pt, top=5pt, bottom=5pt, #1
+}
+
+% =================================================================
+\begin{document}
+
+\begin{center}
+    {\Large\textbf{CPE 342 Machine Learning}}\\[2pt]
+    {\Large\textbf{Assignment 4: Tree-Based and Ensemble Models}}\\[4pt]
+    {\large Predicting MBA Admission via Decision Trees, Random Forests, and Gradient Boosting}\\[6pt]
+    \textcolor{accentblue}{67070501042 วิศิษฐ์ สุวรรณเนาว์}
+\end{center}
+
+\noindent\rule{\textwidth}{0.4pt}\vspace{4pt}
+
+\section*{1. ภาพรวมของปัญหาและวัตถุประสงค์\\ \large(Problem Overview \& Objectives)}
+
+ในงานมอบหมาย Assignment 4 นี้ เราศึกษา พัฒนา และเปรียบเทียบประสิทธิภาพของแบบจำลองประเภท \textbf{Tree-Based และ Ensemble Learning} เพื่อทำนายผลการพิจารณารับนักศึกษาเข้าศึกษาต่อในหลักสูตรบริหารธุรกิจมหาบัณฑิต (\textbf{MBA Admission Prediction}) บนชุดข้อมูล \texttt{MBA.csv} ซึ่งประกอบด้วยข้อมูลประวัติของผู้สมัครรวม $N = 6,194$ รายการ โดยมีกลุ่มข้อมูลที่ได้รับการตัดสินผลแล้ว (Labeled Cohort) จำนวน $1,000$ รายการ แบ่งเป็นผู้ที่ผ่านการคัดเลือก (\textbf{Admit: 900 ราย หรือ 90\%}) และผู้ที่อยู่ในบัญชีสำรอง (\textbf{Waitlist: 100 ราย หรือ 10\%})
+
+\subsection*{วัตถุประสงค์หลักของการทดลอง}
+\begin{enumerate}[leftmargin=18pt, itemsep=2pt]
+    \item เพื่อศึกษาและสร้างแบบจำลองการจำแนกประเภท 3 สถาปัตยกรรมหลักตามเนื้อหา Lecture 5:
+    \begin{itemize}
+        \item \textbf{Decision Tree Classifier}: ต้นไม้ตัดสินใจเดี่ยวแบบแบ่งส่วนตามเกณฑ์ Entropy และ Information Gain
+        \item \textbf{Random Forest Classifier}: โมเดลกลุ่มแบบ Bagging ร่วมกับการสุ่มเลือกคุณลักษณะ (Random Subspace)
+        \item \textbf{Gradient Boosting Classifier}: โมเดลกลุ่มแบบ Boosting แบบเรียงลำดับที่ปรับจูนค่าน้ำหนักตาม Pseudo-Residuals
+    \end{itemize}
+    \item เพื่อวิเคราะห์และจัดการกับภาวะ \textbf{ข้อมูลไม่สมดุล (Class Imbalance)} ในสัดส่วน 9:1 ผ่านการปรับค่าน้ำหนักความสูญเสียแบบถ่วงดุล (\texttt{class\_weight='balanced'}) และการใช้เกณฑ์ประเมินผลที่เหมาะสม
+    \item เพื่อวิเคราะห์ความสำคัญของตัวแปรคุณลักษณะ (\textbf{Feature Importance}) ได้แก่ เกรดเฉลี่ยสะสม (GPA), คะแนนสอบ GMAT, ประสบการณ์การทำงาน (Work Experience) และสายงานธุรกิจ (Industry) ต่อผลการคัดเลือก
+    \item เพื่อประเมินประสิทธิภาพเชิงลึกด้วยตัวชี้วัดที่หลากหลาย ได้แก่ Accuracy, Precision, Recall, F1-Score, Confusion Matrix, ROC-AUC Curve และ 5-Fold Stratified Cross-Validation
+\end{enumerate}
+
+\section*{2. กรอบทฤษฎีและคณิตศาสตร์\\ \large(Theoretical Framework \& Mathematical Formulations)}
+
+เนื้อหาในส่วนนี้อิงตามเอกสารการสอน \textbf{Lecture 5: Tree-Based and Ensemble Models}
+
+\subsection*{2.1 การเหนี่ยวนำต้นไม้ตัดสินใจและเกณฑ์การแบ่ง\\ \normalsize(Decision Tree Induction \& Splitting Criteria)}
+ต้นไม้ตัดสินใจ (Decision Tree) ใช้ระเบียบวิธีแบ่งแยกแบบวนซ้ำ (Recursive Partitioning) โดยมีเป้าหมายเพื่อแบ่งกลุ่มข้อมูลในแต่ละ Node ให้มีความบริสุทธิ์ (Purity) สูงที่สุด
+
+\subsubsection*{1. เอนโทรปี (Entropy)}
+เอนโทรปีคือค่าชี้วัดความไร้ระเบียบหรือความไม่แน่นอนของชุดข้อมูล $S$ นิยามโดย:
+\begin{equation}
+    H(S) = -\sum_{i=1}^{C} p_i \log_2(p_i)
+\end{equation}
+สำหรับปัญหา Binary Classification ($C = 2$): $H(S) = -p_1 \log_2(p_1) - p_2 \log_2(p_2)$ โดยหากทุกตัวอย่างอยู่ในคลาสเดียวกันหมด $H(S) = 0$ (Pure) และหากมีสัดส่วนคลาสละ 50\% $H(S) = 1.0$ (Maximum Disorder)
+
+\subsubsection*{2. อัตราการได้รับสารสนเทศ (Information Gain: IG)}
+อัตราการลดลงของเอนโทรปีเมื่อทำการแบ่งชุดข้อมูล $S$ ด้วยตัวแปรคุณลักษณะ $A$:
+\begin{equation}
+    IG(S, A) = H(S) - \sum_{v \in \text{Values}(A)} \frac{|S_v|}{|S|} H(S_v)
+\end{equation}
+อัลกอริทึมจะเลือกตัวแปร $A^*$ และจุดตัด (Split Point) ที่ให้ค่า $IG(S, A)$ สูงที่สุดในแต่ละ Node
+
+\subsubsection*{3. ดัชนีความไม่บริสุทธิ์ของจีนี (Gini Impurity)}
+เกณฑ์ทางเลือกที่นิยมใช้ในสถาปัตยกรรม CART:
+\begin{equation}
+    Gini(S) = 1 - \sum_{i=1}^{C} p_i^2
+\end{equation}
+
+\subsection*{2.2 การตัดแต่งกิ่งต้นไม้และการควบคุมความซับซ้อน\\ \normalsize(Tree Pruning \& Regularization)}
+ต้นไม้ตัดสินใจเดี่ยวที่ไม่มีการควบคุมความลึกจะขยายกิ่งก้านจนกระทั่งทุก Leaf Node มีเอนโทรปีเป็นศูนย์ ซึ่งก่อให้เกิดภาวะ \textbf{Overfitting} (High Variance) การควบคุมทำได้โดยกำหนดความลึกสูงสุด (\texttt{max\_depth}), จำนวนตัวอย่างขั้นต่ำในการแบ่ง (\texttt{min\_samples\_split}) และการตัดแต่งกิ่งตามความซับซ้อนของต้นไม้ (Cost-Complexity Pruning: CCP):
+\begin{equation}
+    R_\alpha(T) = R(T) + \alpha |T|
+\end{equation}
+เมื่อ $R(T)$ คือความคลาดเคลื่อนในการจำแนก, $|T|$ คือจำนวน Terminal Nodes และ $\alpha \ge 0$ คือค่าปรับโทษความซับซ้อน
+
+\subsection*{2.3 อัลกอริทึม Random Forest และการลดความแปรปรวน\\ \normalsize(Random Forest \& Variance Reduction via Bagging)}
+Random Forest แก้ไขข้อจำกัดด้านความแปรปรวนสูงของต้นไม้เดี่ยวด้วยการผสาน 2 กลไก:
+\begin{enumerate}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{Bootstrap Aggregating (Bagging)}: สุ่มสร้างชุดข้อมูลฝึกสอนย่อย $B$ ชุด โดยการสุ่มแบบใส่คืน (Sampling with Replacement) ขนาด $N$ เท่าเดิม
+    \item \textbf{Random Subspace (Feature Sampling)}: ในการแบ่งแต่ละ Node จะสุ่มเลือกคุณลักษณะมาพิจารณาเพียง $m = \lfloor\sqrt{p}\rfloor$ จากทั้งหมด $p$ คุณลักษณะ เพื่อลดความสัมพันธ์ร่วมกันระหว่างต้นไม้แต่ละต้น (Tree Decorrelation)
+\end{enumerate}
+
+ทฤษฎีการลดความแปรปรวนของโมเดลกลุ่มระบุว่า หากต้นไม้ $B$ ต้นมีความแปรปรวน $\sigma^2$ และมีค่าสหสัมพันธ์เฉลี่ย $\rho$ ความแปรปรวนของค่าเฉลี่ยของโมเดลกลุ่มจะเป็น:
+\begin{equation}
+    \text{Var}\left(\frac{1}{B}\sum_{b=1}^B T_b(x)\right) = \rho \sigma^2 + \frac{1 - \rho}{B}\sigma^2
+\end{equation}
+เมื่อ $B \to \infty$ พจน์ที่สองจะเข้าใกล้ศูนย์ ทำให้ความแปรปรวนรวมลดลงเหลือเพียง $\rho \sigma^2$ ซึ่งการสุ่มเลือก Feature จะช่วยลดค่า $\rho$ ให้ต่ำลงอย่างมีนัยสำคัญ
+
+\subsection*{2.4 การเรียนรู้แบบ Gradient Boosting\\ \normalsize(Gradient Boosting via Sequential Residual Fitting)}
+Gradient Boosting สร้างแบบจำลองกลุ่มแบบเพิ่มพูน (Additive Model) ทีละขั้นตอน:
+\begin{equation}
+    F_M(x) = F_0(x) + \sum_{m=1}^M \eta \cdot h_m(x)
+\end{equation}
+เมื่อ $\eta \in (0, 1]$ คืออัตราการเรียนรู้ (Learning Rate / Shrinkage) และ $h_m(x)$ คือ Base Learner (ต้นไม้ขนาดเล็ก) ที่ถูกเทรนให้เข้ากับค่า \textbf{Pseudo-Residuals} ซึ่งคือความชันลบของ Loss Function $L(y, F(x))$:
+\begin{equation}
+    r_{im} = -\left[\frac{\partial L(y_i, F(x_i))}{\partial F(x_i)}\right]_{F = F_{m-1}}
+\end{equation}
+สำหรับ Binary Log-Loss ค่า $r_{im} = y_i - p_{m-1}(x_i)$ โดย $p(x) = \frac{1}{1 + e^{-F(x)}}$
+
+\subsection*{2.5 เมทริกซ์และตัวชี้วัดประสิทธิภาพสำหรับข้อมูลที่ไม่สมดุล\\ \normalsize(Evaluation Metrics for Imbalanced Datasets)}
+เนื่องจากชุดข้อมูลมีคลาส Admit มากถึง 90\% การใช้ Accuracy เพียงอย่างเดียวจะเกิด \textbf{Accuracy Paradox} จึงจำเป็นต้องประเมินด้วยเมทริกซ์เฉพาะทาง:
+\begin{equation}
+    \text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall (Sensitivity)} = \frac{TP}{TP + FN}
+\end{equation}
+\begin{equation}
+    F_1\text{-Score} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation}
+\begin{equation}
+    \text{ROC-AUC} = \int_0^1 \text{TPR}(\text{FPR}^{-1}(u))\,du
+\end{equation}
+
+\section*{3. โครงสร้างชุดข้อมูลและการจัดเตรียมตัวแปร\\ \large(Dataset Architecture \& Preprocessing)}
+
+ชุดข้อมูล \texttt{MBA.csv} มีขนาด $6,194$ แถว และ $10$ คอลัมน์ โดยมีรายละเอียดการเตรียมข้อมูลดังนี้:
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{การคัดกรองข้อมูลเป้าหมาย}: คัดเลือกเฉพาะ $1,000$ แถวที่มีการบันทึกสถานะ \texttt{admission} (`Admit' = 900 ราย, `Waitlist' = 100 ราย)
+    \item \textbf{การกำหนดคลาสเป้าหมาย}: กำหนดให้ $y = 0$ สำหรับกลุ่ม `Admit' (เสียงข้างมาก) และ $y = 1$ สำหรับกลุ่ม `Waitlist' (เสียงข้างน้อย / คลาสที่สนใจ)
+    \item \textbf{การตัดตัวแปรระบุตัวตน}: ลบคอลัมน์ \texttt{application\_id} เนื่องจากไม่มีคุณค่าทางการทำนาย
+    \item \textbf{การจัดการข้อมูลสูญหาย}: ตัวแปร \texttt{race} มีค่าสูญหาย จึงถูกแทนที่ด้วยกลุ่มระบุเฉพาะ `Missing'
+    \item \textbf{การแปลงคุณลักษณะหมวดหมู่}: ตัวแปร \texttt{gender}, \texttt{international}, \texttt{major}, \texttt{race}, \texttt{work\_industry} ถูกแปลงเป็น Category Codes สำหรับสถาปัตยกรรม Tree
+    \item \textbf{การแบ่งชุดข้อมูล}: แบ่งข้อมูลแบบ Stratified Train/Test Split ในสัดส่วน 80/20 ($N_{train} = 800$, $N_{test} = 200$) เพื่อรักษาสัดส่วนคลาส $9:1$ ให้คงที่ทั้งสองชุด
+\end{itemize}
+
+\section*{4. ผลการทดลองและการวินิจฉัยโมเดล\\ \large(Experimental Results \& Diagnostic Plots)}
+
+\subsection*{4.1 การวิเคราะห์การแจกแจงตัวแปรนำเข้า\\ \normalsize(Exploratory Data Distributions)}
+การตรวจสอบพฤติกรรมการแจกแจงของตัวแปรเชิงตัวเลขระหว่างผู้สมัครที่ได้รับ Admit ($n=900$) และ Waitlist ($n=100$) แสดงใน Figure 1
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{plot_1_eda_distributions.pdf}
+    \caption{\textbf{Exploratory Data Analysis \& Feature Distributions}: ซ้าย: การแจกแจงความหนาแน่น (KDE) ของเกรดเฉลี่ย (GPA) กลาง: การแจกแจงคะแนน GMAT ขวา: แผนภาพ Boxplot ของประสบการณ์การทำงาน (Work Experience)}
+\end{figure}
+
+\noindent
+\textbf{การแปลผล Figure 1}: ค่าเฉลี่ยของ GPA ($\mu \approx 3.25$) และ GMAT ($\mu \approx 651$) มีความใกล้เคียงกันระหว่างสองกลุ่ม โดยกลุ่ม Admit มีการกระจายตัวของประสบการณ์ทำงานที่สูงกว่าเล็กน้อย ซึ่งสะท้อนว่าการพิจารณารับเข้าศึกษาไม่ได้ขึ้นอยู่กับตัวแปรเดี่ยว แต่เกิดจากเงื่อนไขความสัมพันธ์แบบไม่เชิงเส้นหลายตัวแปรร่วมกัน
+
+\subsection*{4.2 โครงสร้างและกฎการตัดสินใจของ Decision Tree\\ \normalsize(Decision Tree Architecture \& Splitting Rules)}
+โครงสร้างของต้นไม้ตัดสินใจเดี่ยวที่ผ่านการตัดแต่งกิ่ง (\texttt{max\_depth=3}, \texttt{class\_weight='balanced'}) แสดงใน Figure 2
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{plot_2_decision_tree.pdf}
+    \caption{\textbf{Pruned Decision Tree Structure (Entropy Criterion, max\_depth=3)}: แผนผังต้นไม้ตัดสินใจแสดงเงื่อนไขการตัดแบ่งในแต่ละ Node, ค่าเอนโทรปี, จำนวนตัวอย่าง และคลาสผลลัพธ์}
+\end{figure}
+
+\noindent
+\textbf{การแปลผล Figure 2}: โหนดราก (Root Node) เริ่มต้นด้วยการตัดแบ่งที่ตัวแปร \texttt{work\_industry} และ \texttt{gpa} สะท้อนว่าประสบการณ์ในสายงานและผลการเรียนระดับปริญญาตรีเป็นด่านแรกในการคัดกรองผู้สมัคร
+
+\subsection*{4.3 การวิเคราะห์ความสำคัญของตัวแปรคุณลักษณะ\\ \normalsize(Feature Importance Analysis)}
+ค่าความสำคัญของคุณลักษณะ (Mean Decrease in Impurity) เปรียบเทียบระหว่างทั้ง 3 โมเดล แสดงใน Figure 3
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plot_3_feature_importance.pdf}
+    \caption{\textbf{Feature Importance Comparison Across Tree-Based Models}: เปรียบเทียบระดับความสำคัญของตัวแปรคุณลักษณะทั้ง 8 ตัวแปร ระหว่าง Decision Tree, Random Forest และ Gradient Boosting}
+\end{figure}
+
+\noindent
+\textbf{การแปลผล Figure 3}: ตัวแปร 4 อันดับแรกที่มีอิทธิพลสูงสุดคือ \textbf{GMAT Score}, \textbf{GPA}, \textbf{Work Experience} และ \textbf{Work Industry} ซึ่งมีสัดส่วนความสำคัญรวมกันมากกว่า $80\%$ ในทุกโมเดล ขณะที่ตัวแปรด้านประชากรศาสตร์ (\texttt{gender}, \texttt{race}, \texttt{international}) มีค่าน้อยมาก
+
+\subsection*{4.4 การประเมินผลลัพธ์ผ่าน Confusion Matrices\\ \normalsize(Confusion Matrix Diagnostic Analysis)}
+เมทริกซ์ความสับสนของการทำนายบนชุดทดสอบ ($N_{test} = 200$) แสดงใน Figure 4
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{plot_4_confusion_matrices.pdf}
+    \caption{\textbf{Comparative Confusion Matrices}: เมทริกซ์ความสับสนของ Decision Tree, Random Forest และ Gradient Boosting บนชุดทดสอบ ($n=200$ โดยมี Admit 180 ราย และ Waitlist 20 ราย)}
+\end{figure}
+
+\noindent
+\textbf{การแปลผล Figure 4}: 
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{Decision Tree}: ตรวจจับกลุ่ม Waitlist ได้มากที่สุด ($8$ จาก $20$ ราย, Recall = $40\%$) แต่แลกด้วย False Positive ที่สูง (ทำนาย Admit ผิดเป็น Waitlist ถึง $65$ ราย)
+    \item \textbf{Random Forest}: สามารถจัดสรรความสมดุลได้ดีขึ้น ตรวจจับ Waitlist ได้ $4$ ราย และทำนายกลุ่ม Admit ถูกต้อง $142$ ราย (Accuracy = $73.0\%$)
+    \item \textbf{Gradient Boosting}: เน้นความแม่นยำของกลุ่มใหญ่ ทำนาย Admit ถูกต้อง $178$ จาก $180$ ราย (Accuracy = $89.5\%$) แต่ตรวจจับ Waitlist ได้เพียง $1$ ราย
+\end{itemize}
+
+\subsection*{4.5 การเปรียบเทียบประสิทธิภาพผ่านเส้นโค้ง ROC และค่า AUC\\ \normalsize(ROC Curves \& AUC Discrimination)}
+เส้นโค้ง ROC เปรียบเทียบความสามารถในการจำแนกระหว่างคลาสแสดงใน Figure 5
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{plot_5_roc_curves.pdf}
+    \caption{\textbf{Receiver Operating Characteristic (ROC) Curves Comparison}: เส้นโค้ง ROC แสดงความสัมพันธ์ระหว่าง True Positive Rate กับ False Positive Rate พร้อมค่า AUC สำหรับทั้ง 3 โมเดล}
+\end{figure}
+
+\noindent
+\textbf{การแปลผล Figure 5}: \textbf{Random Forest} ให้ค่าพื้นที่ใต้เส้นโค้งการจำแนกสูงสุด ($\text{AUC} = 0.5519$ บน Test Set และ $0.6237$ บน 5-Fold Cross Validation) บ่งชี้ว่าการจัดลำดับความน่าจะเป็นของ Random Forest มีความเสถียรที่สุด
+
+\subsection*{4.6 การปรับจูนไฮเปอร์พารามิเตอร์และการวิเคราะห์ Bias-Variance\\ \normalsize(Hyperparameter Validation \& Bias-Variance Tradeoff)}
+เส้นโค้งการตรวจสอบความถูกต้อง (Validation Curves) บน 5-Fold Cross Validation แสดงใน Figure 6
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{plot_6_hyperparameter_tuning.pdf}
+    \caption{\textbf{Hyperparameter Validation Curves \& Bias-Variance Dynamics}: ซ้าย: ความลึกของ Decision Tree (\texttt{max\_depth}) ขวา: จำนวนต้นไม้ใน Random Forest (\texttt{n\_estimators})}
+\end{figure}
+
+\noindent
+\textbf{การแปลผล Figure 6}: 
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{Decision Tree (ซ้าย)}: เมื่อความลึกเพิ่มขึ้นเกิน $3-4$ ระดับ คะแนน Training AUC จะพุ่งสูงขึ้นแต่คะแนน CV AUC จะเริ่มลดลงอย่างรวดเร็ว สะท้อนภาวะ Overfitting อย่างชัดเจน การกำหนด $\text{max\_depth} = 3$ จึงเป็นจุดที่เหมาะสมที่สุด
+    \item \textbf{Random Forest (ขวา)}: ประสิทธิภาพการจำแนกจะเพิ่มขึ้นอย่างรวดเร็วและคงตัว (Asymptotic Plateau) เมื่อจำนวนต้นไม้ $B \ge 100-150$ ต้น ยืนยันว่าการเพิ่มจำนวนต้นไม้ใน Random Forest ไม่ก่อให้เกิด Overfitting
+\end{itemize}
+
+\subsection*{4.7 ตารางสรุปเปรียบเทียบประสิทธิภาพเชิงปริมาณ\\ \normalsize(Quantitative Performance Benchmark)}
+
+\begin{table}[H]
+\centering
+\caption{ตารางสรุปผลการทดลองเปรียบเทียบประสิทธิภาพแบบจำลองทั้ง 3 สถาปัตยกรรม}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c c c c}
+\toprule
+\textbf{แบบจำลอง (Model)} & \textbf{Accuracy} & \textbf{Admit Prec} & \textbf{Admit Rec} & \textbf{Admit F1} & \textbf{Waitlist Prec} & \textbf{Waitlist Rec} & \textbf{Waitlist F1} & \textbf{Test AUC} & \textbf{5-Fold CV AUC} \\
+\midrule
+\textbf{Decision Tree (Pruned)} & 61.50\% & 0.906 & 0.639 & 0.749 & 0.110 & \textbf{0.400} & \textbf{0.172} & 0.5258 & 0.6178 \\
+\textbf{Random Forest (Ensemble)} & 73.00\% & 0.899 & 0.789 & 0.840 & 0.095 & 0.200 & 0.129 & \textbf{0.5519} & \textbf{0.6237} \\
+\textbf{Gradient Boosting (GBM)} & \textbf{89.50\%} & \textbf{0.904} & \textbf{0.989} & \textbf{0.944} & \textbf{0.333} & 0.050 & 0.087 & 0.4981 & 0.6174 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section*{5. การอภิปรายผลเชิงลึกและข้อมูลเชิงธุรกิจ\\ \large(In-Depth Discussion \& Business Insights)}
+
+\subsection*{5.1 พลวัตของความไม่สมดุลของข้อมูลและมาตรการแก้ไข\\ \normalsize(Class Imbalance Dynamics \& Cost-Sensitive Mitigation)}
+ในชุดข้อมูล MBA นี้ ผู้สมัครที่ได้รับการ Admit มีสัดส่วนถึง 90\% ส่งผลให้แบบจำลองมาตรฐานมีแนวโน้มที่จะทำนายว่าทุกคนได้รับ Admit เพื่อเพิ่มค่า Accuracy ให้สูงที่สุด ($90\%$) การนำเทคนิค \textbf{Cost-Sensitive Weighting} (\texttt{class\_weight='balanced'}) มาปรับใช้ช่วยบังคับให้ Decision Tree และ Random Forest เพิ่มโทษต่อความผิดพลาดในคลาส Waitlist ส่งผลให้สามารถตรวจจับผู้สมัครกลุ่มสำรองได้จริง
+
+\subsection*{5.2 การเปรียบเทียบสถาปัตยกรรมแบบจำลองเดี่ยวและแบบกลุ่ม\\ \normalsize(Single Tree vs. Bagging vs. Boosting Comparison)}
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+    \item \textbf{Decision Tree (White-Box)}: โดดเด่นด้านความโปร่งใส สามารถอธิบายกฎการคัดเลือกให้คณะกรรมการเข้าใจได้ง่าย แต่มีข้อจำกัดด้านความแปรปรวนสูงและความแม่นยำโดยรวมต่ำ
+    \item \textbf{Random Forest (Variance Reducer)}: เป็นสถาปัตยกรรมที่ดีที่สุดในภาพรวมสำหรับการจัดลำดับผู้สมัคร (Ranking) โดยให้ค่า Cross-Validation AUC สูงที่สุด ($0.6237$) และมีความทนทานต่อสัญญาณรบกวน
+    \item \textbf{Gradient Boosting (Bias Reducer)}: ปรับลดความคลาดเคลื่อนได้อย่างทรงพลัง เหมาะสำหรับการทำนายผลลัพธ์ของคลาสหลัก แต่จำเป็นต้องมีการปรับเกณฑ์ความน่าจะเป็น (Threshold Moving) หากต้องการเพิ่ม Recall ของคลาสสำรอง
+\end{itemize}
+
+\subsection*{5.3 ปัจจัยเชิงคุณลักษณะและการแปลผลต่อกระบวนการรับสมัคร\\ \normalsize(Admission Determinants \& Committee Decision Insights)}
+ผลการวิเคราะห์ Feature Importance สอดคล้องกับเกณฑ์การรับเข้าศึกษาต่อระดับบัณฑิตศึกษาชั้นนำระดับสากล โดย \textbf{GMAT Score} และ \textbf{GPA} ทำหน้าที่เป็นตัวกรองพื้นฐานทางวิชาการ (Academic Aptitude) ขณะที่ \textbf{Work Experience} และ \textbf{Industry} เป็นตัวตัดสินความพร้อมเชิงวิชาชีพ
+
+\section*{6. ข้อเสนอแนะเชิงกลยุทธ์และการนำไปประยุกต์ใช้\\ \large(Strategic Recommendations)}
+
+\begin{ansbox}
+\textbf{ข้อเสนอแนะเชิงกลยุทธ์สำหรับระบบคัดเลือกนักศึกษา (Admissions Pipeline):}
+\begin{enumerate}[leftmargin=16pt, itemsep=2pt]
+    \item \textbf{ระบบคัดกรองแบบลำดับขั้น (Hybrid Two-Stage Screening Pipeline)}:
+    \begin{itemize}
+        \item \textit{Stage 1}: ใช้ \textbf{Random Forest} คำนวณค่าความน่าจะเป็นในการคัดเลือกเพื่อแบ่งกลุ่มผู้สมัครที่ผ่านเกณฑ์ชัดเจน (Auto-Admit) ออกจากกลุ่มที่มีความเสี่ยง
+        \item \textit{Stage 2}: นำผู้สมัครในกลุ่มก้ำกึ่ง (Borderline / Waitlist Candidates) เข้าสู่การพิจารณาโดยคณะกรรมการ โดยใช้กฎเกณฑ์ของ \textbf{Decision Tree} ช่วยตรวจสอบเงื่อนไขอย่างโปร่งใส
+    \end{itemize}
+    \item \textbf{การปรับเกณฑ์ Threshold สำหรับกลุ่มสำรอง}: ปรับลดเกณฑ์ความน่าจะเป็น (Classification Threshold) สำหรับกลุ่ม Waitlist จาก 0.50 ลงมาที่ 0.25--0.30 เพื่อเพิ่มความครอบคลุมในการตรวจจับผู้สมัครที่มีศักยภาพแต่อยู่ในกลุ่มสำรอง
+\end{enumerate}
+\end{ansbox}
+
+\section*{7. สรุปผลการดำเนินงาน\\ \large(Conclusion)}
+
+การทดลองบนชุดข้อมูล \texttt{MBA.csv} ยืนยันถึงคุณลักษณะเด่นและข้อจำกัดของแบบจำลองทั้ง 3 ประเภทตามทฤษฎีใน Lecture 5 โดย \textbf{Random Forest} เป็นแบบจำลองที่มีความเสถียรและให้ประสิทธิภาพในการจำแนกกลุ่มภาพรวมสูงสุด ($\text{CV AUC} = 0.6237$) ขณะที่ \textbf{Decision Tree} มีความโดดเด่นในด้านความสามารถในการอธิบายผล และ \textbf{Gradient Boosting} ให้ค่าความแม่นยำของกลุ่มหลักสูงสุด ($89.50\%$)
+
+\needspace{8\baselineskip}
+\section*{สรุปผลลัพธ์ (Summary of Results)}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{หัวข้อ} & \textbf{ผลลัพธ์และข้อสรุป} \\
+\midrule
+\textbf{ชุดข้อมูล} & MBA Admission Dataset ($N = 6,194$, Labeled Cohort $= 1,000$): Admit $= 900$ (90\%), Waitlist $= 100$ (10\%) \\[4pt]
+\textbf{Decision Tree} & Accuracy $= 61.50\%$, Waitlist Recall $= \mathbf{40.0\%}$, Test AUC $= 0.5258$, 5-Fold CV AUC $= 0.6178$ \\
+                       & ตัดแต่งกิ่งที่ $\text{max\_depth} = 3$ ช่วยป้องกัน Overfitting และให้ผังการตัดสินใจที่โปร่งใส \\[4pt]
+\textbf{Random Forest} & Accuracy $= 73.00\%$, Waitlist Recall $= 20.0\%$, Test AUC $= \mathbf{0.5519}$, 5-Fold CV AUC $= \mathbf{0.6237}$ \\
+                       & ให้ประสิทธิภาพการจำแนกและความเสถียรสูงสุดจากกลไก Bagging + Random Subspace \\[4pt]
+\textbf{Gradient Boosting} & Accuracy $= \mathbf{89.50\%}$, Admit Recall $= \mathbf{98.9\%}$, Test AUC $= 0.4981$, 5-Fold CV AUC $= 0.6174$ \\
+                           & ให้ค่า Accuracy สูงสุดสำหรับกลุ่มเสียงข้างมาก แต่ต้องปรับ Threshold หากต้องการตรวจจับกลุ่มสำรอง \\[4pt]
+\textbf{Top Features} & \textbf{GMAT Score}, \textbf{Undergraduate GPA}, \textbf{Work Experience}, และ \textbf{Work Industry} ($>80\%$ Importance) \\[4pt]
+\textbf{ข้อเสนอแนะเชิงกลยุทธ์} & นำ Random Forest มาใช้จัดลำดับความน่าจะเป็นใน Stage 1 และใช้ Decision Tree เพื่อตรวจสอบความโปร่งใสใน Stage 2 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\clearpage
+\appendix
+\section*{Appendix: Full Jupyter Notebook Code \& Output}
+
+รายละเอียดต่อไปนี้คือโค้ด Python ที่ใช้แก้ปัญหาและวิเคราะห์ชุดข้อมูล MBA Admission พร้อมผลลัพธ์และกราฟทั้งหมด ซึ่งได้รันจริงจาก Jupyter Notebook (\texttt{Assignment\_4\_Tree\_and\_Ensemble.ipynb})
+
+\input{notebook_appendix_4.tex}
+
+\end{document}

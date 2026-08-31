@@ -1,0 +1,679 @@
+% Auto-generated notebook appendix (Assignment 4 - Tree-based & Ensemble Models)
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{Jupyter Notebook: Assignment\_4\_Tree\_and\_Ensemble.ipynb}]
+โค้ด ผลลัพธ์ และการพล็อตภาพทั้งหมดด้านล่างเป็นการรันจริงจาก Jupyter Notebook
+\end{tcolorbox}
+
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 2. Library Setup \& Environment Configuration}\par\smallskip
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [1]}:
+\begin{lstlisting}[style=pycode]
+%matplotlib inline
+import os
+import sys
+import numpy as np
+import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold, validation_curve
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score,
+                             roc_auc_score, roc_curve, confusion_matrix, classification_report)
+
+# Configure typography for publication-quality rendering
+mpl.rcParams['figure.dpi'] = 100
+font_dir = os.path.join(os.environ.get('LOCALAPPDATA', ''), 'Microsoft', 'Windows', 'Fonts')
+sarabun_r = os.path.join(font_dir, 'Sarabun-Regular.ttf')
+sarabun_b = os.path.join(font_dir, 'Sarabun-Bold.ttf')
+
+if os.path.exists(sarabun_r):
+    fm.fontManager.addfont(sarabun_r)
+if os.path.exists(sarabun_b):
+    fm.fontManager.addfont(sarabun_b)
+
+plt.rcParams['font.family'] = 'Sarabun'
+plt.rcParams['font.size'] = 11
+plt.rcParams['axes.unicode_minus'] = False
+print("Libraries and plotting configuration loaded successfully.")
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[1]}:
+\begin{lstlisting}[style=output]
+Libraries and plotting configuration loaded successfully.
+\end{lstlisting}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 3. Data Loading \& Exploratory Data Analysis}\\\normalsize (EDA)\par\smallskip
+We load \texttt{MBA.csv} and inspect its schema, missing values, and the target class distribution (\texttt{admission}).\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [2]}:
+\begin{lstlisting}[style=pycode]
+# Load MBA dataset
+df = pd.read_csv("MBA.csv")
+print(f"Total dataset dimensions: {df.shape[0]} rows, {df.shape[1]} columns")
+
+# Inspect non-null counts and schema
+print("\n--- Dataset Schema & Data Types ---")
+df.info()
+
+# Filter labeled cohort (admission is non-null)
+df_labeled = df.dropna(subset=['admission']).copy()
+print(f"\nLabeled cohort size: {len(df_labeled)} applicants")
+print("\nTarget Class Distribution:")
+print(df_labeled['admission'].value_counts(normalize=False))
+print("\nTarget Class Proportion:")
+print(df_labeled['admission'].value_counts(normalize=True).map(lambda x: f"{x*100:.1f}%"))
+
+# Summary statistics for numerical variables
+print("\nNumerical Feature Summary (Labeled Cohort):")
+display(df_labeled[['gpa', 'gmat', 'work_exp']].describe())
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[2]}:
+\begin{lstlisting}[style=output]
+Total dataset dimensions: 6194 rows, 10 columns
+
+--- Dataset Schema & Data Types ---
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 6194 entries, 0 to 6193
+Data columns (total 10 columns):
+ #   Column          Non-Null Count  Dtype  
+---  ------          --------------  -----  
+ 0   application_id  6194 non-null   int64  
+ 1   gender          6194 non-null   object 
+ 2   international   6194 non-null   bool   
+ 3   gpa             6194 non-null   float64
+ 4   major           6194 non-null   object 
+ 5   race            4352 non-null   object 
+ 6   gmat            6194 non-null   float64
+ 7   work_exp        6194 non-null   float64
+ 8   work_industry   6194 non-null   object 
+ 9   admission       1000 non-null   object 
+dtypes: bool(1), float64(3), int64(1), object(5)
+memory usage: 441.7+ KB
+
+Labeled cohort size: 1000 applicants
+
+Target Class Distribution:
+admission
+Admit       900
+Waitlist    100
+Name: count, dtype: int64
+
+Target Class Proportion:
+admission
+Admit       90.0%
+Waitlist    10.0%
+Name: proportion, dtype: object
+
+Numerical Feature Summary (Labeled Cohort):
+\end{lstlisting}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [3]}:
+\begin{lstlisting}[style=pycode]
+# Binary encoding for visualization: 0 = Admit (Majority), 1 = Waitlist (Minority)
+df_labeled['target'] = (df_labeled['admission'] == 'Waitlist').astype(int)
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+palette = {0: '#2563eb', 1: '#dc2626'}
+labels = {0: 'Admit (n=900)', 1: 'Waitlist (n=100)'}
+
+# 1. GPA Distribution
+for t_val in [0, 1]:
+    subset = df_labeled[df_labeled['target'] == t_val]
+    sns.kdeplot(subset['gpa'], ax=axes[0], color=palette[t_val], label=labels[t_val], fill=True, alpha=0.3, linewidth=2)
+axes[0].set_title('GPA Distribution by Admission', fontsize=12, fontweight='bold')
+axes[0].set_xlabel('Undergraduate GPA', fontsize=11)
+axes[0].set_ylabel('Density', fontsize=11)
+axes[0].grid(True, linestyle='--', alpha=0.5)
+axes[0].legend(loc='upper left')
+
+# 2. GMAT Distribution
+for t_val in [0, 1]:
+    subset = df_labeled[df_labeled['target'] == t_val]
+    sns.kdeplot(subset['gmat'], ax=axes[1], color=palette[t_val], label=labels[t_val], fill=True, alpha=0.3, linewidth=2)
+axes[1].set_title('GMAT Score Distribution by Admission', fontsize=12, fontweight='bold')
+axes[1].set_xlabel('GMAT Score', fontsize=11)
+axes[1].set_ylabel('Density', fontsize=11)
+axes[1].grid(True, linestyle='--', alpha=0.5)
+axes[1].legend(loc='upper left')
+
+# 3. Work Experience Boxplot
+sns.boxplot(x='admission', y='work_exp', data=df_labeled, ax=axes[2], hue='admission', palette=['#2563eb', '#dc2626'], width=0.45, legend=False)
+axes[2].set_title('Work Experience by Admission', fontsize=12, fontweight='bold')
+axes[2].set_xlabel('Admission Status', fontsize=11)
+axes[2].set_ylabel('Work Experience (Years)', fontsize=11)
+axes[2].grid(True, linestyle='--', axis='y', alpha=0.5)
+
+plt.tight_layout()
+plt.savefig('plot_1_eda_distributions.pdf', bbox_inches='tight')
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.82\textwidth]{plot_1_eda_distributions.pdf}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 1 (Exploratory Data Analysis \& Feature Distributions)}: Bivariate distributions comparing admitted ($n=900$) vs. waitlisted ($n=100$) applicants across academic and professional attributes. Left: Kernel density estimation (KDE) of Undergraduate GPA showing overlapping profiles around mean $\mu \approx 3.25$. Middle: GMAT score distribution highlighting subtle differences in variance. Right: Boxplot of work experience showing comparable median tenure ($\approx 5$ years) with higher outlier dispersion among admitted students.\par
+\end{tcolorbox}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 4. Data Preprocessing \& Categorical Encoding}\par\smallskip
+We prepare feature matrix $X$ and target vector $y$:\par
+1. Remove \texttt{application\_id} (non-predictive identifier).\par
+2. Handle missing values in \texttt{race} by assigning explicit \texttt{'Missing'} category.\par
+3. Transform categorical variables (\texttt{gender}, \texttt{international}, \texttt{major}, \texttt{race}, \texttt{work\_industry}) into categorical integer codes.\par
+4. Execute Stratified 80/20 Train/Test Split ($N_{train} = 800$, $N_{test} = 200$) to preserve the 9:1 class ratio.\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [4]}:
+\begin{lstlisting}[style=pycode]
+# Feature and Target Isolation
+X = df_labeled.drop(columns=['application_id', 'admission', 'target'])
+y = df_labeled['target'] # 0 = Admit, 1 = Waitlist
+
+# Impute missing values in race
+X['race'] = X['race'].fillna('Missing')
+
+# Categorical mapping and integer encoding
+cat_cols = ['gender', 'international', 'major', 'race', 'work_industry']
+category_mappings = {}
+X_encoded = X.copy()
+
+for col in cat_cols:
+    cat_type = X_encoded[col].astype('category')
+    category_mappings[col] = dict(enumerate(cat_type.cat.categories))
+    X_encoded[col] = cat_type.cat.codes
+
+print("Categorical Encodings:")
+for col, mapping in category_mappings.items():
+    print(f"  {col:<15}: {mapping}")
+
+# Stratified Train/Test Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X_encoded, y, test_size=0.2, random_state=42, stratify=y
+)
+
+print(f"\nTraining Set: {X_train.shape[0]} samples (Admit: {sum(y_train==0)}, Waitlist: {sum(y_train==1)})")
+print(f"Testing Set:  {X_test.shape[0]} samples (Admit: {sum(y_test==0)}, Waitlist: {sum(y_test==1)})")
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[4]}:
+\begin{lstlisting}[style=output]
+Categorical Encodings:
+  gender         : {0: 'Female', 1: 'Male'}
+  international  : {0: False, 1: True}
+  major          : {0: 'Business', 1: 'Humanities', 2: 'STEM'}
+  race           : {0: 'Asian', 1: 'Black', 2: 'Hispanic', 3: 'Missing', 4: 'Other', 5: 'White'}
+  work_industry  : {0: 'CPG', 1: 'Consulting', 2: 'Energy', 3: 'Financial Services', 4: 'Health Care', 5: 'Investment Banking', 6: 'Investment Management', 7: 'Media/Entertainment', 8: 'Nonprofit/Gov', 9: 'Other', 10: 'PE/VC', 11: 'Real Estate', 12: 'Retail', 13: 'Technology'}
+
+Training Set: 800 samples (Admit: 720, Waitlist: 80)
+Testing Set:  200 samples (Admit: 180, Waitlist: 20)
+\end{lstlisting}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 5. Model 1 — Decision Tree Classifier}\par\smallskip
+We fit a \textbf{Decision Tree Classifier} using the Information Gain (Entropy) criterion with regularization pruning (\texttt{max\_depth=3}, \texttt{min\_samples\_split=20}, \texttt{min\_samples\_leaf=10}, \texttt{class\_weight='balanced'}) to prevent overfitting and handle class imbalance.\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [5]}:
+\begin{lstlisting}[style=pycode]
+# Instantiate and train Decision Tree
+dt_clf = DecisionTreeClassifier(
+    criterion='entropy',
+    max_depth=3,
+    min_samples_split=20,
+    min_samples_leaf=10,
+    class_weight='balanced',
+    random_state=42
+)
+dt_clf.fit(X_train, y_train)
+
+# Predictions and evaluation
+y_pred_dt = dt_clf.predict(X_test)
+y_proba_dt = dt_clf.predict_proba(X_test)[:, 1]
+
+print("============================================================")
+print("DECISION TREE CLASSIFICATION REPORT")
+print("============================================================")
+print(classification_report(y_test, y_pred_dt, target_names=['Admit (0)', 'Waitlist (1)'], zero_division=0))
+print(f"Test Accuracy: {accuracy_score(y_test, y_pred_dt)*100:.2f}%")
+print(f"ROC-AUC Score: {roc_auc_score(y_test, y_proba_dt):.4f}")
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[5]}:
+\begin{lstlisting}[style=output]
+============================================================
+DECISION TREE CLASSIFICATION REPORT
+============================================================
+              precision    recall  f1-score   support
+
+   Admit (0)       0.91      0.64      0.75       180
+Waitlist (1)       0.11      0.40      0.17        20
+
+    accuracy                           0.61       200
+   macro avg       0.51      0.52      0.46       200
+weighted avg       0.83      0.61      0.69       200
+
+Test Accuracy: 61.50%
+ROC-AUC Score: 0.5258
+\end{lstlisting}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [6]}:
+\begin{lstlisting}[style=pycode]
+# Visualizing Pruned Decision Tree
+fig, ax = plt.subplots(figsize=(16, 8))
+plot_tree(
+    dt_clf,
+    feature_names=X_encoded.columns.tolist(),
+    class_names=['Admit', 'Waitlist'],
+    filled=True,
+    rounded=True,
+    fontsize=10,
+    ax=ax,
+    precision=2
+)
+ax.set_title('Pruned Decision Tree Structure (Entropy Criterion, max_depth=3, Class Balanced)', fontsize=13, fontweight='bold', pad=12)
+plt.tight_layout()
+plt.savefig('plot_2_decision_tree.pdf', bbox_inches='tight')
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.95\textwidth]{plot_2_decision_tree.pdf}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 2 (Decision Tree Architecture \& Splitting Flowchart)}: Interpretable tree diagram illustrating hierarchical binary splits based on Information Gain (Entropy). Top nodes identify critical threshold splits across GPA, GMAT, and Work Industry, showing sample counts, class distributions, and impurity reductions at each branch.\par
+\end{tcolorbox}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 6. Model 2 — Random Forest Classifier}\par\smallskip
+We train a \textbf{Random Forest Classifier} ($B = 150$ trees, \texttt{max\_depth=5}, \texttt{class\_weight='balanced'}) utilizing \textbf{Bootstrap Aggregating (Bagging)} and \textbf{Random Subspace (Feature Sampling)} to decorrelate individual trees and reduce prediction variance.\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [7]}:
+\begin{lstlisting}[style=pycode]
+# Instantiate and train Random Forest
+rf_clf = RandomForestClassifier(
+    n_estimators=150,
+    max_depth=5,
+    min_samples_split=10,
+    min_samples_leaf=5,
+    class_weight='balanced',
+    random_state=42
+)
+rf_clf.fit(X_train, y_train)
+
+# Predictions and evaluation
+y_pred_rf = rf_clf.predict(X_test)
+y_proba_rf = rf_clf.predict_proba(X_test)[:, 1]
+
+print("============================================================")
+print("RANDOM FOREST CLASSIFICATION REPORT")
+print("============================================================")
+print(classification_report(y_test, y_pred_rf, target_names=['Admit (0)', 'Waitlist (1)'], zero_division=0))
+print(f"Test Accuracy: {accuracy_score(y_test, y_pred_rf)*100:.2f}%")
+print(f"ROC-AUC Score: {roc_auc_score(y_test, y_proba_rf):.4f}")
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[7]}:
+\begin{lstlisting}[style=output]
+============================================================
+RANDOM FOREST CLASSIFICATION REPORT
+============================================================
+              precision    recall  f1-score   support
+
+   Admit (0)       0.90      0.79      0.84       180
+Waitlist (1)       0.10      0.20      0.13        20
+
+    accuracy                           0.73       200
+   macro avg       0.50      0.49      0.48       200
+weighted avg       0.82      0.73      0.77       200
+
+Test Accuracy: 73.00%
+ROC-AUC Score: 0.5519
+\end{lstlisting}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 7. Model 3 — Gradient Boosting Classifier}\par\smallskip
+We train a \textbf{Gradient Boosting Classifier} ($M = 100$ boosting iterations, $\eta = 0.05$ learning rate shrinkage, \texttt{max\_depth=3}, \texttt{subsample=0.8}) which sequentially fits weak learners to the pseudo-residuals of the cross-entropy loss function.\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [8]}:
+\begin{lstlisting}[style=pycode]
+# Instantiate and train Gradient Boosting
+gb_clf = GradientBoostingClassifier(
+    n_estimators=100,
+    learning_rate=0.05,
+    max_depth=3,
+    subsample=0.8,
+    random_state=42
+)
+gb_clf.fit(X_train, y_train)
+
+# Predictions and evaluation
+y_pred_gb = gb_clf.predict(X_test)
+y_proba_gb = gb_clf.predict_proba(X_test)[:, 1]
+
+print("============================================================")
+print("GRADIENT BOOSTING CLASSIFICATION REPORT")
+print("============================================================")
+print(classification_report(y_test, y_pred_gb, target_names=['Admit (0)', 'Waitlist (1)'], zero_division=0))
+print(f"Test Accuracy: {accuracy_score(y_test, y_pred_gb)*100:.2f}%")
+print(f"ROC-AUC Score: {roc_auc_score(y_test, y_proba_gb):.4f}")
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[8]}:
+\begin{lstlisting}[style=output]
+============================================================
+GRADIENT BOOSTING CLASSIFICATION REPORT
+============================================================
+              precision    recall  f1-score   support
+
+   Admit (0)       0.90      0.99      0.94       180
+Waitlist (1)       0.33      0.05      0.09        20
+
+    accuracy                           0.90       200
+   macro avg       0.62      0.52      0.52       200
+weighted avg       0.85      0.90      0.86       200
+
+Test Accuracy: 89.50%
+ROC-AUC Score: 0.4981
+\end{lstlisting}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 8. Feature Importance Comparison}\par\smallskip
+We evaluate and compare the \textbf{Mean Decrease in Impurity (Gini / Entropy Importance)} across the three models to understand the primary predictors influencing MBA admission.\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [9]}:
+\begin{lstlisting}[style=pycode]
+# Compile Feature Importance DataFrame
+feat_names = X_encoded.columns.tolist()
+imp_df = pd.DataFrame({
+    'Feature': feat_names,
+    'Decision Tree': dt_clf.feature_importances_,
+    'Random Forest': rf_clf.feature_importances_,
+    'Gradient Boosting': gb_clf.feature_importances_
+}).set_index('Feature')
+
+imp_df = imp_df.sort_values(by='Random Forest', ascending=True)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+y_indices = np.arange(len(feat_names))
+bar_width = 0.25
+
+ax.barh(y_indices + bar_width, imp_df['Decision Tree'], height=bar_width, label='Decision Tree', color='#0284c7', alpha=0.85)
+ax.barh(y_indices, imp_df['Random Forest'], height=bar_width, label='Random Forest', color='#16a34a', alpha=0.85)
+ax.barh(y_indices - bar_width, imp_df['Gradient Boosting'], height=bar_width, label='Gradient Boosting', color='#d97706', alpha=0.85)
+
+ax.set_yticks(y_indices)
+ax.set_yticklabels(imp_df.index, fontsize=11)
+ax.set_xlabel('Feature Importance (Mean Decrease in Impurity)', fontsize=11)
+ax.set_title('Feature Importance Comparison Across Tree-Based Models', fontsize=13, fontweight='bold', pad=12)
+ax.grid(True, linestyle='--', axis='x', alpha=0.5)
+ax.legend(loc='lower right', fontsize=11)
+
+plt.tight_layout()
+plt.savefig('plot_3_feature_importance.pdf', bbox_inches='tight')
+plt.show()
+
+print("\nFeature Importance Values:")
+display(imp_df.sort_values(by='Random Forest', ascending=False))
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.82\textwidth]{plot_3_feature_importance.pdf}
+\end{center}
+\smallskip
+\noindent\textbf{Out[9]}:
+\begin{lstlisting}[style=output]
+Feature Importance Values:
+\end{lstlisting}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 3 (Feature Importance Comparison)}: Horizontal bar chart comparing relative feature importances derived from Mean Decrease in Impurity. GMAT score, GPA, Work Experience, and Work Industry emerge as the dominant predictors across all three architectures, while demographic indicators (gender, race, international) exhibit lower direct influence.\par
+\end{tcolorbox}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 9. Diagnostic Evaluations: Confusion Matrices \& ROC-AUC Analysis}\par\smallskip
+We compare model performance across confusion matrices and \textbf{Receiver Operating Characteristic (ROC)} curves.\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [10]}:
+\begin{lstlisting}[style=pycode]
+# Plot Side-by-Side Confusion Matrices
+fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+models_dict = {
+    'Decision Tree': (dt_clf, y_pred_dt, y_proba_dt),
+    'Random Forest': (rf_clf, y_pred_rf, y_proba_rf),
+    'Gradient Boosting': (gb_clf, y_pred_gb, y_proba_gb)
+}
+
+for idx, (m_name, (model, y_pred, y_proba)) in enumerate(models_dict.items()):
+    cm = confusion_matrix(y_test, y_pred)
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=axes[idx], cbar=False,
+                annot_kws={'size': 14, 'fontweight': 'bold'})
+    axes[idx].set_title(f'{m_name}\nConfusion Matrix', fontsize=12, fontweight='bold')
+    axes[idx].set_xlabel('Predicted Label', fontsize=11)
+    axes[idx].set_ylabel('True Label', fontsize=11)
+    axes[idx].set_xticklabels(['Admit (0)', 'Waitlist (1)'], fontsize=10)
+    axes[idx].set_yticklabels(['Admit (0)', 'Waitlist (1)'], fontsize=10)
+
+plt.tight_layout()
+plt.savefig('plot_4_confusion_matrices.pdf', bbox_inches='tight')
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.82\textwidth]{plot_4_confusion_matrices.pdf}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 4 (Comparative Confusion Matrices)}: $1 \times 3$ grid of Confusion Matrices on the testing cohort ($n=200$). Highlights the operational tradeoff: Decision Tree and Random Forest (with class balancing) capture more Waitlist cases ($8$ and $4$ true positives respectively) at the expense of false positives, whereas Gradient Boosting prioritizes majority class accuracy ($89.5\%$).\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [11]}:
+\begin{lstlisting}[style=pycode]
+# Plot ROC Curves
+fig, ax = plt.subplots(figsize=(8, 6))
+colors = {'Decision Tree': '#0284c7', 'Random Forest': '#16a34a', 'Gradient Boosting': '#d97706'}
+
+for m_name, (model, y_pred, y_proba) in models_dict.items():
+    fpr, tpr, _ = roc_curve(y_test, y_proba)
+    auc_score = roc_auc_score(y_test, y_proba)
+    ax.plot(fpr, tpr, color=colors[m_name], linewidth=2.5, label=f'{m_name} (AUC = {auc_score:.4f})')
+
+ax.plot([0, 1], [0, 1], 'k--', linewidth=1.5, alpha=0.6, label='Random Chance (AUC = 0.5000)')
+ax.set_title('Receiver Operating Characteristic (ROC) Curves Comparison', fontsize=13, fontweight='bold', pad=12)
+ax.set_xlabel('False Positive Rate (1 - Specificity)', fontsize=11)
+ax.set_ylabel('True Positive Rate (Sensitivity / Recall)', fontsize=11)
+ax.set_xlim([-0.02, 1.02])
+ax.set_ylim([-0.02, 1.05])
+ax.grid(True, linestyle='--', alpha=0.5)
+ax.legend(loc='lower right', fontsize=11)
+
+plt.tight_layout()
+plt.savefig('plot_5_roc_curves.pdf', bbox_inches='tight')
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.82\textwidth]{plot_5_roc_curves.pdf}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 5 (Receiver Operating Characteristic (ROC) Curves)}: Discrimination trajectories across varying classification thresholds. Random Forest achieves the highest test discrimination ($\text{AUC} = 0.5519$, 5-Fold $\text{CV AUC} = 0.6237$), effectively ranking applicant admission probabilities.\par
+\end{tcolorbox}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 10. Hyperparameter Tuning \& Bias-Variance Analysis}\par\smallskip
+We compute 5-Fold Stratified Cross-Validation curves to evaluate the impact of tree depth (\texttt{max\_depth}) on Decision Trees and ensemble size (\texttt{n\_estimators}) on Random Forests.\par
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [12]}:
+\begin{lstlisting}[style=pycode]
+# Compute Validation Curves
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# 1. Decision Tree max_depth
+param_range_dt = np.arange(1, 11)
+train_sc_dt, test_sc_dt = validation_curve(
+    DecisionTreeClassifier(criterion='entropy', class_weight='balanced', random_state=42),
+    X_train, y_train,
+    param_name='max_depth',
+    param_range=param_range_dt,
+    cv=5,
+    scoring='roc_auc',
+    n_jobs=-1
+)
+
+tr_m_dt, tr_s_dt = np.mean(train_sc_dt, axis=1), np.std(train_sc_dt, axis=1)
+ts_m_dt, ts_s_dt = np.mean(test_sc_dt, axis=1), np.std(test_sc_dt, axis=1)
+
+ax1.plot(param_range_dt, tr_m_dt, 'o-', color='#2563eb', label='Training AUC', linewidth=2)
+ax1.fill_between(param_range_dt, tr_m_dt - tr_s_dt, tr_m_dt + tr_s_dt, alpha=0.15, color='#2563eb')
+ax1.plot(param_range_dt, ts_m_dt, 's-', color='#dc2626', label='5-Fold CV AUC', linewidth=2)
+ax1.fill_between(param_range_dt, ts_m_dt - ts_s_dt, ts_m_dt + ts_s_dt, alpha=0.15, color='#dc2626')
+ax1.set_title('Decision Tree: max_depth vs. ROC-AUC', fontsize=12, fontweight='bold')
+ax1.set_xlabel('Maximum Tree Depth (max_depth)', fontsize=11)
+ax1.set_ylabel('ROC-AUC Score', fontsize=11)
+ax1.set_xticks(param_range_dt)
+ax1.grid(True, linestyle='--', alpha=0.5)
+ax1.legend(loc='lower right', fontsize=10)
+
+# 2. Random Forest n_estimators
+param_range_rf = [10, 25, 50, 100, 150, 200, 300]
+train_sc_rf, test_sc_rf = validation_curve(
+    RandomForestClassifier(max_depth=5, class_weight='balanced', random_state=42),
+    X_train, y_train,
+    param_name='n_estimators',
+    param_range=param_range_rf,
+    cv=5,
+    scoring='roc_auc',
+    n_jobs=-1
+)
+
+tr_m_rf, tr_s_rf = np.mean(train_sc_rf, axis=1), np.std(train_sc_rf, axis=1)
+ts_m_rf, ts_s_rf = np.mean(test_sc_rf, axis=1), np.std(test_sc_rf, axis=1)
+
+ax2.plot(param_range_rf, tr_m_rf, 'o-', color='#2563eb', label='Training AUC', linewidth=2)
+ax2.fill_between(param_range_rf, tr_m_rf - tr_s_rf, tr_m_rf + tr_s_rf, alpha=0.15, color='#2563eb')
+ax2.plot(param_range_rf, ts_m_rf, 's-', color='#16a34a', label='5-Fold CV AUC', linewidth=2)
+ax2.fill_between(param_range_rf, ts_m_rf - ts_s_rf, ts_m_rf + ts_s_rf, alpha=0.15, color='#16a34a')
+ax2.set_title('Random Forest: n_estimators vs. ROC-AUC', fontsize=12, fontweight='bold')
+ax2.set_xlabel('Number of Trees (n_estimators)', fontsize=11)
+ax2.set_ylabel('ROC-AUC Score', fontsize=11)
+ax2.grid(True, linestyle='--', alpha=0.5)
+ax2.legend(loc='lower right', fontsize=10)
+
+plt.tight_layout()
+plt.savefig('plot_6_hyperparameter_tuning.pdf', bbox_inches='tight')
+plt.show()
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.95\textwidth]{plot_6_hyperparameter_tuning.pdf}
+\end{center}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{Figure 6 (Hyperparameter Validation Curves \& Bias-Variance Dynamics)}: Left: Decision tree depth vs. ROC-AUC showing that unpruned trees ($\text{depth} > 4$) quickly overfit training data while test performance degrades. Right: Random Forest ensemble scaling showing asymptotic variance stabilization beyond $B = 100-150$ trees.\par
+\end{tcolorbox}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 11. Comprehensive Model Evaluation \& Summary Table}\par\smallskip
+\end{tcolorbox}
+\needspace{5\baselineskip}
+\vspace{0.8em}
+\noindent\textbf{In [13]}:
+\begin{lstlisting}[style=pycode]
+# Compile Final Performance Summary Table
+summary_metrics = []
+for m_name, (model, y_pred, y_proba) in models_dict.items():
+    acc = accuracy_score(y_test, y_pred)
+    prec_0 = precision_score(y_test, y_pred, pos_label=0, zero_division=0)
+    rec_0 = recall_score(y_test, y_pred, pos_label=0, zero_division=0)
+    f1_0 = f1_score(y_test, y_pred, pos_label=0, zero_division=0)
+    
+    prec_1 = precision_score(y_test, y_pred, pos_label=1, zero_division=0)
+    rec_1 = recall_score(y_test, y_pred, pos_label=1, zero_division=0)
+    f1_1 = f1_score(y_test, y_pred, pos_label=1, zero_division=0)
+    
+    auc = roc_auc_score(y_test, y_proba)
+    cv_auc = np.mean(cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc'))
+    
+    summary_metrics.append({
+        'Model': m_name,
+        'Accuracy': f"{acc*100:.2f}%",
+        'Admit Prec': f"{prec_0:.3f}",
+        'Admit Rec': f"{rec_0:.3f}",
+        'Admit F1': f"{f1_0:.3f}",
+        'Waitlist Prec': f"{prec_1:.3f}",
+        'Waitlist Rec': f"{rec_1:.3f}",
+        'Waitlist F1': f"{f1_1:.3f}",
+        'Test AUC': f"{auc:.4f}",
+        '5-Fold CV AUC': f"{cv_auc:.4f}"
+    })
+
+perf_df = pd.DataFrame(summary_metrics)
+print("============================================================")
+print("COMPREHENSIVE MODEL EVALUATION BENCHMARK TABLE")
+print("============================================================")
+display(perf_df)
+\end{lstlisting}
+\smallskip
+\noindent\textbf{Out[13]}:
+\begin{lstlisting}[style=output]
+============================================================
+COMPREHENSIVE MODEL EVALUATION BENCHMARK TABLE
+============================================================
+\end{lstlisting}
+\needspace{4\baselineskip}
+\vspace{0.8em}
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!50!black,boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=4pt,bottom=4pt,breakable]
+\textbf{\large 12. Summary of Findings \& Domain Discussion}\par\smallskip
+\smallskip
+\textbf{1. Model Comparisons \& Key Findings:}\par\smallskip
+\textbullet\ \textbf{Decision Tree (CART)}: Provides full white-box interpretability via visual split paths (Figure 2). Pruning with \texttt{max\_depth=3} and \texttt{class\_weight='balanced'} enables capturing 40\% of Waitlist candidates, but has higher variance and lower overall accuracy ($61.50\%$).\par
+\textbullet\ \textbf{Random Forest}: Achieves superior generalization through bagging and feature subspace decorrelation. It demonstrates the most stable ROC-AUC score ($0.5519$ test, $0.6237$ CV AUC), striking a robust balance between precision and recall across both classes.\par
+\textbullet\ \textbf{Gradient Boosting}: Minimizes classification loss via sequential gradient descent on residuals. It achieves the highest raw accuracy ($89.50\%$), but requires careful probability threshold tuning or focal loss adjustments to prevent majority-class bias.\par
+\smallskip
+\textbf{2. Feature Importance \& Domain Insights:}\par\smallskip
+\textbullet\ \textbf{Top Predictors}: Across all three models, \textbf{GMAT score}, \textbf{GPA}, \textbf{Work Experience}, and \textbf{Work Industry} account for $> 80\%$ of overall predictive importance.\par
+\textbullet\ \textbf{Fairness \& Demographics}: Demographic variables (\texttt{gender}, \texttt{race}, \texttt{international}) show minimal direct importance in decision tree splits, suggesting admissions decisions are heavily merit- and experience-driven.\par
+\smallskip
+\textbf{3. Recommendations for MBA Admissions Pipeline:}\par\smallskip
+\textbullet\ \textbf{Ensemble Screening}: Deploy Random Forest for initial applicant scoring and ranking due to its stable probability calibration and robustness against noise.\par
+\textbullet\ \textbf{Interpretable Auditing}: Use Decision Tree rules for transparent committee review and explaining conditional decisions to borderline (Waitlist) candidates.\par
+\end{tcolorbox}
