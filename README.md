@@ -7,7 +7,7 @@ This repository contains coursework, assignments, lecture materials, and referen
 ## 📂 Repository Structure
 
 ```text
-cpe342-machine-learning/
+cpe342-machine-learning-2026/
 ├── assignment/
 │   ├── Assignment 1_Training models/
 │   │   ├── Assignment_1_OLS.ipynb             # Jupyter Notebook implementation
