@@ -36,14 +36,20 @@ cpe342-machine-learning-2026/
 │       ├── Assignment_4_Tree-Based_and_Ensemble_Models.ipynb # Jupyter Notebook implementation
 │       ├── MBA.csv                            # Dataset (N = 6,194, Labeled = 1,000)
 │       ├── CPE342_Assignment 4_main.tex      # LaTeX source report
-│       ├── CPE342_Assignment 4_main.pdf      # Compiled report (29 pages)
+│       ├── CPE342_Assignment 4_main.pdf      # Compiled report (31 pages)
 │       ├── notebook_appendix_4.tex           # LaTeX appendix with executed notebook cells
 │       └── plot_1_*.pdf to plot_6_*.pdf       # High-resolution vector figures
 │
 ├── lecture/                                   # Lecture slides and demo notebooks
-│   ├── Lecture 1–12 PDFs
-│   ├── ML_2_Training_Models.ipynb
-│   └── ML_3_SVM.ipynb
+│   ├── Lecture 1–12 PDFs                      # Course slide decks
+│   ├── ML_2_Training_Models.ipynb             # Demo: Gradient Descent & Linear Regression
+│   ├── ML_3_SVM.ipynb                         # Demo: Support Vector Machines
+│   ├── ML_4_Regression.ipynb                  # Demo: Regression Analysis
+│   ├── ML_5_Classification_Tree_Based.ipynb   # Demo: Tree-based Classification (Decision Trees)
+│   ├── ML_5_Ensemble_Models.ipynb             # Demo: Random Forest, Gradient Boosting & XGBoost
+│   ├── ML_5_hr_attrition.csv                  # Dataset: HR Employee Attrition
+│   ├── ML_5_bank-data.csv                     # Dataset: Banking Marketing Churn
+│   └── ML_5_hr_attrition.data                 # Preprocessed training cohort pickle
 │
 └── textbook/                                  # Reference textbooks (ISLR / O'Reilly)
 ```
@@ -116,7 +122,7 @@ cpe342-machine-learning-2026/
 ## 🛠️ Environment & Prerequisites
 
 * **Python:** 3.10+
-* **Core Libraries:** `numpy`, `pandas`, `scikit-learn`, `matplotlib`, `scipy`, `lifelines`, `statsmodels`, `seaborn`, `jupyter`
+* **Core Libraries:** `numpy`, `pandas`, `scikit-learn`, `xgboost`, `matplotlib`, `scipy`, `lifelines`, `statsmodels`, `seaborn`, `jupyter`, `pydotplus`
 * **Typography:** TH Sarabun New / Sarabun font support for Matplotlib charts
 * **Report Compilation:** XeLaTeX / TeX Live / MiKTeX (Polyglossia + Sarabun font)
 
